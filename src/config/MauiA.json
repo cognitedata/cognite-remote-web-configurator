@@ -1,0 +1,1300 @@
+{
+  "assets": {
+      "geometries": {
+          "mauia": {
+              "modelID": "5769842934990645",
+              "revisionID": "8582053089075525"
+          }
+      }
+  },
+  "header": {
+      "name": "Maui A - local",
+      "type": "inspectionApplication"
+  },
+  "scenes": [
+      {
+          "actors": [
+              {
+                  "name": "drawingMod3",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          0,
+                          0,
+                          0
+                      ],
+                      "rotation": [
+                          0,
+                          0,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "material": {
+                              "type": "textured",
+                              "diffuse": "5956180913020765"
+                          },
+                          "meshType": "plane",
+                          "transform": {
+                              "type": "unrealTransform",
+                              "scale": [
+                                  124.272,
+                                  87.12,
+                                  1
+                              ],
+                              "position": [
+                                  2150,
+                                  3050,
+                                  2200
+                              ],
+                              "rotation": [
+                                  0,
+                                  0,
+                                  0
+                              ]
+                          },
+                          "componentType": "basicMeshComponent"
+                      }
+                  ]
+              },
+              {
+                  "name": "images360helideck",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          1100,
+                          3200,
+                          4900
+                      ],
+                      "rotation": [
+                          0,
+                          -177,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "siteIds": [
+                              "helideck-site-2"
+                          ],
+                          "componentType": "image360Component"
+                      }
+                  ]
+              },
+              {
+                  "name": "images360jtube",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          3400,
+                          4600,
+                          3000
+                      ],
+                      "rotation": [
+                          0,
+                          -40,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "siteIds": [
+                              "j-tube-diesel-header-tank"
+                          ],
+                          "componentType": "image360Component",
+                          "defaultImageRotation": 0
+                      }
+                  ]
+              },
+              {
+                  "name": "images360sestairs",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          17600,
+                          5600,
+                          3700
+                      ],
+                      "rotation": [
+                          0,
+                          -96,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "siteIds": [
+                              "se-stairs-module-5-boot-room"
+                          ],
+                          "componentType": "image360Component",
+                          "defaultImageRotation": 0
+                      }
+                  ]
+              },
+              {
+                  "name": "mauiaactor",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          0,
+                          0,
+                          0
+                      ],
+                      "rotation": [
+                          0,
+                          0,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "componentName": "maui",
+                          "componentType": "geometryComponent",
+                          "geometryDataID": "mauia"
+                      }
+                  ]
+              },
+              {
+                  "name": "MauiSensorsActor",
+                  "type": "actor",
+                  "transform": {
+                      "type": "unrealTransform",
+                      "scale": [
+                          1,
+                          1,
+                          1
+                      ],
+                      "position": [
+                          0,
+                          0,
+                          0
+                      ],
+                      "rotation": [
+                          0,
+                          0,
+                          0
+                      ]
+                  },
+                  "components": [
+                      {
+                          "widget": {
+                              "size": 50,
+                              "type": "text",
+                              "color": "#FFFFFF",
+                              "content": "  HP SEPARATOR  \n  V-2090  ",
+                              "outlineSize": 1,
+                              "outlineColor": "000000",
+                              "rotationMode": "noRotation",
+                              "backgroundColor": "202020"
+                          },
+                          "transform": {
+                              "scale": [
+                                  1.2,
+                                  1.2,
+                                  1.2
+                              ],
+                              "position": [
+                                  4800,
+                                  3700,
+                                  2900
+                              ],
+                              "rotation": [
+                                  0,
+                                  0,
+                                  0
+                              ]
+                          },
+                          "componentType": "widgetComponent"
+                      },
+                      {
+                          "widget": {
+                              "size": 20,
+                              "type": "text",
+                              "color": "#FFFFFF",
+                              "content": "\n  HP Separator Pressure {@timeseriesExternalID: NZ_APT-2090A} bar  \n  PW Transfer Pumps to Degasser {@timeseriesExternalID: NZ_AFIT-1593A} m3/Hr  \n  Level (Low Range) {@timeseriesExternalID: NZ_ALT-2090C} mm  \n",
+                              "outlineSize": 1,
+                              "outlineColor": "000000",
+                              "rotationMode": "noRotation",
+                              "backgroundColor": "202020"
+                          },
+                          "transform": {
+                              "scale": [
+                                  1.15,
+                                  1.15,
+                                  1.15
+                              ],
+                              "position": [
+                                  4800,
+                                  3700,
+                                  2680
+                              ],
+                              "rotation": [
+                                  0,
+                                  0,
+                                  0
+                              ]
+                          },
+                          "componentType": "widgetComponent"
+                      },
+                      {
+                          "widget": {
+                              "size": 50,
+                              "type": "text",
+                              "color": "#FFFFFF",
+                              "content": "  TRAIN 5 LT SEP  \n  V-0560  ",
+                              "outlineSize": 1,
+                              "outlineColor": "000000",
+                              "rotationMode": "faceCamera_ZOnly",
+                              "backgroundColor": "202020"
+                          },
+                          "transform": {
+                              "scale": [
+                                  1.2,
+                                  1.2,
+                                  1.2
+                              ],
+                              "position": [
+                                  4500,
+                                  2650,
+                                  2900
+                              ],
+                              "rotation": [
+                                  0,
+                                  90,
+                                  0
+                              ]
+                          },
+                          "componentType": "widgetComponent"
+                      },
+                      {
+                          "widget": {
+                              "size": 20,
+                              "type": "text",
+                              "color": "#FFFFFF",
+                              "content": "\n  Train 5 Separator Pressure {@timeseriesExternalID: NZ_API-0560/A} bar  \n  Train 5 LTS Bath Tempr {@timeseriesExternalID: NZ_ATT-0560A} deg C  \n  ",
+                              "outlineSize": 1,
+                              "outlineColor": "000000",
+                              "rotationMode": "faceCamera_ZOnly",
+                              "backgroundColor": "202020"
+                          },
+                          "transform": {
+                              "scale": [
+                                  1.15,
+                                  1.15,
+                                  1.15
+                              ],
+                              "position": [
+                                  4500,
+                                  2650,
+                                  2680
+                              ],
+                              "rotation": [
+                                  0,
+                                  90,
+                                  0
+                              ]
+                          },
+                          "componentType": "widgetComponent"
+                      }
+                  ]
+              }
+          ],
+          "camera": {
+              "groundReference": -1300,
+              "initialCoordinates": {
+                  "type": "unrealTransform",
+                  "scale": [
+                      1,
+                      1,
+                      1
+                  ],
+                  "position": [
+                      3500,
+                      -3000,
+                      7000
+                  ],
+                  "rotation": [
+                      -35,
+                      90,
+                      0
+                  ]
+              }
+          },
+          "waterPlane": {
+              "transform": {
+                  "type": "unrealTransform",
+                  "scale": [
+                      5,
+                      5,
+                      5
+                  ],
+                  "position": [
+                      0,
+                      0,
+                      0
+                  ],
+                  "rotation": [
+                      0,
+                      0,
+                      0
+                  ]
+              }
+          },
+          "uiConfiguration": {
+              "sliceTool": {
+                  "maximum": 12000,
+                  "minimum": -1500
+              },
+              "measureTool": {
+                  "type": "path"
+              },
+              "settingsPanel": {}
+          },
+          "visibilityLayers": [
+              {
+                  "name": "Maui A CAD",
+                  "objects": [
+                      {
+                          "actorName": "mauiaactor"
+                      }
+                  ],
+                  "isActive": true
+              },
+              {
+                  "name": "Sensor Labels",
+                  "objects": [
+                      {
+                          "actorName": "MauiSensorsActor"
+                      }
+                  ],
+                  "isActive": false
+              },
+              {
+                  "name": "Lower Deck Drawing",
+                  "objects": [
+                      {
+                          "actorName": "drawingMod3"
+                      }
+                  ],
+                  "isActive": false
+              }
+          ],
+          "environmentControl": {
+              "underWaterColor": "#002B43",
+              "underWaterDensity": 0.1,
+              "directionalLightSettings": {
+                  "color": "#FFFFFFFF",
+                  "rotation": [
+                      -31.3,
+                      36.4,
+                      -51.3
+                  ],
+                  "intensity": 3.141593
+              }
+          }
+      }
+  ],
+  "hierarchy": {
+      "type": "noHierarchy",
+      "rootAssetId": 4735378114496141
+  },
+  "workOrders": [
+    {
+      "title": "WORK ORDERS",
+      "labelText": "{@description}",
+      "workOrder": {
+        "id": "{@metadata:AUFNR}",
+        "title": "{@description}",
+        "description": "{@description}",
+        "details": [{
+            "data": {
+              "text": "{@startTime}",
+              "format": [{
+                  "value": "{@msse}",
+                  "displayName": "%Y-%m-%d"
+                },
+                {
+                  "value": "{@default}",
+                  "displayName": "Invalid"
+                }
+              ]
+            },
+            "title": "BASIC START DATE"
+          },
+          {
+            "data": {
+              "text": "{@endTime}",
+              "format": [{
+                  "value": "{@msse}",
+                  "displayName": "%Y-%m-%d"
+                },
+                {
+                  "value": "{@default}",
+                  "displayName": "Invalid"
+                }
+              ]
+            },
+            "title": "BASIC FINISH DATE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:PRIOK}",
+              "format": [
+                {
+                  "color": "#008800",
+                  "value": "5",
+                  "displayName": "Low (>= 6 months)"
+                },
+                {
+                  "color": "#FFA500",
+                  "value": "4",
+                  "displayName": "Medium (<= 1 month)"
+                },
+                {
+                  "color": "#FF7700",
+                  "value": "3",
+                  "displayName": "High (<= 2 weeks)"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "2",
+                  "displayName": "Urgent (<= 1 week)"
+                },
+                {
+                  "color": "#800080",
+                  "value": "1",
+                  "displayName": "Emergency (Immediate)"
+                },
+                {
+                  "color": "#000000",
+                  "value": "{@default}"
+                }
+              ]
+            },
+            "title": "PRIORITY",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@subtype}",
+              "format": [
+                {
+                  "value": "EP01",
+                  "displayName": "EP01: E&P Corrective Maintenance"
+                },
+                {
+                  "value": "EP02",
+                  "displayName": "EP02: E&P Preventive Maintenance"
+                },
+                {
+                  "value": "EP03",
+                  "displayName": "EP03: E&P Non Maintenance"
+                },
+                {
+                  "value": "EP06",
+                  "displayName": "EP06: E&P Subsurface"
+                },
+                {
+                  "value": "EP07",
+                  "displayName": "EP07: E&P Production Operations"
+                }
+              ]
+            },
+            "title": "ORDER TYPE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:REVNR}",
+              "format": []
+            },
+            "title": "REVISION",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:ILART}",
+              "format": [
+                {
+                  "value": "MRM",
+                  "displayName": "MRM: Routine Maintenance"
+                },
+                {
+                  "value": "MRS",
+                  "displayName": "MRS: Preservation of Spares"
+                },  
+                {
+                  "value": "MRP",
+                  "displayName": "MRP: Repair"
+                },           
+                {
+                  "value": "SCE",
+                  "displayName": "SCE: Inspection & Testing SCEs"
+                },           
+                {
+                  "value": "NSC",
+                  "displayName": "NSC: Inspection & Testing Non-SCEs"
+                },     
+                {
+                  "value": "PSI",
+                  "displayName": "PSI: Inspection & Testing Statutory"
+                },
+                {
+                  "value": "MCM",
+                  "displayName": "MCM: Condition Monitoring"
+                },               
+                {
+                  "value": "MCP",
+                  "displayName": "MCP: Civil & Structure Plant/Facility"
+                }, 
+                {
+                  "value": "MCR",
+                  "displayName": "MCR: Road Maintenance"
+                },  
+                {
+                  "value": "MVE",
+                  "displayName": "MVE: Vehicle Maintenance"
+                },
+                {
+                  "value": "MMO",
+                  "displayName": "MMO: Major Overhaul"
+                },
+                {
+                  "value": "MTA",
+                  "displayName": "MTA: Turnaround & Shutdown"
+                },
+                {
+                  "value": "MCO",
+                  "displayName": "MCO: Corrosion Protection"
+                },
+                {
+                  "value": "MRE",
+                  "displayName": "MRE: Replacement / Renewal Programs"
+                },
+                {
+                  "value": "OBM",
+                  "displayName": "OBM: Operator Based Maintenance"
+                },
+                {
+                  "value": "ORO",
+                  "displayName": "ORO: Operator Rounds"
+                },
+                {
+                  "value": "OCI",
+                  "displayName": "OCI: Chemical Inhibition"
+                },
+                {
+                  "value": "OFA",
+                  "displayName": "OFA: Flow Assurance & Chemical Treatment"
+                },
+                {
+                  "value": "SWI",
+                  "displayName": "SWI: Well Intervention"
+                },
+                {
+                  "value": "SWO",
+                  "displayName": "SWO: Workover"
+                },
+                {
+                  "value": "SDS",
+                  "displayName": "SDS: Drilling Support"
+                },
+                {
+                  "value": "DEL",
+                  "displayName": "DEL: Decommissioning / Liquidation"
+                }
+              ]
+            },
+            "title": "MAINTENACE ACTIVITY TYPE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:ABCKZ}",
+              "format": [
+                {
+                  "color": "#008800",
+                  "value": "L",
+                  "displayName": "L: Low Critical"
+                },
+                {
+                  "color": "#FFA500",
+                  "value": "M",
+                  "displayName": "M: Medium Critical"
+                },
+                {
+                  "color": "#FF7700",
+                  "value": "H",
+                  "displayName": "H: High Critical"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "S",
+                  "displayName": "S: Safety Critical"
+                },
+                {
+                  "color": "#000000",
+                  "value": "{@default}"
+                }
+              ]
+            },
+            "title": "ABC INDICATOR",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:ANLZU}",
+              "format": [
+                {
+                  "value": "0",
+                  "displayName": "0: No Prod Impact; Non IAP; UNVERIFIED"
+                },
+                {
+                  "value": "1",
+                  "displayName": "1: No Prod Impact; Non IAP; VERIFIED"
+                },
+                {
+                  "value": "2",
+                  "displayName": "2: No Prod Impact - Pre-shutdown"
+                },
+                {
+                  "value": "3",
+                  "displayName": "3: No Prod Impact - Post-shutdown"
+                },
+                {
+                  "value": "4",
+                  "displayName": "4: Production Threat"
+                },  
+                {
+                  "value": "5",
+                  "displayName": "5: Threats to Offload / Berthing"
+                },  
+                {
+                  "value": "A",
+                  "displayName": "A: Well Shutdown"
+                },
+                {
+                  "value": "B",
+                  "displayName": "B: Reduced Production Capacity"
+                },
+                {
+                  "value": "C",
+                  "displayName": "C: Artificial Lift System Shutdown"
+                },
+                {
+                  "value": "D",
+                  "displayName": "D: Subsurface Injection System Shutdown"
+                },  
+                {
+                  "value": "E",
+                  "displayName": "E: Train Shutdown (Oil/Gas/Water)"
+                },
+                {
+                  "value": "F",
+                  "displayName": "F: Process Shutdown (Oil/Gas/Water)"
+                },
+                {
+                  "value": "G",
+                  "displayName": "G: Facility Shutdown"
+                },
+                {
+                  "value": "H",
+                  "displayName": "H: Field Shutdown"
+                }
+              ]
+            },
+            "title": "SYSTEM CONDITION"
+          }
+        ]
+      },
+      "categories": [
+        {
+          "name": "startTime",
+          "options": [
+            {
+              "name": "now-2592000,now",
+              "displayName": "[calendar]"
+            },
+            {
+              "name": "now-604800,now",
+              "displayName": "Past Week"
+            },
+            {
+              "name": "now-2592000,now",
+              "displayName": "Past Month"
+            },
+            {
+              "name": "now,now+604800",
+              "displayName": "Next Week"
+            },
+            {
+              "name": "now,now+2592000",
+              "displayName": "Next Month"
+            }
+          ],
+          "displayName": "BASIC START DATE"
+        },
+        {
+          "name": "endTime",
+          "options": [
+            {
+              "name": "now-2592000,now",
+              "displayName": "[calendar]"
+            },
+            {
+              "name": "now-604800,now",
+              "displayName": "Past Week"
+            },
+            {
+              "name": "now-2592000,now",
+              "displayName": "Past Month"
+            },
+            {
+              "name": "now,now+604800",
+              "displayName": "Next Week"
+            },
+            {
+              "name": "now,now+2592000",
+              "displayName": "Next Month"
+            }
+          ],
+          "displayName": "BASIC FINISH DATE"
+        },
+        {
+          "name": "subtype",
+          "options": [
+            {
+              "name": "EP01",
+              "displayName": "EP01: E&P Corrective Maintenance"
+            },
+            {
+              "name": "EP02",
+              "displayName": "EP02: E&P Preventive Maintenance"
+            },
+            {
+              "name": "EP03",
+              "displayName": "EP03: E&P Non Maintenance"
+            },
+            {
+              "name": "EP06",
+              "displayName": "EP06: E&P Subsurface"
+            },
+            {
+              "name": "EP07",
+              "displayName": "EP07: E&P Production Operations"
+            }
+          ],
+          "displayName": "ORDER TYPE"
+        },
+        {
+          "name": "metadata:PRIOK",
+          "options": [{
+              "name": "5",
+              "displayName": "Low"
+            },
+            {
+              "name": "4",
+              "displayName": "Medium"
+            },
+            {
+              "name": "3",
+              "displayName": "High"
+            },
+            {
+              "name": "2",
+              "displayName": "Urgent"
+            },
+            {
+              "name": "1",
+              "displayName": "Emergency"
+            }
+          ],
+          "displayName": "PRIORITY"
+        },
+        {
+          "name": "metadata:ILART",
+          "options": [
+              {
+                "name": "MRM",
+                "displayName": "MRM: Routine Maintenance"
+              },
+              {
+                "name": "MRS",
+                "displayName": "MRS: Preservation of Spares"
+              },  
+              {
+                "name": "MRP",
+                "displayName": "MRP: Repair"
+              },           
+              {
+                "name": "SCE",
+                "displayName": "SCE: Inspection & Testing SCEs"
+              },           
+              {
+                "name": "NSC",
+                "displayName": "NSC: Inspection & Testing Non-SCEs"
+              },     
+              {
+                "name": "PSI",
+                "displayName": "PSI: Inspection & Testing Statutory"
+              },
+              {
+                "name": "MCM",
+                "displayName": "MCM: Condition Monitoring"
+              },
+              {
+                "name": "MMO",
+                "displayName": "MMO: Major Overhaul"
+              },
+              {
+                "name": "MTA",
+                "displayName": "MTA: Turnaround & Shutdown"
+              },
+              {
+                "name": "MCO",
+                "displayName": "MCO: Corrosion Protection"
+              },
+              {
+                "name": "MRE",
+                "displayName": "MRE: Replacement / Renewal Programs"
+              },
+              {
+                "name": "OBM",
+                "displayName": "OBM: Operator Based Maintenance"
+              },
+              {
+                "name": "ORO",
+                "displayName": "ORO: Operator Rounds"
+              },
+              {
+                "name": "OCI",
+                "displayName": "OCI: Chemical Inhibition"
+              },
+              {
+                "name": "OFA",
+                "displayName": "OFA: Flow Assurance & Chemical Treatment"
+              }
+          ],
+          "displayName": "MAINT. ACTIVITY TYPE"
+        },
+        {
+          "name": "metadata:ABCKZ",
+          "options": [
+            {
+              "name": "L",
+              "displayName": "L: Low Critical"
+            },
+            {
+              "name": "M",
+              "displayName": "M: Medium Critical"
+            },
+            {
+              "name": "H",
+              "displayName": "H: High Critical"
+            },
+            {
+              "name": "S",
+              "displayName": "S: Safety Critical"
+            }
+          ],
+          "displayName": "ABC INDICATOR"
+        },
+        {
+          "name": "metadata:ANLZU",
+          "options": [
+            {
+              "name": "0",
+              "displayName": "0: No Prod Impact; Non IAP; UNVERIFIED"
+            },
+            {
+              "name": "1",
+              "displayName": "1: No Prod Impact; Non IAP; VERIFIED"
+            },
+            {
+              "name": "2",
+              "displayName": "2: No Prod Impact - Pre-shutdown"
+            },
+            {
+              "name": "3",
+              "displayName": "3: No Prod Impact - Post-shutdown"
+            },
+            {
+              "name": "4",
+              "displayName": "4: Production Threat"
+            },  
+            {
+              "name": "5",
+              "displayName": "5: Threats to Offload / Berthing"
+            },  
+            {
+              "name": "A",
+              "displayName": "A: Well Shutdown"
+            },
+            {
+              "name": "B",
+              "displayName": "B: Reduced Production Capacity"
+            },
+            {
+              "name": "C",
+              "displayName": "C: Artificial Lift System Shutdown"
+            },
+            {
+              "name": "D",
+              "displayName": "D: Subsurface Injection System Shutdown"
+            },  
+            {
+              "name": "E",
+              "displayName": "E: Train Shutdown (Oil/Gas/Water)"
+            },
+            {
+              "name": "F",
+              "displayName": "F: Process Shutdown (Oil/Gas/Water)"
+            },
+            {
+              "name": "G",
+              "displayName": "G: Facility Shutdown"
+            },
+            {
+              "name": "H",
+              "displayName": "H: Field Shutdown"
+            }
+          ],
+          "displayName": "SYSTEM CONDITION"
+        }
+      ],
+      "labelMarkerColor": "#FF0000",
+      "labelBackgroundColor": "#FFFFFFE0",
+      "staticFilter": [{
+        "key": "metadata:INGPR",
+        "value": "MPA"
+      }]
+    },
+    {
+      "title": "NOTIFICATIONS",
+      "labelText": "{@description}",
+      "workOrder": {
+        "id": "{@metadata:QMNUM}",
+        "title": "{@description}",
+        "description": "{@description}",
+        "details": [{
+            "data": {
+              "text": "{@startTime}",
+              "format": [{
+                  "value": "{@msse}",
+                  "displayName": "%Y-%m-%d"
+                },
+                {
+                  "value": "{@default}",
+                  "displayName": "Invalid"
+                }
+              ]
+            },
+            "title": "REQUIRED START DATE"
+          },
+          {
+            "data": {
+              "text": "{@endTime}",
+              "format": [{
+                  "value": "{@msse}",
+                  "displayName": "%Y-%m-%d"
+                },
+                {
+                  "value": "{@default}",
+                  "displayName": "Invalid"
+                }
+              ]
+            },
+            "title": "REQUIRED END DATE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:PRIOK}",
+              "format": [
+                {
+                  "color": "#008800",
+                  "value": "5",
+                  "displayName": "Low (>= 6 months)"
+                },
+                {
+                  "color": "#FFA500",
+                  "value": "4",
+                  "displayName": "Medium (<= 1 month)"
+                },
+                {
+                  "color": "#FF7700",
+                  "value": "3",
+                  "displayName": "High (<= 2 weeks)"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "2",
+                  "displayName": "Urgent (<= 1 week)"
+                },
+                {
+                  "color": "#800080",
+                  "value": "1",
+                  "displayName": "Emergency (Immediate)"
+                },
+                {
+                  "color": "#000000",
+                  "value": "{@default}"
+                }
+              ]
+            },
+            "title": "PRIORITY",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:QMART}",
+              "format": [
+                {
+                  "value": "E1",
+                  "displayName": "E1: Corrective Maintenance"
+                },
+                {
+                  "value": "E2",
+                  "displayName": "E2: Preventive Maintenance"
+                },
+                {
+                  "value": "E3",
+                  "displayName": "E3: Non Maintenance"
+                },
+                {
+                  "value": "E6",
+                  "displayName": "E6: Subsurface"
+                },
+                {
+                  "value": "E8",
+                  "displayName": "E8: Process Control Domain (PCD)"
+                },
+                {
+                  "value": "E9",
+                  "displayName": "E9: Master Data Maint."
+                }
+              ]
+            },
+            "title": "NOTIFICATION TYPE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:REVNR}",
+              "format": []
+            },
+            "title": "REVISION",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:ABCKZ}",
+              "format": [
+                {
+                  "color": "#008800",
+                  "value": "L",
+                  "displayName": "L: Low Critical"
+                },
+                {
+                  "color": "#FFA500",
+                  "value": "M",
+                  "displayName": "M: Medium Critical"
+                },
+                {
+                  "color": "#FF7700",
+                  "value": "H",
+                  "displayName": "H: High Critical"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "S",
+                  "displayName": "S: Safety Critical"
+                },
+                {
+                  "color": "#000000",
+                  "value": "{@default}"
+                }
+              ]
+            },
+            "title": "ABC INDICATOR"
+          },
+          {
+            "data": {
+              "text": "{@metadata:QMGRP}",
+              "format": []
+            },
+            "title": "SYMPTOM",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:QMNAM}",
+              "format": []
+            },
+            "title": "REPORTED BY"
+          }
+        ]
+      },
+      "categories": [
+        {
+          "name": "startTime",
+          "options": [
+            {
+              "name": "now-2592000,now",
+              "displayName": "[calendar]"
+            },
+            {
+              "name": "now-604800,now",
+              "displayName": "Past Week"
+            },
+            {
+              "name": "now-2592000,now",
+              "displayName": "Past Month"
+            },
+            {
+              "name": "now,now+604800",
+              "displayName": "Next Week"
+            },
+            {
+              "name": "now,now+2592000",
+              "displayName": "Next Month"
+            }
+          ],
+          "displayName": "REQUIRED START DATE"
+        },
+        {
+          "name": "endTime",
+          "options": [
+            {
+              "name": "now-2592000,now",
+              "displayName": "[calendar]"
+            },
+            {
+              "name": "now-604800,now",
+              "displayName": "Past Week"
+            },
+            {
+              "name": "now-2592000,now",
+              "displayName": "Past Month"
+            },
+            {
+              "name": "now,now+604800",
+              "displayName": "Next Week"
+            },
+            {
+              "name": "now,now+2592000",
+              "displayName": "Next Month"
+            }
+          ],
+          "displayName": "REQUIRED END DATE"
+        },
+        {
+          "name": "metadata:QMART",
+          "options": [
+            {
+              "name": "E1",
+              "displayName": "E1: Corrective Maintenance"
+            },
+            {
+              "name": "E2",
+              "displayName": "E2: Preventive Maintenance"
+            },
+            {
+              "name": "E3",
+              "displayName": "E3: Non Maintenance"
+            },
+            {
+              "name": "E6",
+              "displayName": "E6: Subsurface"
+            },
+            {
+              "name": "E8",
+              "displayName": "E8: Process Control Domain (PCD)"
+            },
+            {
+              "name": "E9",
+              "displayName": "E9: Master Data Maint."
+            }
+          ],
+          "displayName": "NOTIFICATION TYPE"
+        },
+        {
+          "name": "metadata:PRIOK",
+          "options": [{
+              "name": "5",
+              "displayName": "Low"
+            },
+            {
+              "name": "4",
+              "displayName": "Medium"
+            },
+            {
+              "name": "3",
+              "displayName": "High"
+            },
+            {
+              "name": "2",
+              "displayName": "Urgent"
+            },
+            {
+              "name": "1",
+              "displayName": "Emergency"
+            }
+          ],
+          "displayName": "PRIORITY"
+        },
+        {
+          "name": "metadata:ABCKZ",
+          "options": [
+            {
+              "name": "L",
+              "displayName": "L: Low Critical"
+            },
+            {
+              "name": "M",
+              "displayName": "M: Medium Critical"
+            },
+            {
+              "name": "H",
+              "displayName": "H: High Critical"
+            },
+            {
+              "name": "S",
+              "displayName": "S: Safety Critical"
+            }
+          ],
+          "displayName": "ABC INDICATOR"
+        }
+      ],
+      "labelMarkerColor": "#FF0000",
+      "labelBackgroundColor": "#FFFFFFE0",
+      "eventType": "notification",
+      "staticFilter": [{
+        "key": "metadata:INGRP",
+        "value": "MPA"
+      }]
+    }
+  ]
+}

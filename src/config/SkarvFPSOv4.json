@@ -1,0 +1,1207 @@
+{
+  "assets": {
+    "geometries": {
+      "F100": {
+        "modelID": 2128842475879595,
+        "revisionID": 265063809544202
+      },
+      "P200": {
+        "modelID": 736206806256044,
+        "revisionID": 3105828649306715
+      },
+      "P300": {
+        "modelID": 1062932355215772,
+        "revisionID": 4655365204293296
+      },
+      "P400": {
+        "modelID": 7768032252070252,
+        "revisionID": 2234480180737131
+      },
+      "P500": {
+        "modelID": 8680096604459157,
+        "revisionID": 8259599202494375
+      },
+      "P600": {
+        "modelID": 7479333757709979,
+        "revisionID": 1911904087650079
+      },
+      "P700": {
+        "modelID": 386025772682573,
+        "revisionID": 3539182423372883
+      },
+      "T000": {
+        "modelID": 4429683188555333,
+        "revisionID": 6608133205290472
+      },
+      "U800": {
+        "modelID": 4344383645395812,
+        "revisionID": 7095154226325649
+      },
+      "hull": {
+        "modelID": 4380157329782056,
+        "revisionID": 822587379957720
+      },
+      "main": {
+        "modelID": 6626657034651938,
+        "revisionID": 7685101425017538
+      },
+      "slopTank": {
+        "modelID": 1895757527020579,
+        "revisionID": 3838919960329245
+      },
+      "walkPath": {
+        "modelID": 2142886517106760,
+        "revisionID": 6252551399982941
+      },
+      "ballastTank2": {
+        "modelID": 981195524314516,
+        "revisionID": 1141128288631083
+      },
+      "ballastTank4": {
+        "modelID": 0,
+        "revisionID": 0
+      },
+      "ballastTank6S": {
+        "modelID": 3624821388870891,
+        "revisionID": 4202876900624935
+      }
+    },
+    "pointClouds": {
+      "skaC600": {
+        "modelID": 3428232777850316,
+        "colorSource": "pointIntensity"
+      },
+      "SkarvU800": {
+        "modelID": 6414185306263443
+      },
+      "skarvaftdeck4": {
+        "modelID": 1092290218667350
+      },
+      "skarvaftdeck5": {
+        "modelID": 4217457950413195
+      },
+      "skarvaftdeck6": {
+        "modelID": 2627263261315609
+      },
+      "skarvtankdeck": {
+        "modelID": 0
+      }
+    }
+  },
+  "header": {
+    "name": "Skarv FPSO V4 - local",
+    "type": "inspectionApplication",
+    "thumbnailImageId": 34952965690386
+  },
+  "scenes": [
+    {
+      "actors": [
+        {
+          "name": "images360",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "siteIds": [
+                "5cf4f3796b80bd1168052579",
+                "5cf0db5b6b80bd11680521b3",
+                "5cf4c5096b80bd11680523d2",
+                "5cf5197a6b80bd1168052750",
+                "5cf608d86b80bd1168052915",
+                "5cf76096e8bea90da4d95468",
+                "5da01ec5e8bea90da4d96571",
+                "5da45dafe8bea90da4d96848",
+                "5d0a1850e8bea90da4d95d9a",
+                "5d038eaee8bea90da4d95aec",
+                "5cf8adebe8bea90da4d95753"
+              ],
+              "componentType": "image360Component"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudSkaC600",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "skaC600"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudSkarvU800",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "SkarvU800"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudAftDeck4",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "skarvaftdeck4"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudAftDeck5",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "skarvaftdeck5"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudAftDeck6",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "skarvaftdeck6"
+            }
+          ]
+        },
+        {
+          "name": "PointCloudTankDeck",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "pointCloudComponent",
+              "geometryDataID": "skarvtankdeck"
+            }
+          ]
+        },
+        {
+          "name": "skarvActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentName": "main",
+              "componentType": "geometryComponent",
+              "geometryDataID": "main"
+            },
+            {
+              "componentName": "F100",
+              "componentType": "geometryComponent",
+              "geometryDataID": "F100"
+            },
+            {
+              "componentName": "P200",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P200"
+            },
+            {
+              "componentName": "P300",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P300"
+            },
+            {
+              "componentName": "P400",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P400"
+            },
+            {
+              "componentName": "P500",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P500"
+            },
+            {
+              "componentName": "P600",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P600"
+            },
+            {
+              "componentName": "P700",
+              "componentType": "geometryComponent",
+              "geometryDataID": "P700"
+            },
+            {
+              "componentName": "U800",
+              "componentType": "geometryComponent",
+              "geometryDataID": "U800"
+            },
+            {
+              "componentName": "T000",
+              "componentType": "geometryComponent",
+              "geometryDataID": "T000"
+            }
+          ]
+        },
+        {
+          "name": "hullActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "hull"
+            }
+          ]
+        },
+        {
+          "name": "scout-robot",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              25793,
+              -8190,
+              806
+            ],
+            "rotation": [
+              0,
+              91.06,
+              0
+            ]
+          },
+          "components": [
+            {
+              "icon": "{@metadata:my_icon_image_id}",
+              "title": {
+                "text": "{@metadata:scout_inspection_name}"
+              },
+              "details": [
+                {
+                  "data": {
+                    "text": "{@metadata:scout_target_name}",
+                    "format": [
+                      {
+                        "color": "#000000",
+                        "value": "{@default}"
+                      }
+                    ]
+                  },
+                  "title": "LOCATION"
+                },
+                {
+                  "data": {
+                    "text": "{@startTime}",
+                    "format": [
+                      {
+                        "value": "{@msse}",
+                        "displayName": "%Y.%m.%d %H:%M:%S"
+                      }
+                    ]
+                  },
+                  "title": "START"
+                },
+                {
+                  "data": {
+                    "text": "{@metadata:duration}",
+                    "format": []
+                  },
+                  "title": "DURATION",
+                  "newline": true
+                },
+                {
+                  "data": {
+                    "text": "{@endTime}",
+                    "format": [
+                      {
+                        "value": "{@msse}",
+                        "displayName": "%Y.%m.%d %H:%M:%S"
+                      }
+                    ]
+                  },
+                  "title": "END"
+                }
+              ],
+              "robotId": "Scout Drone 1",
+              "timestamp": {
+                "text": "{@startTime}",
+                "format": [
+                  {
+                    "value": "{@msse}",
+                    "displayName": "%Y.%m.%d %H:%M:%S"
+                  }
+                ]
+              },
+              "description": {
+                "text": "{@metadata:scout_inspection_description}"
+              },
+              "imageDetails": [
+                {
+                  "data": {
+                    "text": "{@metadata:scout_severity}",
+                    "format": [
+                      {
+                        "color": "#00FF00",
+                        "value": "LOW"
+                      },
+                      {
+                        "color": "#FF8000",
+                        "value": "MEDIUM"
+                      },
+                      {
+                        "color": "#FF0000",
+                        "value": "HIGH"
+                      }
+                    ]
+                  },
+                  "title": "SEVERITY"
+                },
+                {
+                  "data": {
+                    "text": "{@metadata:scout_type_name}",
+                    "format": []
+                  },
+                  "title": "TYPE"
+                }
+              ],
+              "componentType": "robotComponent",
+              "imageDescription": {
+                "text": "{@metadata:description}"
+              },
+              "imageMetadataKey": "type",
+              "videoMetadataKey": "type",
+              "imageMetadataValue": "image",
+              "videoMetadataValue": "video"
+            }
+          ]
+        },
+        {
+          "name": "slopTankActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "slopTank"
+            }
+          ]
+        },
+        {
+          "name": "ballastTank2Actor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "ballastTank2"
+            }
+          ]
+        },
+        {
+          "name": "ballastTank4Actor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "ballastTank4"
+            }
+          ]
+        },
+        {
+          "name": "ballastTank6SActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "ballastTank6S"
+            }
+          ]
+        },
+        {
+          "name": "walkPathActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              -1300
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "walkPath"
+            }
+          ]
+        }
+      ],
+      "camera": {
+        "groundReference": -1300,
+        "initialCoordinates": {
+          "type": "unrealTransform",
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "position": [
+            35000,
+            -30000,
+            18405
+          ],
+          "rotation": [
+            -35,
+            90,
+            0
+          ]
+        }
+      },
+      "waterPlane": {
+        "transform": {
+          "type": "unrealTransform",
+          "scale": [
+            5,
+            5,
+            5
+          ],
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "followCamera": false
+      },
+      "uiConfiguration": {
+        "sliceTool": {
+          "maximum": 14500,
+          "minimum": -1500
+        },
+        "measureTool": {
+          "type": "path"
+        },
+        "settingsPanel": {}
+      },
+      "visibilityLayers": [
+        {
+          "name": "Skarv ship model | Hull",
+          "objects": [
+            {
+              "actorName": "hullActor"
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | F100 (Flare)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "F100"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P200 (Export Compressors & Flare System)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P200"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P300 (Gas Treatment & Injection)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P300"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P400 (Recompression & Fuel Gas)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P400"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P500 (Seperation & Water Treatment)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P500"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P600 (Separation & Chemicals)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P600"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | P700 (Turret Infill Area)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "P700"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | U800 (Main Power Generation)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "U800"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Modules | T000 (Turret)",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "T000"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Skarv ship model | Tanks | Ballast tanks | Ballast tank 2",
+          "objects": [
+            {
+              "actorName": "ballastTank2Actor"
+            }
+          ]
+        },
+        {
+          "name": "Skarv ship model | Tanks | Ballast tanks | Ballast tank 4",
+          "objects": [
+            {
+              "actorName": "ballastTank4Actor"
+            }
+          ]
+        },
+        {
+          "name": "Skarv ship model | Tanks | Ballast tanks | Ballast tank 6S",
+          "objects": [
+            {
+              "actorName": "ballastTank6SActor"
+            }
+          ]
+        },
+        {
+          "name": "Skarv ship model | Tanks | Slop tank",
+          "objects": [
+            {
+              "actorName": "slopTankActor"
+            }
+          ]
+        },
+        {
+          "name": "Skarv ship model | Uncategorized",
+          "objects": [
+            {
+              "actorName": "skarvActor",
+              "componentNames": [
+                "main"
+              ]
+            }
+          ],
+          "isActive": true
+        },
+        {
+          "name": "Point clouds | Aft deck 4",
+          "objects": [
+            {
+              "actorName": "PointCloudAftDeck4"
+            }
+          ]
+        },
+        {
+          "name": "Point clouds | Aft deck 5",
+          "objects": [
+            {
+              "actorName": "PointCloudAftDeck5"
+            }
+          ]
+        },
+        {
+          "name": "Point clouds | Aft deck 6",
+          "objects": [
+            {
+              "actorName": "PointCloudAftDeck6"
+            }
+          ]
+        },
+        {
+          "name": "Point clouds | AKSO C600",
+          "objects": [
+            {
+              "actorName": "PointCloudSkaC600"
+            }
+          ]
+        },
+        {
+          "name": "Point clouds | Tank deck",
+          "objects": [
+            {
+              "actorName": "PointCloudTankDeck"
+            }
+          ]
+        },
+        {
+          "name": "Point clouds | U800",
+          "objects": [
+            {
+              "actorName": "PointCloudSkarvU800"
+            }
+          ]
+        },
+        {
+          "name": "Walk Paths only",
+          "objects": [
+            {
+              "actorName": "walkPathActor"
+            }
+          ],
+          "isActive": false
+        }
+      ],
+      "environmentControl": {
+        "underWaterColor": "#002B43",
+        "underWaterDensity": 0.1,
+        "directionalLightSettings": {
+          "color": "#FFFFFFFF",
+          "rotation": [
+            -31.3,
+            36.4,
+            -51.3
+          ],
+          "intensity": 3.141593
+        }
+      }
+    }
+  ],
+  "hierarchy": {
+    "type": "noHierarchy",
+    "rootAssetId": 2484236591747434
+  },
+  "workOrders": [
+    {
+      "title": "WORK ORDERS",
+      "labelText": "{@metadata:WorkOrderNumber}",
+      "workOrder": {
+        "id": "{@metadata:WorkOrderNumber}",
+        "title": "{@metadata:WorkOrderTitle}",
+        "details": [
+          {
+            "data": {
+              "text": "{@createdTime}",
+              "format": [
+                {
+                  "value": "{@msse}",
+                  "displayName": "%Y.%m.%d"
+                },
+                {
+                  "value": "{@default}",
+                  "displayName": "Invalid"
+                }
+              ]
+            },
+            "title": "DUE"
+          },
+          {
+            "data": {
+              "text": "{@metadata:WorkOrderPriorityType}",
+              "format": [
+                {
+                  "color": "#008800",
+                  "value": "D-Low",
+                  "displayName": "LOW"
+                },
+                {
+                  "color": "#FF8000",
+                  "value": "C-Medium",
+                  "displayName": "MEDIUM"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "B-High",
+                  "displayName": "HIGH"
+                }
+              ]
+            },
+            "title": "PRIORITY"
+          },
+          {
+            "data": {
+              "text": "{@metadata:WorkOrderUserStatus}",
+              "format": []
+            },
+            "title": "USER"
+          },
+          {
+            "data": {
+              "text": "{@metadata:WorkOrderSystemStatus}",
+              "format": []
+            },
+            "title": "SYSTEM",
+            "newline": true
+          },
+          {
+            "data": {
+              "text": "{@metadata:WorkOrderDiscipline}",
+              "format": []
+            },
+            "title": "DIS"
+          },
+          {
+            "data": {
+              "text": "{@metadata:WorkOrderIsCancelled}",
+              "format": [
+                {
+                  "color": "#000000",
+                  "value": "0",
+                  "displayName": "NO"
+                },
+                {
+                  "color": "#FF0000",
+                  "value": "1",
+                  "displayName": "YES"
+                }
+              ]
+            },
+            "title": "CANCELLED"
+          }
+        ],
+        "description": "{@metadata:WorkOrderDescription}"
+      },
+      "categories": [
+        {
+          "name": "WorkOrderPriorityType",
+          "options": [
+            {
+              "name": "D-Low",
+              "displayName": "Low"
+            },
+            {
+              "name": "C-Medium",
+              "displayName": "Medium"
+            },
+            {
+              "name": "B-High",
+              "displayName": "High"
+            }
+          ],
+          "displayName": "PRIORITY"
+        },
+        {
+          "name": "WorkOrderUserStatus",
+          "options": [
+            {
+              "name": "RSCH",
+              "displayName": "Ready for Schedule"
+            },
+            {
+              "name": "RDEX",
+              "displayName": "Ready for Execution"
+            },
+            {
+              "name": "PLIP",
+              "displayName": "Planning in Progress"
+            },
+            {
+              "name": "WPRG",
+              "displayName": "Work in Progress"
+            },
+            {
+              "name": "RESC",
+              "displayName": "Rescheduling"
+            }
+          ],
+          "displayName": "USER STATUS"
+        },
+        {
+          "name": "WorkOrderSystemStatus",
+          "options": [
+            {
+              "name": "CRTD",
+              "displayName": "Created"
+            },
+            {
+              "name": "PCNF",
+              "displayName": "Partially Confirmed"
+            },
+            {
+              "name": "CNF",
+              "displayName": "Confirmed"
+            },
+            {
+              "name": "REL",
+              "displayName": "Released"
+            },
+            {
+              "name": "RELR",
+              "displayName": "Release Rejected"
+            },
+            {
+              "name": "TECO",
+              "displayName": "Technically Completed"
+            },
+            {
+              "name": "CLSD",
+              "displayName": "Closed"
+            }
+          ],
+          "displayName": "SYSTEM STATUS"
+        },
+        {
+          "name": "WorkOrderDiscipline",
+          "options": [
+            {
+              "name": "EI",
+              "displayName": "EI"
+            },
+            {
+              "name": "OI",
+              "displayName": "OI"
+            },
+            {
+              "name": "AI",
+              "displayName": "AI"
+            },
+            {
+              "name": "MI",
+              "displayName": "MI"
+            },
+            {
+              "name": "PI",
+              "displayName": "PI"
+            },
+            {
+              "name": "LI",
+              "displayName": "LI"
+            },
+            {
+              "name": "BI",
+              "displayName": "BI"
+            }
+          ],
+          "displayName": "DISCIPLINE"
+        },
+        {
+          "name": "WorkOrderMaterialStatus",
+          "options": [
+            {
+              "name": "@08@",
+              "displayName": "Received Offshore"
+            },
+            {
+              "name": "@09@",
+              "displayName": "On Base"
+            },
+            {
+              "name": "@0A@",
+              "displayName": "Not on base"
+            }
+          ],
+          "displayName": "MATERIAL STATUS"
+        },
+        {
+          "name": "WorkOrderPlannerGroup",
+          "options": [
+            {
+              "name": "100",
+              "displayName": "Offshore Planner"
+            },
+            {
+              "name": "200",
+              "displayName": "Onshore Planner"
+            }
+          ],
+          "displayName": "PLANNER GROUP"
+        },
+        {
+          "name": "WorkOrderIsSafetyCritical",
+          "options": [
+            {
+              "name": "NO",
+              "displayName": "No"
+            },
+            {
+              "name": "YES",
+              "displayName": "Yes"
+            }
+          ],
+          "displayName": "SAFETY CRITICAL"
+        }
+      ],
+      "eventSubtype": "SKA",
+      "labelMarkerColor": "#FF0000",
+      "labelBackgroundColor": "#FFFFFFE0"
+    }
+  ]
+}

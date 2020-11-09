@@ -1,0 +1,120 @@
+{
+  "assets": {
+    "geometries": {
+      "IvarAasen": {
+        "modelID": "2127519354547982",
+        "transform": {
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "position": [
+            -35520,
+            9615,
+            -47180.0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "revisionID": "5197721330824666"
+      }
+    }
+  },
+  "header": {
+    "name": "Ivar Aasen - local",
+    "thumbnailImageId": 3488336574690165,
+    "type": "inspectionApplication"
+  },
+  "scenes": [
+    {
+      "actors": [
+        {
+          "name": "IvarAasenActor",
+          "transform": {
+            "type": "unrealTransform",
+            "scale": [
+              1,
+              1,
+              1
+            ],
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ]
+          },
+          "components": [
+            {
+              "componentType": "geometryComponent",
+              "geometryDataID": "IvarAasen"
+            }
+          ]
+        }
+      ],
+			"waterPlane": {
+				"transform": {
+					"type": "unrealTransform",
+					"scale": [
+						5,
+						5,
+						5
+					],
+					"position": [
+						0,
+						0,
+						0
+					],
+					"rotation": [
+						0,
+						0,
+						0
+					]
+				},
+				"followCamera": false
+			},
+			"camera": {
+				"groundReference": 0,
+				"initialCoordinates": {
+					"type": "unrealTransform",
+					"scale": [
+						1,
+						1,
+						1
+					],
+					"position": [
+						-2500,
+						9500,
+						8250
+					],
+					"rotation": [
+						-20,
+						-90,
+						0
+					]
+				}
+			},
+      "uiConfiguration": {
+        "measureTool": {
+          "type": "path"
+        },
+        "sliceTool": {
+          "maximum": 15000,
+          "minimum": 0
+        },        
+        "settingsPanel": {}
+      }     
+    }
+  ],
+  "hierarchy": {
+    "type": "fullAssetHierarchy"
+  }
+}
