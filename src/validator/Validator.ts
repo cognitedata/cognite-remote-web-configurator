@@ -9,23 +9,40 @@ import { RefType } from "../enum/RefType.enum";
 
 let rootDataNode: IDataNode;
 
-const childrenNodes = (schema: ISchemaNode): IDataNode => {
+const childrenNodes = (schema: ISchemaNode, isRequired: boolean): IDataNode => {
   const obj: IDataNode = {
     type: DataType.unspecified,
     data: {},
+    isRequired,
   };
 
   if (schema.properties) {
     for (const [key, val] of Object.entries(schema.properties)) {
-      (obj.data as IDataNodeMap)[key] = childrenNodes(val);
+      const required = schema.required?.findIndex((s) => s === key) >= 0;
+      (obj.data as IDataNodeMap)[key] = childrenNodes(val, required);
     }
     return obj;
   } else {
-    // obj.leaf = true;
     switch (schema.type) {
       case "array":
         obj.type = DataType.array;
         obj.data = [];
+        return obj;
+      case "string":
+        obj.type = DataType.string;
+        obj.data = "";
+        return obj;
+      case "number":
+        obj.type = DataType.number;
+        obj.data = 0;
+        return obj;
+      case "boolean":
+        obj.type = DataType.boolean;
+        obj.data = false;
+        return obj;
+      case "object":
+        obj.type = DataType.object;
+        obj.data = {};
         return obj;
       default:
         obj.type = ParseType(schema.type);
@@ -34,15 +51,17 @@ const childrenNodes = (schema: ISchemaNode): IDataNode => {
   }
 };
 
-export const generateTemplate = (paths: {refType: RefType, val: string | number}[]): IValidationResult => {
+export const generateTemplate = (
+  paths: { refType: RefType; val: string | number }[]
+): IValidationResult => {
   let resultNode = { ...rootDataNode };
 
   for (const path of paths) {
     let next;
-    if(path.refType === RefType.Object){
-        next = (resultNode.data as IDataNodeMap)[path.val as string];
+    if (path.refType === RefType.Object) {
+      next = (resultNode.data as IDataNodeMap)[path.val as string];
     } else {
-        next = (resultNode.data as IDataNode[])[path.val as number];
+      next = (resultNode.data as IDataNode[])[path.val as number];
     }
     if (!next) {
       return {
@@ -69,8 +88,10 @@ export const loadSchema = (): Promise<void> => {
             type: DataType.unspecified,
           };
           for (const val of Object.values(rootSchema)) {
-            const cn = childrenNodes(val as ISchemaNode);
-            rootDataNode.data = { ...rootDataNode.data, ...cn.data };
+            const cn = childrenNodes(val as ISchemaNode, true);
+            if(rootDataNode.type === DataType.unspecified){
+                rootDataNode.data = { ...(rootDataNode.data as IDataNodeMap), ...(cn.data as IDataNodeMap) };
+            }
           }
 
           console.log("Schema Loaded!", rootDataNode);
