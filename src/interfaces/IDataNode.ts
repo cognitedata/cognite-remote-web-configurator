@@ -1,12 +1,12 @@
 export enum DataType {
-  unspecified,
-  string,
-  number,
-  boolean,
-  object,
+  unspecified = 'unspecified',
+  string = 'string',
+  number = 'number',
+  boolean = 'boolean',
+  object = 'object',
 }
 
 export interface IDataNode {
-  [key: string]: unknown;
-  metaType: DataType;
+  data: {[key: string]: IDataNode};
+  type: DataType;
 }

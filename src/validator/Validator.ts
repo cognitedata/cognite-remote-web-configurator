@@ -1,37 +1,40 @@
 import { DataType, IDataNode } from "../interfaces/IDataNode";
 import YAML from "yamljs";
-import ymlFile from "./twinconfig.yaml";
+import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
+import { ParseType } from "../util/Parser";
 
-let rootSchema: any;
+let rootDataNode: IDataNode;
 
 const childrenNodes = (schema: ISchemaNode): IDataNode => {
   const obj: IDataNode = {
-    metaType: DataType.unspecified,
+    type: DataType.unspecified,
+    data: {}
   };
+
   if (schema.properties) {
     for (const [key, val] of Object.entries(schema.properties)) {
-      obj[key] = childrenNodes(val);
+      obj.data[key] = childrenNodes(val);
     }
     return obj;
   } else {
-    obj.leaf = true;
+    // obj.leaf = true;
     // switch(schema.type){
 
     // }
-    obj.meta = schema.type;
+    obj.type = ParseType(schema.type);
     return obj;
   }
 };
 
 export const generateTemplate = (paths: string[]): IValidationResult => {
-  let schemaNode = { ...rootSchema };
+  let resultNode = { ...rootDataNode };
+
   for (const path of paths) {
-    const next = schemaNode[path];
+    const next = resultNode.data[path];
     if (!next) {
-      // Invalid Path
       return {
         resultNode: null,
         error: {
@@ -39,20 +42,28 @@ export const generateTemplate = (paths: string[]): IValidationResult => {
         },
       };
     }
-    schemaNode = next;
+    resultNode = next;
   }
-  const resultNode = childrenNodes(schemaNode);
-  console.log(resultNode);
   return { resultNode };
 };
 
-export const loadSchema = () => {
+export const loadSchema = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     YAML.load(ymlFile, (ymlJson: any) => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
-          rootSchema = api.components.schemas;
-          console.log("Schema Loaded!", rootSchema);
+          const rootSchema = api.components.schemas;
+
+          rootDataNode = {
+              data: {},
+              type: DataType.unspecified
+          };
+          for (const [key, val] of Object.entries(rootSchema)){
+            const cn = childrenNodes(val as ISchemaNode);
+            rootDataNode.data = {...rootDataNode.data, ...cn.data};
+          }
+
+          console.log("Schema Loaded!", rootDataNode);
           resolve();
         } else {
           console.error(err);

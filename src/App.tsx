@@ -8,7 +8,7 @@ function App(): JSX.Element {
   
   const initValidater = async () => {
     await loadSchema();
-    console.log(generateTemplate(["TwinConfigurationa"]));
+    console.log(generateTemplate([ "assets", "splines"]));
   }
 
   useEffect(() => {
