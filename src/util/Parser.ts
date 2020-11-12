@@ -10,6 +10,8 @@ export const ParseType = (type: string): DataType => {
       return DataType.object;
     case "boolean":
       return DataType.boolean;
+    case "array":
+      return DataType.array;
 
     default:
       return DataType.unspecified;

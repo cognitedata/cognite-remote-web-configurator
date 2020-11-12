@@ -4,9 +4,11 @@ export enum DataType {
   number = 'number',
   boolean = 'boolean',
   object = 'object',
+  array = 'array'
 }
 
+export type IDataNodeMap = {[key: string]: IDataNode}
 export interface IDataNode {
-  data: {[key: string]: IDataNode};
+  data: IDataNodeMap | IDataNode[];
   type: DataType;
 }
