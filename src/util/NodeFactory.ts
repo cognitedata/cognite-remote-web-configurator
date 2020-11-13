@@ -1,11 +1,16 @@
 import { DataType } from "../enum/DataType.enum";
-import { ArrayNode, BooleanNode, DataNode, IDataNodeMap, NumberNode, ObjectNode, StringNode } from "../interfaces/IDataNode";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
+import { ArrayNode } from "../nodes/ArrayNode";
+import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
+import { BooleanNode } from "../nodes/BooleanNode";
+import { NumberNode } from "../nodes/NumberNode";
+import { ObjectNode } from "../nodes/ObjectNode";
+import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
-export const populateChildren = (schema: ISchemaNode, isRequired: boolean): DataNode => {
+export const populateChildren = (schema: ISchemaNode, isRequired: boolean): BaseNode => {
     if (schema.properties) {
-      const obj: DataNode = new DataNode(
+      const obj: BaseNode = new BaseNode(
         ParseType(schema.type),
         schema.description,
         {},
@@ -29,7 +34,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Data
         case "object":
           return new ObjectNode(schema.description, {}, isRequired);
         default:
-          return new DataNode(DataType.unspecified, schema.description, [], isRequired);
+          return new BaseNode(DataType.unspecified, schema.description, [], isRequired);
       }
     }
   };

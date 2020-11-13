@@ -5,10 +5,10 @@ import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { RefType } from "../enum/RefType.enum";
 import { populateChildren } from "../util/NodeFactory";
-import { DataNode, IDataNodeMap } from "../interfaces/IDataNode";
 import { DataType } from "../enum/DataType.enum";
+import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
 
-let rootDataNode: DataNode;
+let rootDataNode: BaseNode;
 
 export const generateTemplate = (
   paths: { refType: RefType; val: string | number }[]
@@ -20,7 +20,7 @@ export const generateTemplate = (
     if (path.refType === RefType.Object) {
       next = (resultNode.data as IDataNodeMap)[path.val as string];
     } else {
-      next = (resultNode.data as DataNode[])[path.val as number];
+      next = (resultNode.data as BaseNode[])[path.val as number];
     }
     if (!next) {
       return {
@@ -42,7 +42,7 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
           console.log(rootSchema.TwinConfiguration);
-          rootDataNode = new DataNode(
+          rootDataNode = new BaseNode(
             DataType.unspecified,
             "Root Data Node",
             {},

@@ -1,4 +1,4 @@
-import { DataNode } from "./IDataNode";
+import { BaseNode } from "../nodes/BaseNode";
 
 export enum ErrorType {
     InvalidPath
@@ -10,6 +10,6 @@ export interface IValidationError {
 }
 
 export interface IValidationResult {
-    resultNode: DataNode | null;
+    resultNode: BaseNode | null;
     error?: IValidationError;
 }
