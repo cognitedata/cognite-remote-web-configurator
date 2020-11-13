@@ -17,7 +17,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
         isRequired
       );
       for (const [key, val] of Object.entries(schema.properties)) {
-        const required = schema.required?.findIndex((s) => s === key) >= 0;
+        const required = schema.required?.findIndex((s) => s === key) !== -1;
         (obj.data as IDataNodeMap)[key] = populateChildren(val, required);
       }
       return obj;
@@ -28,7 +28,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
         case "string":
           return new StringNode(schema, '', isRequired);
         case "number":
-          return new NumberNode(schema.description, 0, isRequired);
+          return new NumberNode(schema, 0, isRequired);
         case "boolean":
           return new BooleanNode(schema.description, false, isRequired);
         case "object":

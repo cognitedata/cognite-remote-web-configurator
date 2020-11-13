@@ -12,7 +12,7 @@ export class ArrayNode extends BaseNode {
       this.minItems = schema.minItems;
       this.maxItems = schema.maxItems;
   
-      if(this.minItems > 0){
+      if(this.minItems && schema.items){
         for(let i = 0; i< this.minItems; i++){
           (this.data as BaseNode[]).push(populateChildren(schema.items, true))
         }

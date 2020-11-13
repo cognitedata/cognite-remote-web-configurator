@@ -1,8 +1,14 @@
 import { DataType } from "../enum/DataType.enum";
+import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { BaseNode, IData } from "./BaseNode";
 
 export class NumberNode extends BaseNode {
-    constructor(description: string, data: IData, isRequired: boolean){
-      super(DataType.number, description, data, isRequired);
-    }
+  public minimum: number | undefined;
+  public maximum: number | undefined;
+
+  constructor(schema: ISchemaNode, data: IData, isRequired: boolean) {
+    super(DataType.number, schema.description, data, isRequired);
+    this.minimum = schema.minimum;
+    this.maximum = schema.maximum;
   }
+}
