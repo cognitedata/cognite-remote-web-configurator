@@ -9,7 +9,7 @@ function App(): JSX.Element {
   
   const initValidater = async () => {
     await loadSchema();
-    console.log(generateTemplate([ {refType: RefType.Object, val: "assets"}]));
+    console.log(generateTemplate([{refType: RefType.Object, val: "coordinates"}]));
   }
 
   useEffect(() => {

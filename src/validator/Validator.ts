@@ -1,22 +1,22 @@
-import { DataType, IDataNode, IDataNodeMap } from "../interfaces/IDataNode";
+import { ArrayNode, BooleanNode, DataNode, DataType, IDataNodeMap, NumberNode, ObjectNode, StringNode } from "../interfaces/IDataNode";
 import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { ParseType } from "../util/Parser";
+import { ParseType } from "../util/TypeParser";
 import { RefType } from "../enum/RefType.enum";
 
-let rootDataNode: IDataNode;
+let rootDataNode: DataNode;
 
-const childrenNodes = (schema: ISchemaNode, isRequired: boolean): IDataNode => {
-  const obj: IDataNode = {
-    type: DataType.unspecified,
-    data: {},
-    isRequired,
-  };
-
+const childrenNodes = (schema: ISchemaNode, isRequired: boolean): DataNode => {
   if (schema.properties) {
+    const obj: DataNode = new DataNode(
+      ParseType(schema.type),
+      schema.description,
+      {},
+      isRequired
+    );
     for (const [key, val] of Object.entries(schema.properties)) {
       const required = schema.required?.findIndex((s) => s === key) >= 0;
       (obj.data as IDataNodeMap)[key] = childrenNodes(val, required);
@@ -25,28 +25,17 @@ const childrenNodes = (schema: ISchemaNode, isRequired: boolean): IDataNode => {
   } else {
     switch (schema.type) {
       case "array":
-        obj.type = DataType.array;
-        obj.data = [];
-        return obj;
+        return new ArrayNode( schema.description, [], isRequired);
       case "string":
-        obj.type = DataType.string;
-        obj.data = "";
-        return obj;
+        return new StringNode(schema.description, '', isRequired);
       case "number":
-        obj.type = DataType.number;
-        obj.data = 0;
-        return obj;
+        return new NumberNode(schema.description, [], isRequired);
       case "boolean":
-        obj.type = DataType.boolean;
-        obj.data = false;
-        return obj;
+        return new BooleanNode(schema.description, [], isRequired);
       case "object":
-        obj.type = DataType.object;
-        obj.data = {};
-        return obj;
+        return new ObjectNode(schema.description, [], isRequired);
       default:
-        obj.type = ParseType(schema.type);
-        return obj;
+        return new DataNode(DataType.unspecified, schema.description, [], isRequired);
     }
   }
 };
@@ -61,7 +50,7 @@ export const generateTemplate = (
     if (path.refType === RefType.Object) {
       next = (resultNode.data as IDataNodeMap)[path.val as string];
     } else {
-      next = (resultNode.data as IDataNode[])[path.val as number];
+      next = (resultNode.data as DataNode[])[path.val as number];
     }
     if (!next) {
       return {
@@ -83,18 +72,24 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
           console.log(rootSchema.TwinConfiguration);
-          rootDataNode = {
-            data: {},
-            type: DataType.unspecified,
-          };
+          rootDataNode = new DataNode(
+            DataType.unspecified,
+            "Root Data Node",
+            {},
+            true
+          );
           for (const val of Object.values(rootSchema)) {
             const cn = childrenNodes(val as ISchemaNode, true);
-            if(rootDataNode.type === DataType.unspecified){
-                rootDataNode.data = { ...(rootDataNode.data as IDataNodeMap), ...(cn.data as IDataNodeMap) };
+            if (rootDataNode.type === DataType.unspecified) {
+              rootDataNode.data = {
+                ...(rootDataNode.data as IDataNodeMap),
+                ...(cn.data as IDataNodeMap),
+              };
             }
           }
 
-          console.log("Schema Loaded!", rootDataNode);
+          console.log("Schema YML!", rootSchema);
+          console.log("Schema Node!", rootDataNode);
           resolve();
         } else {
           console.error(err);
