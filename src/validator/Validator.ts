@@ -3,7 +3,6 @@ import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { RefType } from "../enum/RefType.enum";
 import { populateChildren } from "../util/NodeFactory";
 import { DataType } from "../enum/DataType.enum";
 import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
@@ -11,17 +10,18 @@ import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
 let rootDataNode: BaseNode;
 
 export const generateTemplate = (
-  paths: { refType: RefType; val: string | number }[]
+  paths: { isArray: boolean; val: string | number }[]
 ): IValidationResult => {
   let resultNode = { ...rootDataNode };
 
   for (const path of paths) {
     let next;
-    if (path.refType === RefType.Object) {
-      next = (resultNode.data as IDataNodeMap)[path.val as string];
-    } else {
+    if (path.isArray) {
       next = (resultNode.data as BaseNode[])[path.val as number];
+    } else {
+      next = (resultNode.data as IDataNodeMap)[path.val as string];
     }
+    
     if (!next) {
       return {
         resultNode: null,
