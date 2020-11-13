@@ -3,4 +3,9 @@ export interface ISchemaNode {
   type: string;
   required: string[];
   description: string;
+  minItems: number;
+  maxItems: number;
+  items: ISchemaNode;
+  format: string;
+  enum: string[];
 }

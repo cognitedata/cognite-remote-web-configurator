@@ -1,44 +1,14 @@
-import { ArrayNode, BooleanNode, DataNode, DataType, IDataNodeMap, NumberNode, ObjectNode, StringNode } from "../interfaces/IDataNode";
 import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { ParseType } from "../util/TypeParser";
 import { RefType } from "../enum/RefType.enum";
+import { populateChildren } from "../util/NodeFactory";
+import { DataNode, IDataNodeMap } from "../interfaces/IDataNode";
+import { DataType } from "../enum/DataType.enum";
 
 let rootDataNode: DataNode;
-
-const childrenNodes = (schema: ISchemaNode, isRequired: boolean): DataNode => {
-  if (schema.properties) {
-    const obj: DataNode = new DataNode(
-      ParseType(schema.type),
-      schema.description,
-      {},
-      isRequired
-    );
-    for (const [key, val] of Object.entries(schema.properties)) {
-      const required = schema.required?.findIndex((s) => s === key) >= 0;
-      (obj.data as IDataNodeMap)[key] = childrenNodes(val, required);
-    }
-    return obj;
-  } else {
-    switch (schema.type) {
-      case "array":
-        return new ArrayNode( schema.description, [], isRequired);
-      case "string":
-        return new StringNode(schema.description, '', isRequired);
-      case "number":
-        return new NumberNode(schema.description, [], isRequired);
-      case "boolean":
-        return new BooleanNode(schema.description, [], isRequired);
-      case "object":
-        return new ObjectNode(schema.description, [], isRequired);
-      default:
-        return new DataNode(DataType.unspecified, schema.description, [], isRequired);
-    }
-  }
-};
 
 export const generateTemplate = (
   paths: { refType: RefType; val: string | number }[]
@@ -79,7 +49,7 @@ export const loadSchema = (): Promise<void> => {
             true
           );
           for (const val of Object.values(rootSchema)) {
-            const cn = childrenNodes(val as ISchemaNode, true);
+            const cn = populateChildren(val as ISchemaNode, true);
             if (rootDataNode.type === DataType.unspecified) {
               rootDataNode.data = {
                 ...(rootDataNode.data as IDataNodeMap),

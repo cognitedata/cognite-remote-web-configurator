@@ -1,20 +1,9 @@
-export enum DataType {
-  unspecified = "unspecified",
-  string = "string",
-  number = "number",
-  boolean = "boolean",
-  object = "object",
-  array = "array",
-}
+import { DataType } from "../enum/DataType.enum";
+import { populateChildren } from "../util/NodeFactory";
+import { ISchemaNode } from "./ISchemaNode";
 
 export type IDataNodeMap = { [key: string]: DataNode };
 export type IDataType = IDataNodeMap | DataNode[] | string | number | boolean
-// export interface IDataNode {
-//   data: IDataNodeMap | IDataNode[] | string | number | boolean;
-//   type: DataType;
-//   description: string;
-//   isRequired?: boolean;
-// }
 
 export class DataNode {
   public type: DataType;
@@ -31,8 +20,13 @@ export class DataNode {
 }
 
 export class StringNode extends DataNode {
-  constructor(description: string, data: IDataType, isRequired: boolean){
-    super(DataType.string, description, data, isRequired);
+  public possibleValues: string[] = [];
+  constructor(schema: ISchemaNode, data: IDataType, isRequired: boolean){
+    super(DataType.string, schema.description, data, isRequired);
+    if(schema.enum){
+      this.possibleValues = schema.enum;
+      this.data = schema.enum[0];
+    }
   }
 }
 
@@ -43,8 +37,19 @@ export class NumberNode extends DataNode {
 }
 
 export class ArrayNode extends DataNode {
-  constructor(description: string, data: IDataType, isRequired: boolean){
-    super(DataType.array, description, data, isRequired);
+  public minItems: number | undefined;
+  public maxItems: number | undefined;
+
+  constructor(schema: ISchemaNode, isRequired: boolean){
+    super(DataType.array, schema.description, [], isRequired);
+    this.minItems = schema.minItems;
+    this.maxItems = schema.maxItems;
+
+    if(this.minItems > 0){
+      for(let i = 0; i< this.minItems; i++){
+        (this.data as DataNode[]).push(populateChildren(schema.items, true))
+      }
+    }
   }
 }
 
