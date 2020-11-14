@@ -1,8 +1,9 @@
 import { DataType } from "../enum/DataType.enum";
+import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { BaseNode, IData } from "./BaseNode";
 
 export class BooleanNode extends BaseNode {
-    constructor(description: string, data: IData, isRequired: boolean){
-      super(DataType.boolean, description, data, isRequired);
+    constructor(schema: ISchemaNode, data: IData, isRequired: boolean){
+      super(DataType.boolean, schema, data, isRequired);
     }
   }

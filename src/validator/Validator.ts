@@ -44,7 +44,11 @@ export const loadSchema = (): Promise<void> => {
           console.log(rootSchema.TwinConfiguration);
           rootDataNode = new BaseNode(
             DataType.unspecified,
-            "Root Data Node",
+            {
+              properties: {},
+              type: '',
+              description: "Root Data Node"
+            },
             {},
             true
           );

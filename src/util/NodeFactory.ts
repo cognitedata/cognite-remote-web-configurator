@@ -12,7 +12,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
     if (schema.properties) {
       const obj: BaseNode = new BaseNode(
         ParseType(schema.type),
-        schema.description,
+        schema,
         {},
         isRequired
       );
@@ -22,19 +22,19 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
       }
       return obj;
     } else {
-      switch (schema.type) {
-        case "array":
+      switch (ParseType(schema.type)) {
+        case DataType.array:
           return new ArrayNode( schema, isRequired);
-        case "string":
+        case DataType.string:
           return new StringNode(schema, '', isRequired);
-        case "number":
+        case DataType.number:
           return new NumberNode(schema, 0, isRequired);
-        case "boolean":
-          return new BooleanNode(schema.description, false, isRequired);
-        case "object":
-          return new ObjectNode(schema.description, {}, isRequired);
+        case DataType.boolean:
+          return new BooleanNode(schema, false, isRequired);
+        case DataType.object:
+          return new ObjectNode(schema, {}, isRequired);
         default:
-          return new BaseNode(DataType.unspecified, schema.description, [], isRequired);
+          return new BaseNode(DataType.unspecified, schema, [], isRequired);
       }
     }
   };

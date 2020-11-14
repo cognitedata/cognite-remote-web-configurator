@@ -7,7 +7,7 @@ export class NumberNode extends BaseNode {
   public maximum: number | undefined;
 
   constructor(schema: ISchemaNode, data: IData, isRequired: boolean) {
-    super(DataType.number, schema.description, data, isRequired);
+    super(DataType.number, schema, data, isRequired);
     this.minimum = schema.minimum;
     this.maximum = schema.maximum;
   }

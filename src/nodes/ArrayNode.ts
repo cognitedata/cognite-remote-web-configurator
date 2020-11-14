@@ -8,7 +8,7 @@ export class ArrayNode extends BaseNode {
     public maxItems: number | undefined;
   
     constructor(schema: ISchemaNode, isRequired: boolean){
-      super(DataType.array, schema.description, [], isRequired);
+      super(DataType.array, schema, [], isRequired);
       this.minItems = schema.minItems;
       this.maxItems = schema.maxItems;
   
