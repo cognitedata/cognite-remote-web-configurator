@@ -3,6 +3,7 @@
     color: white;
     border: solid #4891db;
     font-weight: bold;
+    text-align: center;
     padding: 15px 25px;
     border-radius: 45px;
     min-width: 200px;
@@ -13,6 +14,6 @@
     cursor: pointer;
 }
 .commandItem:active {
-    background-color: #84b7eb;
+    background-color: #9bc6f1;
     color: blue;
 }
