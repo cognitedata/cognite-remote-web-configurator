@@ -1,11 +1,12 @@
 import React from 'react';
 import classes from './FileCommands.module.scss';
+import { CommandItem } from '../Util/CommandItem/CommandItem';
 
 export const FileCommands: React.FC<any> = () => {
     return (
         <div className={classes.commandsContainer}>
-            <div className={classes.commandItem}>DELETE</div>
-            <div className={classes.commandItem}>UPDATE</div>
+            <CommandItem>DELETE</CommandItem>
+            <CommandItem>UPDATE</CommandItem>
         </div>
     );
 }
