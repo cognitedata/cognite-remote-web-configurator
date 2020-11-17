@@ -1,11 +1,8 @@
 import React from 'react';
 import classes from './TwinSelector.module.scss';
+import { TwinItem } from '../Util/TwinItem/TwinItem';
 
 const availableTwins: string[] = ['IA', 'MauiA', 'SkarvFPSOv4', 'demo'];
-
-const TwinItem: React.FC<string> = (twinName: string) => {
-    return <div className={classes.twinItem}>{twinName}</div>
-}
 
 export const TwinSelector: React.FC<any> = () => {
     return (
@@ -16,7 +13,7 @@ export const TwinSelector: React.FC<any> = () => {
             <div className={classes.twinContainer}>
                 {availableTwins.map(twin => {
                     return (
-                        TwinItem(twin)
+                        <TwinItem twinItem={twin}/>
                     )
                 })}
             </div>
