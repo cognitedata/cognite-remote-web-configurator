@@ -1,4 +1,4 @@
-.commandItem{
+.commandItem {
     background-color: #4891db;
     color: white;
     border: solid #4891db;
@@ -7,9 +7,12 @@
     border-radius: 45px;
     min-width: 200px;
 }
-
-.commandItem:hover{
+.commandItem:hover {
     background-color: white;
     color: #4891db;
     cursor: pointer;
+}
+.commandItem:active {
+    background-color: #84b7eb;
+    color: blue;
 }

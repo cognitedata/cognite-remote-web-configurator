@@ -1,4 +1,13 @@
-.twinItem{
+.twinItem {
     padding: 10px 15px;
-    font-weight: bold;;
+    font-weight: bold;
+}
+.twinItem:hover {
+    background-color: white;
+    color: #4891db;
+    cursor: pointer;
+}
+.twinItem:active {
+    background-color: #84b7eb;
+    color: blue;
 }
