@@ -5,8 +5,8 @@ import { CommandItem } from '../Util/CommandItem/CommandItem';
 export const FileCommands: React.FC<any> = () => {
     return (
         <div className={classes.commandsContainer}>
-            <CommandItem>DELETE</CommandItem>
-            <CommandItem>UPDATE</CommandItem>
+            <CommandItem><i className="fa fa-trash"></i> DELETE</CommandItem>
+            <CommandItem><i className="fa fa-upload"></i> UPDATE</CommandItem>
         </div>
     );
 }
