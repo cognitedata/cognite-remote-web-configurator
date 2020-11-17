@@ -1,8 +1,15 @@
 .commandItem{
     background-color: #4891db;
     color: white;
+    border: solid #4891db;
     font-weight: bold;
     padding: 15px 25px;
     border-radius: 45px;
     min-width: 200px;
+}
+
+.commandItem:hover{
+    background-color: white;
+    color: #4891db;
+    cursor: pointer;
 }
