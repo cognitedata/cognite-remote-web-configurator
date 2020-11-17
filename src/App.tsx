@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.scss';
-import ReactJson from 'react-json-view';
-import mauiA from './config/MauiA.json';
+import { JsonConfigurator } from './views/JsonConfigurator/JsonConfigurator';
 import { generateTemplate, loadSchema } from './validator/Validator';
 
 function App(): JSX.Element {
@@ -18,9 +17,7 @@ function App(): JSX.Element {
 
   return (
     <div className="App">
-      <div className="json-view">
-          <ReactJson src={mauiA} />
-      </div>
+      <JsonConfigurator />
     </div>
   );
 }
