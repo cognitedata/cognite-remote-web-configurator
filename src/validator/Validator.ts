@@ -2,38 +2,32 @@ import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
-import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
+import { IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
 import { BaseNode, IDataNodeMap } from "./nodes/BaseNode";
+import { getNode } from "./util/Helper";
 
 let rootDataNode: BaseNode;
 
-export const generateTemplate = (
+export const addNode = (
   paths: { isArray: boolean; val: string | number }[]
 ): IValidationResult => {
-  let resultNode = { ...rootDataNode };
-
-  for (const path of paths) {
-    let next;
-    if (path.isArray) {
-      next = (resultNode.data as BaseNode[])[path.val as number];
-    } else {
-      next = (resultNode.data as IDataNodeMap)[path.val as string];
-    }
-    
-    if (!next) {
-      return {
-        resultNode: null,
-        error: {
-          type: ErrorType.InvalidPath,
-        },
-      };
-    }
-    resultNode = next;
-  }
-  return { resultNode };
+  return getNode(rootDataNode, paths);
 };
+
+export const removeNode = (
+  paths: { isArray: boolean; val: string | number }[]
+): IValidationResult => {
+  const root = { ...rootDataNode };
+  const result = getNode(root, paths);
+
+  if(!result.error){
+    console.log('Node exists');
+  }
+
+  return result;
+}
 
 export const loadSchema = (): Promise<void> => {
   return new Promise((resolve, reject) => {
