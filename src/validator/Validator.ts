@@ -1,11 +1,11 @@
 import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { populateChildren } from "../util/NodeFactory";
-import { DataType } from "../enum/DataType.enum";
-import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
+import { ISchemaNode } from "./interfaces/ISchemaNode";
+import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
+import { populateChildren } from "./util/NodeFactory";
+import { DataType } from "./enum/DataType.enum";
+import { BaseNode, IDataNodeMap } from "./nodes/BaseNode";
 
 let rootDataNode: BaseNode;
 
