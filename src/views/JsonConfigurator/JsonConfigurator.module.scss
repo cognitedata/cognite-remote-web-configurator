@@ -1,0 +1,20 @@
+.configurator {
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-areas:
+        "leftbar file-commands"
+        "leftbar json-view";
+    grid-gap: 10px;
+    padding: 10px;
+}
+.leftbar {
+    grid-area: leftbar;
+    padding: 10px;
+    border-right: solid #cdcfd1;
+}
+.fileCommands {
+    grid-area: file-commands;
+}
+.jsonjsonView {
+    grid-area: json-view;
+}
