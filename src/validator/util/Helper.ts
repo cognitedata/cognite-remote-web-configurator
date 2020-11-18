@@ -1,5 +1,5 @@
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 
 export const getNode = (rootDataNode: BaseNode, 
     paths: { isArray: boolean; val: string | number }[]
@@ -11,7 +11,7 @@ export const getNode = (rootDataNode: BaseNode,
       if (path.isArray) {
         next = (resultNode.data as BaseNode[])[path.val as number];
       } else {
-        next = (resultNode.data as IDataNodeMap)[path.val as string];
+        next = (resultNode.data as BaseNodes)[path.val as string];
       }
       
       if (!next) {

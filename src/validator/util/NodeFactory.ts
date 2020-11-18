@@ -1,7 +1,7 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, IDataNodeMap } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { BooleanNode } from "../nodes/BooleanNode";
 import { NumberNode } from "../nodes/NumberNode";
 import { ObjectNode } from "../nodes/ObjectNode";
@@ -18,7 +18,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
       );
       for (const [key, val] of Object.entries(schema.properties)) {
         const required = schema.required?.findIndex((s) => s === key) !== -1;
-        (obj.data as IDataNodeMap)[key] = populateChildren(val, required);
+        (obj.data as BaseNodes)[key] = populateChildren(val, required);
       }
       return obj;
     } else {

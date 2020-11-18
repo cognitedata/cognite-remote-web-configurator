@@ -5,7 +5,7 @@ import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
-import { BaseNode, IDataNodeMap } from "./nodes/BaseNode";
+import { BaseNode, BaseNodes } from "./nodes/BaseNode";
 import { getNode } from "./util/Helper";
 
 let rootDataNode: BaseNode;
@@ -22,12 +22,12 @@ export const removeNode = (
   const root = { ...rootDataNode };
   const result = getNode(root, paths);
 
-  if(!result.error){
-    console.log('Node exists');
+  if (!result.error) {
+    console.log("Node exists");
   }
 
   return result;
-}
+};
 
 export const loadSchema = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -40,18 +40,19 @@ export const loadSchema = (): Promise<void> => {
             DataType.unspecified,
             {
               properties: {},
-              type: '',
-              description: "Root Data Node"
+              type: "",
+              description: "Root Data Node",
             },
             {},
             true
           );
           for (const val of Object.values(rootSchema)) {
-            const cn = populateChildren(val as ISchemaNode, true);
-            if (rootDataNode.type === DataType.unspecified) {
+            const childrenNodes = populateChildren(val as ISchemaNode, true);
+
+            if (childrenNodes.type === DataType.object) {
               rootDataNode.data = {
-                ...(rootDataNode.data as IDataNodeMap),
-                ...(cn.data as IDataNodeMap),
+                ...(rootDataNode.data as BaseNodes),
+                ...(childrenNodes.data as BaseNodes),
               };
             }
           }

@@ -1,8 +1,8 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 
-export type IDataNodeMap = { [key: string]: BaseNode };
-export type IData = IDataNodeMap | BaseNode[] | string | number | boolean;
+export type BaseNodes = { [key: string]: BaseNode };
+export type IData = BaseNodes | BaseNode[] | string | number | boolean;
 
 export class BaseNode {
     public type: DataType;
