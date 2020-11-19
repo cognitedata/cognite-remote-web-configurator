@@ -7,7 +7,7 @@ function App(): JSX.Element {
   
   const initValidater = async () => {
     await loadSchema();
-    console.log(addNode([{isArray: false, val: "coordinates"}]));
+    console.log(addNode(["coordinates"]));
   }
 
   useEffect(() => {

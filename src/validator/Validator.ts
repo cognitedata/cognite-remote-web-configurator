@@ -11,13 +11,13 @@ import { getNode } from "./util/Helper";
 let rootDataNode: BaseNode;
 
 export const addNode = (
-  paths: { isArray: boolean; val: string | number }[]
+  paths: (string | number)[]
 ): IValidationResult => {
   return getNode(rootDataNode, paths);
 };
 
 export const removeNode = (
-  paths: { isArray: boolean; val: string | number }[]
+  paths: (string | number )[]
 ): IValidationResult => {
   const root = { ...rootDataNode };
   const result = getNode(root, paths);
