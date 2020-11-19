@@ -2,7 +2,7 @@ import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
-import { IValidationResult } from "./interfaces/IValidationResult";
+import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
 import { BaseNode, BaseNodes } from "./nodes/BaseNode";
@@ -23,7 +23,17 @@ export const removeNode = (
   const result = getNode(root, paths);
 
   if (!result.error) {
-    console.log("Node exists");
+    if(result.resultNode?.isRequired){
+      return {
+        error: {
+          type: ErrorType.RequiredNode
+        }
+      }
+    }else {
+      return {
+        resultNode: null
+      }
+    }
   }
 
   return result;
