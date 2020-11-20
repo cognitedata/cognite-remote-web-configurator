@@ -5,34 +5,39 @@ import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
-import { BaseNode, IDataNodeMap } from "./nodes/BaseNode";
+import { BaseNode, BaseNodes } from "./nodes/BaseNode";
+import { getNode, removeDataNode } from "./util/Helper";
 
 let rootDataNode: BaseNode;
 
-export const generateTemplate = (
-  paths: { isArray: boolean; val: string | number }[]
+export const addNode = (
+  paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = { ...rootDataNode };
+  return getNode(rootDataNode, paths);
+};
 
-  for (const path of paths) {
-    let next;
-    if (path.isArray) {
-      next = (resultNode.data as BaseNode[])[path.val as number];
-    } else {
-      next = (resultNode.data as IDataNodeMap)[path.val as string];
-    }
-    
-    if (!next) {
+export const removeNode = (
+  data: Record<string, unknown>,
+  paths: (string | number )[]
+): IValidationResult => {
+  const root = { ...rootDataNode };
+  const result = getNode(root, paths);
+
+  if (!result.error) {
+    if(result.resultNode?.isRequired){
+      return {
+        error: {
+          type: ErrorType.RequiredNode
+        }
+      }
+    }else {  
       return {
         resultNode: null,
-        error: {
-          type: ErrorType.InvalidPath,
-        },
-      };
+        resultData: removeDataNode(data, paths)
+      }
     }
-    resultNode = next;
   }
-  return { resultNode };
+  return result;
 };
 
 export const loadSchema = (): Promise<void> => {
@@ -46,18 +51,19 @@ export const loadSchema = (): Promise<void> => {
             DataType.unspecified,
             {
               properties: {},
-              type: '',
-              description: "Root Data Node"
+              type: "",
+              description: "Root Data Node",
             },
             {},
             true
           );
           for (const val of Object.values(rootSchema)) {
-            const cn = populateChildren(val as ISchemaNode, true);
-            if (rootDataNode.type === DataType.unspecified) {
+            const childrenNodes = populateChildren(val as ISchemaNode, true);
+
+            if (childrenNodes.type === DataType.object) {
               rootDataNode.data = {
-                ...(rootDataNode.data as IDataNodeMap),
-                ...(cn.data as IDataNodeMap),
+                ...(rootDataNode.data as BaseNodes),
+                ...(childrenNodes.data as BaseNodes),
               };
             }
           }
