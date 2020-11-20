@@ -10,6 +10,7 @@ import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
 export const populateChildren = (schema: ISchemaNode, isRequired: boolean): BaseNode => {
+  // TOOD: Handle array type here, items
     if (schema.properties) {
       const obj: BaseNode = new BaseNode(
         ParseType(schema.type),
