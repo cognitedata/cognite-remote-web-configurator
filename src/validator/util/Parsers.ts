@@ -6,6 +6,7 @@ export const ParseType = (type: string): DataType => {
     case "string":
       return DataType.string;
     case "number":
+    case "integer":
       return DataType.number;
     case "object":
       return DataType.object;

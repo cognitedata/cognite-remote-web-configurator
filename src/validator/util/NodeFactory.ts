@@ -12,17 +12,13 @@ import { ParseType } from "./Parsers";
 export const populateChildren = (schema: ISchemaNode, isRequired: boolean): BaseNode => {
   // TOOD: Handle array type here, items
     if (schema.properties) {
-      const obj: BaseNode = new BaseNode(
-        ParseType(schema.type),
-        schema,
-        {},
-        isRequired
-      );
+      const obj: BaseNode  = { data: {}}
       for (const [key, val] of Object.entries(schema.properties)) {
         const required = schema.required?.findIndex((s) => s === key) !== -1;
         (obj.data as BaseNodes)[key] = populateChildren(val, required);
       }
       return obj;
+
     } else if (schema.additionalProperties) {
       const sampleData: BaseNodes = {};
       for (const [key, val] of Object.entries(schema.additionalProperties.properties)) {

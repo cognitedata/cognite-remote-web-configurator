@@ -60,7 +60,7 @@ export const loadSchema = (): Promise<void> => {
           for (const val of Object.values(rootSchema)) {
             const childrenNodes = populateChildren(val as ISchemaNode, true);
 
-            if (childrenNodes.type === DataType.object) {
+            if (!childrenNodes.type) {
               rootDataNode.data = {
                 ...(rootDataNode.data as BaseNodes),
                 ...(childrenNodes.data as BaseNodes),
