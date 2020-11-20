@@ -9,7 +9,7 @@ export const JsonEditor: React.FC<any> = () => {
 
     const initValidater = async () => {
         await loadSchema();
-        console.log(removeNode(["assets","geometries", "mauia", "modelId"]));
+        console.log('Result----', removeNode(mauiA, ["assets","geometries", "mauia", "modelId"]));
     }
 
     useEffect(() => {

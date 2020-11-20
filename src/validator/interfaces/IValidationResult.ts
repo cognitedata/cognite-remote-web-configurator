@@ -11,6 +11,7 @@ export interface IValidationError {
 }
 
 export interface IValidationResult {
-    resultNode?: BaseNode | null;
-    error?: IValidationError;
+    resultNode?: BaseNode | null;           // Affected node with meta data
+    resultData?: Record<string, unknown>    // Full result json after changes are affected
+    error?: IValidationError;               // If error occured
 }

@@ -6,7 +6,7 @@ import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
 import { BaseNode, BaseNodes } from "./nodes/BaseNode";
-import { getNode } from "./util/Helper";
+import { getNode, removeDataNode } from "./util/Helper";
 
 let rootDataNode: BaseNode;
 
@@ -17,6 +17,7 @@ export const addNode = (
 };
 
 export const removeNode = (
+  data: Record<string, unknown>,
   paths: (string | number )[]
 ): IValidationResult => {
   const root = { ...rootDataNode };
@@ -29,13 +30,13 @@ export const removeNode = (
           type: ErrorType.RequiredNode
         }
       }
-    }else {
+    }else {  
       return {
-        resultNode: null
+        resultNode: null,
+        resultData: removeDataNode(data, paths)
       }
     }
   }
-
   return result;
 };
 
