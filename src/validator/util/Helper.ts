@@ -4,7 +4,7 @@ import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
-  paths: (string | number)[]
+  paths: readonly(string | number)[]
 ): Record<string, unknown> => {
 
   const obj: any = {...data}
@@ -21,7 +21,7 @@ export const removeDataNode = (
 
 export const getNode = (
   rootDataNode: BaseNode,
-  paths: (string | number)[]
+  paths: readonly (string | number)[]
 ): IValidationResult => {
   let resultNode = { ...rootDataNode };
 
