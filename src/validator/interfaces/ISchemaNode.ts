@@ -1,5 +1,6 @@
 export interface ISchemaNode {
   properties: {[key: string]: any};
+  additionalProperties?: ISchemaNode;
   type: string;
   description: string;
   required?: string[];
