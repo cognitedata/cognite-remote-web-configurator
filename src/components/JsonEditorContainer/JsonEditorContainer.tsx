@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { removeNode } from '../../validator/Validator'
@@ -6,6 +6,7 @@ import { removeNode } from '../../validator/Validator'
 export function JsonEditorContainer(props: { json: any }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
+    const [JsonFile, setJsonFile] = useState(props.json);
 
     const options: JSONEditorOptions = {
         mode: 'tree',
@@ -37,13 +38,30 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
             console.log(err.toString())
         },
         onCreateMenu: (items: MenuItem[], node: MenuItemNode) => {
-            // console.log(items);
-            // console.log("onCreateMenu", node.paths[0]);
-            // console.log("onCreateMenu", removeNode(props.json, node.paths[0]).error);
-            // console.log("onCreateMenu", props.json);
-            if (removeNode(props.json, node.paths[0]).error) {
+            const paths = node.paths[0]
+            const removeResult = removeNode(props.json, paths)
+
+            //new Delete function
+            const Delete = () => {
+                if (!removeResult.error) {
+                    console.log("new", removeResult.resultData)
+                    setJsonFile(removeResult.resultData);
+                }
+            }
+
+            // if removeNode validation returns error
+            // Remove default Remove(Delete) function
+            if (removeResult.error) {
                 items = items.filter(item => item.text !== "Remove")
             }
+
+            // alter existing Remove method
+            items.forEach((item) => {
+                if (item.text === "Remove") {
+                    item.click = Delete;
+                }
+            });
+
             return items;
         },
         onEvent: (node: EditableNode, event: any) => {
@@ -120,9 +138,9 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
     useEffect(() => {
         const editor = jsonEditorInstance.current;
         if (editor) {
-            editor.set(props.json);
+            editor.set(JsonFile);
         }
-    }, [props.json]);
+    }, [JsonFile]);
 
 
     return (<div className="json-editor-container" ref={jsonEditorElm} />);
