@@ -1,6 +1,5 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { populateChildren } from "../util/NodeFactory";
 import { BaseNode, BaseNodes, IData } from "./BaseNode";
 
 export class ArrayNode extends BaseNode {

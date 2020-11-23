@@ -50,7 +50,7 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
         },
         onEvent: (node: EditableNode, event: any) => {
             if (node.field !== undefined) {
-                console.log(event, node);
+                // console.log(event, node);
                 if (event.type === "click") {
                     console.log(event.type + ' event ' +
                         'on value ' + JSON.stringify(node.value) + ' ' +

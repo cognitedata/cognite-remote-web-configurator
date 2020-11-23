@@ -6,7 +6,6 @@ import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode, removeDataNode } from "./util/Helper";
-import { ObjectNode } from "./nodes/ObjectNode";
 
 const defaultGroup = 'TwinConfiguration';
 
@@ -50,7 +49,7 @@ export const loadSchema = (): Promise<void> => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;
-          console.log(rootSchema.TwinConfiguration);
+          // console.log(rootSchema.TwinConfiguration);
           // rootDataNode = new ObjectNode(
           //   rootSchema,
           //   {},

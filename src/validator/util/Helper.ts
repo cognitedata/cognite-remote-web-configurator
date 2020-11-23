@@ -4,7 +4,6 @@ import { AdditionalNode } from "../nodes/AdditionalNode";
 import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
-import { StringNode } from "../nodes/StringNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -55,7 +54,8 @@ export const getNode = (
   return { resultNode };
 };
 
-export const getJson = (obj: BaseNode) => {
+// TODO: change return type to specific
+export const getJson = (obj: BaseNode): any => {
   if (obj instanceof ObjectNode) {
     if (obj.data) {
       const dat: any = {};
