@@ -12,21 +12,21 @@ import { ParseType } from "./Parsers";
 export const populateChildren = (schema: ISchemaNode, isRequired: boolean): BaseNode => {
   // TOOD: Handle array type here, items
     if (schema.properties) {
-      const obj: BaseNode  = { data: {}}
-      for (const [key, val] of Object.entries(schema.properties)) {
+      const obj = new ObjectNode(schema, {}, isRequired);//{ data: {}}
+      for (const [key, schem] of Object.entries(schema.properties)) {
         const required = schema.required?.findIndex((s) => s === key) !== -1;
-        (obj.data as BaseNodes)[key] = populateChildren(val, required);
+        (obj.data as BaseNodes)[key] = populateChildren(schem, required);
       }
       return obj;
 
     } else if (schema.additionalProperties) {
       const sampleData: BaseNodes = {};
-      for (const [key, val] of Object.entries(schema.additionalProperties.properties)) {
+      for (const [key, schem] of Object.entries(schema.additionalProperties.properties)) {
         const required = schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
-        sampleData[key] = populateChildren(val, required);
+        sampleData[key] = populateChildren(schem, required);
       }
 
-      const obj: AdditionalNode = new AdditionalNode(
+      const obj = new AdditionalNode(
         schema,
         {},
         false,

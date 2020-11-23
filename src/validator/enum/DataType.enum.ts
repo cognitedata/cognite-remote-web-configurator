@@ -5,4 +5,5 @@ export enum DataType {
     boolean = "boolean",
     object = "object",
     array = "array",
+    map = "map"
   }

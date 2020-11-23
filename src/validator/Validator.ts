@@ -5,8 +5,8 @@ import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { DataType } from "./enum/DataType.enum";
-import { BaseNode, BaseNodes } from "./nodes/BaseNode";
-import { getNode, removeDataNode } from "./util/Helper";
+import { BaseNode } from "./nodes/BaseNode";
+import { getJson, getNode, removeDataNode } from "./util/Helper";
 
 let rootDataNode: BaseNode;
 
@@ -57,20 +57,24 @@ export const loadSchema = (): Promise<void> => {
             {},
             true
           );
+          let output: any = {};
           for (const val of Object.values(rootSchema)) {
             const childrenNodes = populateChildren(val as ISchemaNode, true);
-
-            if (!childrenNodes.type) {
-              rootDataNode.data = {
-                ...(rootDataNode.data as BaseNodes),
-                ...(childrenNodes.data as BaseNodes),
+            // console.log(childrenNodes.data);
+            // if (!childrenNodes.type) {
+              output = {
+                ...(output),
+                ...(childrenNodes.data as Record<string, unknown>),
               };
-            }
+            // }
           }
-
+          rootDataNode.data = output;
           console.log("Schema YML!", rootSchema);
           console.log("Schema Node!", rootDataNode);
-          resolve();
+
+          // (window as any)['aaa'] = output;
+
+          console.log('JSON->', getJson(rootDataNode))
         } else {
           console.error(err);
           reject();

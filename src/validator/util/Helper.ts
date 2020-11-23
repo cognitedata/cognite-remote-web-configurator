@@ -1,3 +1,4 @@
+import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { AdditionalNode } from "../nodes/AdditionalNode";
 import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
@@ -51,3 +52,15 @@ export const getNode = (
   }
   return { resultNode };
 };
+
+export const getJson = (obj: BaseNode) => {
+  if(obj.data && (obj.type === DataType.object)){
+    const dat: any = {};
+    for(const [key, val] of Object.entries(obj.data)){
+      dat[key] = getJson(val);
+    }
+    return dat;
+  }else {
+    return '';
+  }
+}
