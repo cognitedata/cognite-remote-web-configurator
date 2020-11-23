@@ -52,10 +52,10 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
             if (node.field !== undefined) {
                 // console.log(event, node);
                 if (event.type === "click") {
-                    console.log(event.type + ' event ' +
-                        'on value ' + JSON.stringify(node.value) + ' ' +
-                        'at path ' + JSON.stringify(node.path)
-                    )
+                    // console.log(event.type + ' event ' +
+                    //     'on value ' + JSON.stringify(node.value) + ' ' +
+                    //     'at path ' + JSON.stringify(node.path)
+                    // )
                 }
             }
         },

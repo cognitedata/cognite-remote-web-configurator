@@ -49,33 +49,15 @@ export const loadSchema = (): Promise<void> => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;
-          // console.log(rootSchema.TwinConfiguration);
-          // rootDataNode = new ObjectNode(
-          //   rootSchema,
-          //   {},
-          //   true
-          // );
-          // let output: any = {};
-          // const arr = [];
           for (const [key, val] of Object.entries(rootSchema)) {
             const childrenNodes = populateChildren(val as ISchemaNode, true);
             rootDataNode[key] = childrenNodes;
-            // console.log(childrenNodes.data);
-            // if (!childrenNodes.type) {
-              // output = {
-              //   ...(output),
-              //   ...(childrenNodes.data as Record<string, unknown>),
-              // };
-              // arr.push(childrenNodes.data);
-            // }
           }
-          // rootDataNode.data = output;
           console.log("Schema YML!", rootSchema[defaultGroup]);
           console.log("Schema Node!", rootDataNode[defaultGroup]);
-          // console.log("Schema Arr!", arr);
-          // (window as any)['aaa'] = output;
 
           console.log('JSON->', getJson(rootDataNode[defaultGroup]))
+          resolve();
         } else {
           console.error(err);
           reject();

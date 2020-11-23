@@ -81,7 +81,7 @@ export const populateChildren = (
           (sampleData.data as BaseNodes)[key] = populateChildren(schem, required);
         }
       }
-      const obj = new ArrayNode(schema, [], false, sampleData);
+      const obj = new ArrayNode(schema, [], isRequired, sampleData);
       return obj;
     } else if (schema.additionalProperties) {
       const sampleData: BaseNodes = {};

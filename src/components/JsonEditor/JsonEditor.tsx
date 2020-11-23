@@ -8,8 +8,11 @@ import { loadSchema, removeNode } from '../../validator/Validator';
 export const JsonEditor: React.FC<any> = () => {
 
     const initValidater = async () => {
-        await loadSchema();
-        console.log('Result----', removeNode(mauiA, ["assets","geometries", "mauia", "modelId"]));
+        loadSchema().then(() => {
+            console.log('Result----', removeNode(mauiA, ["scenes"]));
+        })
+        // console.log('Result----', removeNode(mauiA, ["assets","geometries", "mauia", "modelId"]));
+
     }
 
     useEffect(() => {
