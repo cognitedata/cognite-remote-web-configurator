@@ -8,19 +8,23 @@ import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode, removeDataNode } from "./util/Helper";
 import { ObjectNode } from "./nodes/ObjectNode";
 
-let rootDataNode: BaseNode;
+const defaultGroup = 'TwinConfiguration';
+
+const rootDataNode: {[key: string]: BaseNode} = {};
 
 export const addNode = (
-  paths: (string | number)[]
+  paths: (string | number)[],
+  group: string = defaultGroup
 ): IValidationResult => {
-  return getNode(rootDataNode, paths);
+  return getNode(rootDataNode[group], paths);
 };
 
 export const removeNode = (
   data: Record<string, unknown>,
-  paths: (string | number )[]
+  paths: (string | number )[],
+  group: string = defaultGroup
 ): IValidationResult => {
-  const root = { ...rootDataNode };
+  const root = { ...rootDataNode[group] };
   const result = getNode(root, paths);
 
   if (!result.error) {
@@ -47,29 +51,32 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
           console.log(rootSchema.TwinConfiguration);
-          rootDataNode = new ObjectNode(
-            rootSchema,
-            {},
-            true
-          );
-          let output: any = {};
-          for (const val of Object.values(rootSchema)) {
+          // rootDataNode = new ObjectNode(
+          //   rootSchema,
+          //   {},
+          //   true
+          // );
+          // let output: any = {};
+          // const arr = [];
+          for (const [key, val] of Object.entries(rootSchema)) {
             const childrenNodes = populateChildren(val as ISchemaNode, true);
+            rootDataNode[key] = childrenNodes;
             // console.log(childrenNodes.data);
             // if (!childrenNodes.type) {
-              output = {
-                ...(output),
-                ...(childrenNodes.data as Record<string, unknown>),
-              };
+              // output = {
+              //   ...(output),
+              //   ...(childrenNodes.data as Record<string, unknown>),
+              // };
+              // arr.push(childrenNodes.data);
             // }
           }
-          rootDataNode.data = output;
-          console.log("Schema YML!", rootSchema);
-          console.log("Schema Node!", rootDataNode);
-
+          // rootDataNode.data = output;
+          console.log("Schema YML!", rootSchema[defaultGroup]);
+          console.log("Schema Node!", rootDataNode[defaultGroup]);
+          // console.log("Schema Arr!", arr);
           // (window as any)['aaa'] = output;
 
-          console.log('JSON->', getJson(rootDataNode))
+          console.log('JSON->', getJson(rootDataNode[defaultGroup]))
         } else {
           console.error(err);
           reject();

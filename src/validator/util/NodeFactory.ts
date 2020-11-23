@@ -71,7 +71,7 @@ export const populateChildren = (
         // Only keys are added as data of ObjectNode
 
         if (schem.items?.properties === schema.items.properties) {
-          ( (sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
+          ((sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
             schema,
             [],
             false,
