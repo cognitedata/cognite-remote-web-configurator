@@ -67,15 +67,16 @@ export const getJson = (obj: BaseNode) => {
   } else if (obj instanceof ArrayNode) {
     // temp add one item
     if (obj.minItems) {
-      if (obj.sampleData) {
-        const dat: any = {};
-        for (const [key, val] of Object.entries(obj.sampleData)) {
+      // if (obj.sampleData) {
+
+        const dat: any = [];
+        for (const [key, val] of Object.entries(obj.sampleData ?? '')) {
           dat[key] = getJson(val);
         }
         return [dat];
-      } else {
-        return ["NO sample"];
-      }
+      // } else {
+      //   return ["NO sample"];
+      // }
     } else {
       return [];
     }

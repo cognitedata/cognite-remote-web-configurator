@@ -13,9 +13,9 @@ export class ArrayNode extends BaseNode {
     this.minItems = schema.minItems;
     this.maxItems = schema.maxItems;
     this.data = data;
-    if(sampleData){
-      this.sampleData = sampleData;
-    }
+
+    this.sampleData = sampleData;
+
 
     // if (schema.items) {
     //   this.sampleData = sampleData;

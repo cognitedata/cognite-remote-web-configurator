@@ -19,6 +19,24 @@ export const ParseType = (type: string): DataType => {
   }
 };
 
+export const getDefaultPrimitiveVal = (type: string): any => {
+  switch (type) {
+    case "string":
+      return '';
+    case "number":
+    case "integer":
+      return 0;
+    case "object":
+      return {};
+    case "boolean":
+      return false;
+    case "array":
+      return [];
+    default:
+      return undefined;
+  }
+};
+
 export const ParseFormat = (format: string): DataFormat => {
   switch (format) {
     case "int32":

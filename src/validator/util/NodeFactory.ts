@@ -7,7 +7,7 @@ import { BooleanNode } from "../nodes/BooleanNode";
 import { NumberNode } from "../nodes/NumberNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
-import { ParseType } from "./Parsers";
+import { getDefaultPrimitiveVal, ParseType } from "./Parsers";
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
   if (!schema) {
@@ -48,6 +48,7 @@ export const populateChildren = (
     return obj;
     // schema.additionalProperties.properties: check this here
   } else if (schema.additionalProperties) {
+    
     const sampleData: BaseNodes = {};
     for (const [key, schem] of Object.entries(
       schema.additionalProperties.properties
@@ -84,15 +85,20 @@ export const populateChildren = (
       return obj;
     } 
     else {
+
+      const type = schema.items.type;
       // if (schema.items.type) {
         //mkpt
-        const s: ISchemaNode = {
-          type: schema.items.type ?? '',
-          properties: {},
-          description: "Primitive Type",
-        };
+        // const s: ISchemaNode = {
+        //   type: schema.items.type ?? '',
+        //   properties: {},
+        //   description: "Primitive Type",
+        // };
 
-        const sampleData = getPrimitiveObject(s, isRequired);
+         
+
+
+        const sampleData = getDefaultPrimitiveVal(type);
         const obj = new ArrayNode(schema, [], false, sampleData);
         return obj;
       // } else {
