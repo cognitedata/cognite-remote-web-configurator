@@ -74,7 +74,7 @@ export const populateChildren = (
           ((sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
             schema,
             [],
-            false,
+            required,
             sampleData
           );
         } else {

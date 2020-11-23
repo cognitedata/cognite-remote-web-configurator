@@ -51,7 +51,9 @@ export const getNode = (
     }
     resultNode = next as BaseNode;
   }
-  return { resultNode };
+
+  const resultData = getJson(resultNode)
+  return { resultNode, resultData };
 };
 
 // TODO: change return type to specific
