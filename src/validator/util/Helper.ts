@@ -2,16 +2,16 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { AdditionalNode } from "../nodes/AdditionalNode";
 import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
+import { StringNode } from "../nodes/StringNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
   paths: (string | number)[]
 ): Record<string, unknown> => {
-
-  const obj: any = {...data}
+  const obj: any = { ...data };
   let next = obj;
-  for (let i=0; i< paths.length;i++) { 
-    if(i === paths.length -1){
+  for (let i = 0; i < paths.length; i++) {
+    if (i === paths.length - 1) {
       delete next[paths[i]];
       break;
     }
@@ -36,7 +36,7 @@ export const getNode = (
 
     if (!next) {
       if (resultNode instanceof AdditionalNode) {
-        next =  resultNode.sampleData;
+        next = resultNode.sampleData;
         resultNode.data = next as IData;
         continue;
       } else {
@@ -54,13 +54,21 @@ export const getNode = (
 };
 
 export const getJson = (obj: BaseNode) => {
-  if(obj.data && (obj.type === DataType.object)){
+  if (obj.data && obj.type === DataType.object) {
     const dat: any = {};
-    for(const [key, val] of Object.entries(obj.data)){
+    for (const [key, val] of Object.entries(obj.data)) {
       dat[key] = getJson(val);
     }
     return dat;
-  }else {
-    return '';
+  } else {
+    switch (obj.type) {
+      case DataType.array:
+        return [];
+      case DataType.string:
+        return obj.data;
+
+      default:
+        return undefined;
+    }
   }
-}
+};

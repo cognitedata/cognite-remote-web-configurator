@@ -19,8 +19,8 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
         (obj.data as BaseNodes)[key] = populateChildren(schem, required);
       }
       return obj;
-
-    } else if (schema.additionalProperties) {
+      // schema.additionalProperties.properties: check this here
+    } else if (schema.additionalProperties ) {
       const sampleData: BaseNodes = {};
       for (const [key, schem] of Object.entries(schema.additionalProperties.properties)) {
         const required = schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
@@ -35,10 +35,31 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
         sampleData
       );
       return obj;
-    } else {
+    } else if(schema.items && schema.items.properties){
+      const sampleData: BaseNodes = {};
+      for (const [key, schem] of Object.entries(schema.items.properties)) {
+        const required = schema.items.required?.findIndex((s) => s === key) !== -1;
+        // Only keys are added as data of ObjectNode
+
+        if(schem.items?.properties === schema.items.properties){
+           (sampleData[key] as ArrayNode) = new ArrayNode(schema, [], false, sampleData);
+        } else {
+          sampleData[key] = populateChildren(schem, required);
+        }
+      }
+
+      const obj = new ArrayNode(
+        schema,
+        [],
+        false,
+        sampleData
+      );
+      return obj;
+    }
+    else {
       switch (ParseType(schema.type)) {
         case DataType.array:
-          return new ArrayNode( schema, isRequired);
+          return new ArrayNode( schema, [], isRequired);
         case DataType.string:
           return new StringNode(schema, '', isRequired);
         case DataType.number:

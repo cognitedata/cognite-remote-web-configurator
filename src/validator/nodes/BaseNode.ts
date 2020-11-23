@@ -2,7 +2,7 @@ import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
-export type IData = BaseNodes | BaseNode[] | string | number | boolean;
+export type IData = BaseNodes | BaseNode[] | string | number | boolean | undefined;
 
 export class BaseNode {
     public type?: DataType;

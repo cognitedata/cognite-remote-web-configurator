@@ -9,7 +9,11 @@ export class StringNode extends BaseNode {
     super(DataType.string, schema, data, isRequired);
     if (schema.enum) {
       this.possibleValues = schema.enum;
-      this.data = schema.enum[0];
+    }
+    if(isRequired){    
+      this.data = this.possibleValues ? this.possibleValues[0] : '';
+    } else {
+      this.data = undefined;
     }
   }
 }
