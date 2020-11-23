@@ -83,6 +83,20 @@ export const populateChildren = (
       }
       const obj = new ArrayNode(schema, [], false, sampleData);
       return obj;
+    } else if (schema.additionalProperties) {
+      const sampleData: BaseNodes = {};
+      for (const [key, val] of Object.entries((schema.additionalProperties as ISchemaNode).properties)) {
+        const required = (schema.additionalProperties  as ISchemaNode).required?.findIndex((s) => s === key) !== -1;
+        sampleData[key] = populateChildren(val, required);
+      }
+
+      const obj: AdditionalNode = new AdditionalNode(
+        schema,
+        {},
+        false,
+        sampleData
+      );
+      return obj;
     } else {
       const type = schema.items.type;
       const sampleData: BaseNode = {
