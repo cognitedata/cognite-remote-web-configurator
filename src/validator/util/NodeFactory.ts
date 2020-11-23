@@ -48,14 +48,13 @@ export const populateChildren = (
     return obj;
     // schema.additionalProperties.properties: check this here
   } else if (schema.additionalProperties) {
-    
     const sampleData: BaseNodes = {};
+
     for (const [key, schem] of Object.entries(
       schema.additionalProperties.properties
     )) {
       const required =
-        schema.additionalProperties.required?.findIndex((s) => s === key) !==
-        -1;
+        schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
       // Only keys are added as data of ObjectNode
       sampleData[key] = populateChildren(schem, required);
     }
@@ -64,46 +63,34 @@ export const populateChildren = (
     return obj;
   } else if (schema.items) {
     if (schema.items.properties) {
-      const sampleData: BaseNodes = {};
+      // const sampleData: BaseNodes = {};
+      const sampleData = new ObjectNode(schema, {}, isRequired);
       for (const [key, schem] of Object.entries(schema.items.properties)) {
         const required =
           schema.items.required?.findIndex((s) => s === key) !== -1;
         // Only keys are added as data of ObjectNode
 
         if (schem.items?.properties === schema.items.properties) {
-          (sampleData[key] as ArrayNode) = new ArrayNode(
+          ( (sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
             schema,
             [],
             false,
             sampleData
           );
         } else {
-          sampleData[key] = populateChildren(schem, required);
+          (sampleData.data as BaseNodes)[key] = populateChildren(schem, required);
         }
       }
       const obj = new ArrayNode(schema, [], false, sampleData);
       return obj;
-    } 
-    else {
-
+    } else {
       const type = schema.items.type;
-      // if (schema.items.type) {
-        //mkpt
-        // const s: ISchemaNode = {
-        //   type: schema.items.type ?? '',
-        //   properties: {},
-        //   description: "Primitive Type",
-        // };
-
-         
-
-
-        const sampleData = getDefaultPrimitiveVal(type);
-        const obj = new ArrayNode(schema, [], false, sampleData);
-        return obj;
-      // } else {
-      //   return 
-      // }
+      const sampleData: BaseNode = {
+        type: ParseType(type),
+        data: getDefaultPrimitiveVal(type)
+      }
+      const obj = new ArrayNode(schema, [], false, sampleData);
+      return obj;
     }
   } else {
     return getPrimitiveObject(schema, isRequired);

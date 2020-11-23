@@ -69,11 +69,19 @@ export const getJson = (obj: BaseNode) => {
     if (obj.minItems) {
       // if (obj.sampleData) {
 
-        const dat: any = [];
-        for (const [key, val] of Object.entries(obj.sampleData ?? '')) {
-          dat[key] = getJson(val);
+      const dat: any = [];
+      let sampleVal: any;
+
+      if (obj.sampleData?.type === DataType.object) {
+        sampleVal = {};
+        for (const [key, val] of Object.entries(obj.sampleData?.data ?? "")) {
+          sampleVal[key] = getJson(val as BaseNode);
         }
-        return [dat];
+      } else {
+        sampleVal = obj.sampleData?.data;
+      }
+      dat.push(sampleVal);
+      return dat;
       // } else {
       //   return ["NO sample"];
       // }
