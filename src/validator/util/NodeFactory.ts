@@ -15,6 +15,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
       const obj = new ObjectNode(schema, {}, isRequired);//{ data: {}}
       for (const [key, schem] of Object.entries(schema.properties)) {
         const required = schema.required?.findIndex((s) => s === key) !== -1;
+        // Only keys are added as data of ObjectNode
         (obj.data as BaseNodes)[key] = populateChildren(schem, required);
       }
       return obj;
@@ -23,6 +24,7 @@ export const populateChildren = (schema: ISchemaNode, isRequired: boolean): Base
       const sampleData: BaseNodes = {};
       for (const [key, schem] of Object.entries(schema.additionalProperties.properties)) {
         const required = schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
+        // Only keys are added as data of ObjectNode
         sampleData[key] = populateChildren(schem, required);
       }
 

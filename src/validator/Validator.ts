@@ -48,7 +48,7 @@ export const loadSchema = (): Promise<void> => {
           const rootSchema = api.components.schemas;
           console.log(rootSchema.TwinConfiguration);
           rootDataNode = new BaseNode(
-            DataType.unspecified,
+            DataType.object,
             {
               properties: {},
               type: "",
