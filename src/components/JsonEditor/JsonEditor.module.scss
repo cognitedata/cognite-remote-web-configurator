@@ -1,8 +1,5 @@
 .jsonView {
     background-color: white;
-    top: 0;
-    left: 0;
-    overflow: scroll;
-    padding: 10px;
-    height: 800px;
+    height: 100%;
+    overflow-y: auto;
 }

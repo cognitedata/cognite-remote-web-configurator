@@ -18,7 +18,7 @@ export const addNode = (
 
 export const removeNode = (
   data: Record<string, unknown>,
-  paths: (string | number )[]
+  paths: readonly (string | number )[]
 ): IValidationResult => {
   const root = { ...rootDataNode };
   const result = getNode(root, paths);
