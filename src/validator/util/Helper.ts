@@ -1,7 +1,9 @@
 import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { AdditionalNode } from "../nodes/AdditionalNode";
+import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
+import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
 
 export const removeDataNode = (
@@ -54,21 +56,46 @@ export const getNode = (
 };
 
 export const getJson = (obj: BaseNode) => {
-  if (obj.data && obj.type === DataType.object) {
-    const dat: any = {};
-    for (const [key, val] of Object.entries(obj.data)) {
-      dat[key] = getJson(val);
+  if (obj instanceof ObjectNode) {
+    if (obj.data) {
+      const dat: any = {};
+      for (const [key, val] of Object.entries(obj.data)) {
+        dat[key] = getJson(val);
+      }
+      return dat;
     }
-    return dat;
+  } else if (obj instanceof ArrayNode) {
+    // temp add one item
+    if (obj.minItems) {
+      if (obj.sampleData) {
+        const dat: any = {};
+        for (const [key, val] of Object.entries(obj.sampleData)) {
+          dat[key] = getJson(val);
+        }
+        return [dat];
+      } else {
+        return ["NO sample"];
+      }
+    } else {
+      return [];
+    }
   } else {
-    switch (obj.type) {
+    switch (obj?.type) {
+      case DataType.string:
+        return "";
+      case DataType.number:
+        return 0;
+      case DataType.boolean:
+        return false;
+      case DataType.object:
+      case DataType.map:
+        return {};
       case DataType.array:
         return [];
-      case DataType.string:
-        return obj.data;
 
       default:
         return undefined;
     }
   }
+  return undefined;
 };

@@ -4,9 +4,9 @@ import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
-import { DataType } from "./enum/DataType.enum";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode, removeDataNode } from "./util/Helper";
+import { ObjectNode } from "./nodes/ObjectNode";
 
 let rootDataNode: BaseNode;
 
@@ -47,13 +47,8 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
           console.log(rootSchema.TwinConfiguration);
-          rootDataNode = new BaseNode(
-            DataType.object,
-            {
-              properties: {},
-              type: "",
-              description: "Root Data Node",
-            },
+          rootDataNode = new ObjectNode(
+            rootSchema,
             {},
             true
           );

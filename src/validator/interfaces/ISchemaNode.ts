@@ -1,8 +1,10 @@
 export interface ISchemaNode {
   properties: {[key: string]: any};
-  additionalProperties?: ISchemaNode;
   type: string;
   description: string;
+
+  // optional props
+  additionalProperties?: ISchemaNode;
   required?: string[];
   minItems?: number;
   maxItems?: number;
