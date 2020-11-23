@@ -9,8 +9,8 @@ export const JsonEditor: React.FC<any> = () => {
 
     const initValidater = async () => {
         await loadSchema();
-        console.log('Result----', removeNode(mauiA, ["scenes"]));
-        console.log('All---', addNode(["assets"]));
+        console.log('Remove----', removeNode(mauiA, [""]));
+        console.log('Add---', addNode([""]));
     }
 
     useEffect(() => {

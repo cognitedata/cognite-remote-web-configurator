@@ -25,7 +25,7 @@ export const getNode = (
   rootDataNode: BaseNode,
   paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = { ...rootDataNode };
+  let resultNode = rootDataNode;
 
   for (const path of paths) {
     let next;
@@ -69,8 +69,6 @@ export const getJson = (obj: BaseNode): any => {
   } else if (obj instanceof ArrayNode) {
     // temp add one item
     if (obj.minItems) {
-      // if (obj.sampleData) {
-
       const dat: any = [];
       let sampleVal: any;
 
@@ -84,9 +82,6 @@ export const getJson = (obj: BaseNode): any => {
       }
       dat.push(sampleVal);
       return dat;
-      // } else {
-      //   return ["NO sample"];
-      // }
     } else {
       return [];
     }
