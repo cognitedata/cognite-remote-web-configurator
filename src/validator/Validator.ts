@@ -4,23 +4,26 @@ import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
-import { DataType } from "./enum/DataType.enum";
-import { BaseNode, BaseNodes } from "./nodes/BaseNode";
-import { getNode, removeDataNode } from "./util/Helper";
+import { BaseNode } from "./nodes/BaseNode";
+import { getJson, getNode, removeDataNode } from "./util/Helper";
 
-let rootDataNode: BaseNode;
+const defaultGroup = 'TwinConfiguration';
+
+const rootDataNode: {[key: string]: BaseNode} = {};
 
 export const addNode = (
-  paths: (string | number)[]
+  paths: (string | number)[],
+  group: string = defaultGroup
 ): IValidationResult => {
-  return getNode(rootDataNode, paths);
+  return getNode(rootDataNode[group], paths);
 };
 
 export const removeNode = (
   data: Record<string, unknown>,
-  paths: readonly (string | number )[]
+  paths: (string | number )[],
+  group: string = defaultGroup
 ): IValidationResult => {
-  const root = { ...rootDataNode };
+  const root = { ...rootDataNode[group] };
   const result = getNode(root, paths);
 
   if (!result.error) {
@@ -46,30 +49,14 @@ export const loadSchema = (): Promise<void> => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;
-          console.log(rootSchema.TwinConfiguration);
-          rootDataNode = new BaseNode(
-            DataType.unspecified,
-            {
-              properties: {},
-              type: "",
-              description: "Root Data Node",
-            },
-            {},
-            true
-          );
-          for (const val of Object.values(rootSchema)) {
+          for (const [key, val] of Object.entries(rootSchema)) {
             const childrenNodes = populateChildren(val as ISchemaNode, true);
-
-            if (childrenNodes.type === DataType.object) {
-              rootDataNode.data = {
-                ...(rootDataNode.data as BaseNodes),
-                ...(childrenNodes.data as BaseNodes),
-              };
-            }
+            rootDataNode[key] = childrenNodes;
           }
+          console.log("Schema YML!", rootSchema[defaultGroup]);
+          console.log("Schema Node!", rootDataNode[defaultGroup]);
 
-          console.log("Schema YML!", rootSchema);
-          console.log("Schema Node!", rootDataNode);
+          console.log('JSON->', getJson(rootDataNode[defaultGroup]))
           resolve();
         } else {
           console.error(err);

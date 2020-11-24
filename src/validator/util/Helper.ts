@@ -1,16 +1,18 @@
+import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { AdditionalNode } from "../nodes/AdditionalNode";
+import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
+import { ObjectNode } from "../nodes/ObjectNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
-  paths: readonly(string | number)[]
+  paths: (string | number)[]
 ): Record<string, unknown> => {
-
-  const obj: any = {...data}
+  const obj: any = { ...data };
   let next = obj;
-  for (let i=0; i< paths.length;i++) { 
-    if(i === paths.length -1){
+  for (let i = 0; i < paths.length; i++) {
+    if (i === paths.length - 1) {
       delete next[paths[i]];
       break;
     }
@@ -21,9 +23,9 @@ export const removeDataNode = (
 
 export const getNode = (
   rootDataNode: BaseNode,
-  paths: readonly (string | number)[]
+  paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = { ...rootDataNode };
+  let resultNode = rootDataNode;
 
   for (const path of paths) {
     let next;
@@ -35,7 +37,7 @@ export const getNode = (
 
     if (!next) {
       if (resultNode instanceof AdditionalNode) {
-        next =  resultNode.sampleData;
+        next = resultNode.sampleData;
         resultNode.data = next as IData;
         continue;
       } else {
@@ -49,5 +51,57 @@ export const getNode = (
     }
     resultNode = next as BaseNode;
   }
-  return { resultNode };
+
+  const resultData = getJson(resultNode)
+  return { resultNode, resultData };
+};
+
+// TODO: change return type to specific
+export const getJson = (obj: BaseNode): any => {
+  if (obj instanceof ObjectNode) {
+    if (obj.data) {
+      const dat: any = {};
+      for (const [key, val] of Object.entries(obj.data)) {
+        dat[key] = getJson(val);
+      }
+      return dat;
+    }
+  } else if (obj instanceof ArrayNode) {
+    // temp add one item
+    if (obj.minItems) {
+      const dat: any = [];
+      let sampleVal: any;
+
+      if (obj.sampleData?.type === DataType.object) {
+        sampleVal = {};
+        for (const [key, val] of Object.entries(obj.sampleData?.data ?? "")) {
+          sampleVal[key] = getJson(val as BaseNode);
+        }
+      } else {
+        sampleVal = obj.sampleData?.data;
+      }
+      dat.push(sampleVal);
+      return dat;
+    } else {
+      return [];
+    }
+  } else {
+    switch (obj?.type) {
+      case DataType.string:
+        return "";
+      case DataType.number:
+        return 0;
+      case DataType.boolean:
+        return false;
+      case DataType.object:
+      case DataType.map:
+        return {};
+      case DataType.array:
+        return [];
+
+      default:
+        return undefined;
+    }
+  }
+  return undefined;
 };

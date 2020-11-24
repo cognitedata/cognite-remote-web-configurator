@@ -38,7 +38,7 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
         },
         onCreateMenu: (items: MenuItem[], node: MenuItemNode) => {
             const paths = node.paths[0]
-            const removeResult = removeNode(props.json, paths)
+            const removeResult = removeNode(props.json, [...paths])
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
@@ -50,12 +50,12 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
         },
         onEvent: (node: EditableNode, event: any) => {
             if (node.field !== undefined) {
-                console.log(event, node);
+                // console.log(event, node);
                 if (event.type === "click") {
-                    console.log(event.type + ' event ' +
-                        'on value ' + JSON.stringify(node.value) + ' ' +
-                        'at path ' + JSON.stringify(node.path)
-                    )
+                    // console.log(event.type + ' event ' +
+                    //     'on value ' + JSON.stringify(node.value) + ' ' +
+                    //     'at path ' + JSON.stringify(node.path)
+                    // )
                 }
             }
         },

@@ -6,6 +6,7 @@ export const ParseType = (type: string): DataType => {
     case "string":
       return DataType.string;
     case "number":
+    case "integer":
       return DataType.number;
     case "object":
       return DataType.object;
@@ -15,6 +16,24 @@ export const ParseType = (type: string): DataType => {
       return DataType.array;
     default:
       return DataType.unspecified;
+  }
+};
+
+export const getDefaultPrimitiveVal = (type: string): any => {
+  switch (type) {
+    case "string":
+      return '';
+    case "number":
+    case "integer":
+      return 0;
+    case "object":
+      return {};
+    case "boolean":
+      return false;
+    case "array":
+      return [];
+    default:
+      return undefined;
   }
 };
 
