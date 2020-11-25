@@ -62,8 +62,10 @@ export const loadSchema = (): Promise<void> => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;
+          const sampleSchema: ISchemaNode = {description: 'root', type: '', properties: {} };
+
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = populateChildren(val as ISchemaNode, true);
+            const childrenNodes = populateChildren(val as ISchemaNode, true, sampleSchema);
             rootDataNode[key] = childrenNodes;
           }
 

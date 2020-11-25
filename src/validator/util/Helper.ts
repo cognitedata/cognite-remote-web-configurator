@@ -2,7 +2,7 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { AdditionalNode } from "../nodes/AdditionalNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, BaseNodes, IData } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 
 export const removeDataNode = (
@@ -39,7 +39,7 @@ export const getNode = (
     if (!next) {
       if (resultNode instanceof AdditionalNode) {
         next = resultNode.sampleData;
-        resultNode.data = next as IData;
+        resultNode.data = next.data;
         continue;
       } else {
         return {

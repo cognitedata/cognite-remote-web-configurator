@@ -7,7 +7,7 @@ import { BooleanNode } from "../nodes/BooleanNode";
 import { NumberNode } from "../nodes/NumberNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
-import { getDefaultPrimitiveVal, ParseType } from "./Parsers";
+import { ParseType } from "./Parsers";
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
   if (!schema) {
@@ -35,7 +35,8 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
 
 export const populateChildren = (
   schema: ISchemaNode,
-  isRequired: boolean
+  isRequired: boolean,
+  parentSchema: ISchemaNode
 ): BaseNode => {
   // TOOD: Handle array type here, items
   if (schema.properties) {
@@ -43,69 +44,90 @@ export const populateChildren = (
     for (const [key, schem] of Object.entries(schema.properties)) {
       const required = schema.required?.findIndex((s) => s === key) !== -1;
       // Only keys are added as data of ObjectNode
-      (obj.data as BaseNodes)[key] = populateChildren(schem, required);
+      (obj.data as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
     return obj;
     // schema.additionalProperties.properties: check this here
   } else if (schema.additionalProperties) {
-    const sampleData: BaseNodes = {};
-
-    for (const [key, schem] of Object.entries(
-      schema.additionalProperties.properties
-    )) {
-      const required =
-        schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
-      // Only keys are added as data of ObjectNode
-      sampleData[key] = populateChildren(schem, required);
-    }
+    const sampleData = populateChildren(schema.additionalProperties, false, schema);
 
     const obj = new AdditionalNode(schema, {}, false, sampleData);
     return obj;
+    // const sampleData: BaseNodes = {};
+
+    // for (const [key, schem] of Object.entries(
+    //   schema.additionalProperties.properties
+    // )) {
+    //   const required =
+    //     schema.additionalProperties.required?.findIndex((s) => s === key) !== -1;
+    //   // Only keys are added as data of ObjectNode
+    //   sampleData[key] = populateChildren(schem, required);
+    // }
+
+    // const obj = new AdditionalNode(schema, {}, false, sampleData);
+    // return obj;
   } else if (schema.items) {
-    if (schema.items.properties) {
-      // const sampleData: BaseNodes = {};
-      const sampleData = new ObjectNode(schema, {}, isRequired);
-      for (const [key, schem] of Object.entries(schema.items.properties)) {
-        const required =
-          schema.items.required?.findIndex((s) => s === key) !== -1;
-        // Only keys are added as data of ObjectNode
+    if (schema.items === parentSchema){
+      console.log('equla case', schema.items === parentSchema);
+      // console.log(schema.items, parentSchema);
 
-        if (schem.items?.properties === schema.items.properties) {
-          ((sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
-            schema,
-            [],
-            required,
-            sampleData
-          );
-        } else {
-          (sampleData.data as BaseNodes)[key] = populateChildren(schem, required);
-        }
+      const sampleData: BaseNode = {
+        data: []
       }
-      const obj = new ArrayNode(schema, [], isRequired, sampleData);
-      return obj;
-    } else if (schema.additionalProperties) {
-      const sampleData: BaseNodes = {};
-      for (const [key, val] of Object.entries((schema.additionalProperties as ISchemaNode).properties)) {
-        const required = (schema.additionalProperties  as ISchemaNode).required?.findIndex((s) => s === key) !== -1;
-        sampleData[key] = populateChildren(val, required);
-      }
-
-      const obj: AdditionalNode = new AdditionalNode(
-        schema,
-        {},
-        false,
-        sampleData
-      );
+      const obj = new ArrayNode(schema, {}, false, sampleData);
       return obj;
     } else {
-      const type = schema.items.type;
-      const sampleData: BaseNode = {
-        type: ParseType(type),
-        data: getDefaultPrimitiveVal(type)
-      }
-      const obj = new ArrayNode(schema, [], false, sampleData);
+      const sampleData = populateChildren(schema.items, false, schema);
+      const obj = new ArrayNode(schema, {}, false, sampleData);
       return obj;
     }
+    
+    // if (schema.items.properties) {
+    //   // const sampleData: BaseNodes = {};
+    //   const sampleData = new ObjectNode(schema, {}, isRequired);
+    //   for (const [key, schem] of Object.entries(schema.items.properties)) {
+    //     const required =
+    //       schema.items.required?.findIndex((s) => s === key) !== -1;
+    //     // Only keys are added as data of ObjectNodei
+
+    //     if (schem.items?.properties === schema.items.properties) {
+          
+    //       ((sampleData.data as BaseNodes)[key] as ArrayNode) = new ArrayNode(
+    //         schema,
+    //         [],
+    //         required,
+    //         sampleData
+    //       );
+    //     } else {
+    //       (sampleData.data as BaseNodes)[key] = populateChildren(schem, required, schema);
+    //     }
+    //   }
+    //   const obj = new ArrayNode(schema, [], isRequired, sampleData);
+    //   return obj;
+    // }
+    // else if (schema.additionalProperties) {
+    //   const sampleData: BaseNodes = {};
+    //   for (const [key, val] of Object.entries((schema.additionalProperties as ISchemaNode).properties)) {
+    //     const required = (schema.additionalProperties  as ISchemaNode).required?.findIndex((s) => s === key) !== -1;
+    //     sampleData[key] = populateChildren(val, required, schema);
+    //   }
+
+    //   const obj: AdditionalNode = new AdditionalNode(
+    //     schema,
+    //     {},
+    //     false,
+    //     sampleData.data
+    //   );
+    //   return obj;
+    // } else {
+    //   const type = schema.items.type;
+    //   const sampleData: BaseNode = {
+    //     type: ParseType(type),
+    //     data: getDefaultPrimitiveVal(type)
+    //   }
+    //   const obj = new ArrayNode(schema, [], false, sampleData);
+    //   return obj;
+    // }
   } else {
     return getPrimitiveObject(schema, isRequired);
   }
