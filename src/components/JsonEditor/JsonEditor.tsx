@@ -20,7 +20,7 @@ export const JsonEditor: React.FC<any> = () => {
                 text: node.key.split(":")[1],
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
-                field: node.key,
+                field: node.key.split(":")[1],
                 value: node.data
             }
             templates.push(temp);
