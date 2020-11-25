@@ -1,38 +1,15 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { removeNode } from '../../validator/Validator'
 
-export function JsonEditorContainer(props: { json: any }): JSX.Element {
+export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
 
     const options: JSONEditorOptions = {
         mode: 'tree',
-        templates: [
-            {
-                text: 'Person',
-                title: 'Insert a Person Node',
-                className: 'jsoneditor-type-object',
-                field: 'PersonTemplate',
-                value: {
-                    'firstName': 'John',
-                    'lastName': 'Do',
-                    'age': 28
-                }
-            },
-            {
-                text: 'Address',
-                title: 'Insert a Address Node',
-                field: 'AddressTemplate',
-                value: {
-                    'street': '',
-                    'city': '',
-                    'state': '',
-                    'ZIP code': ''
-                }
-            }
-        ],
+        templates: props.templates,
         onError: (err: any) => {
             console.log(err.toString())
         },

@@ -19,7 +19,7 @@ export const addNode = (
   return getNode(rootDataNode[group], paths);
 };
 
-export const getAllNodes = (): IValidationResult => {
+export const getAllNodes = (): any => {
   return allNodes;
 };
 
