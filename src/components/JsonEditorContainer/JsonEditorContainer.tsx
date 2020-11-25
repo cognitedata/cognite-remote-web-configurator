@@ -34,7 +34,20 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.submenu?.forEach(subItem => {
-                        if(validInsertItems !== undefined && validInsertItems.length !== 0){
+                        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
+                            Object.keys(validInsertItems).forEach((key: any) => {
+                                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
+                                    validMenuItems.push(subItem);
+                                }
+                            });
+                        }
+                    });
+                    item.submenu = validMenuItems;
+                }
+                // adding samw logic to Append
+                if (item.text === "Append") {
+                    item.submenu?.forEach(subItem => {
+                        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
                             Object.keys(validInsertItems).forEach((key: any) => {
                                 if (subItem.text === key && subItem.title === validInsertItems[key].description) {
                                     validMenuItems.push(subItem);
