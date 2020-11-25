@@ -1,7 +1,27 @@
 import React, { useEffect, useRef } from "react";
 import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
-import { addNode, removeNode } from '../../validator/Validator'
+import { addNode, removeNode } from '../../validator/Validator';
+
+const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any) => {
+    const validMenuItems: MenuItem[] = [];
+
+    if (submenu === undefined || submenu.length === 0) {
+        return undefined;
+    }
+
+    submenu?.forEach(subItem => {
+        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
+            Object.keys(validInsertItems).forEach((key: any) => {
+                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
+                    validMenuItems.push(subItem);
+                }
+            });
+        }
+    });
+
+    return validMenuItems;
+}
 
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
