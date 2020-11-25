@@ -2,19 +2,15 @@ import React, { useEffect } from 'react';
 import classes from './JsonEditor.module.scss'
 import mauiA from '../../config/MauiA.json';
 import { JsonEditorContainer } from "../JsonEditorContainer/JsonEditorContainer";
-import { addNode, getAllNodes, loadSchema, removeNode } from '../../validator/Validator';
-import { IValidationResult } from '../../validator/interfaces/IValidationResult';
+import { getAllNodes, loadSchema, addNode } from '../../validator/Validator';
 import { Template } from 'jsoneditor';
 
 const generateCaption = (key: string) => {
     let text = extractField(key);
-
     // add spaces
     text = text.replace(/([A-Z])/g, ' $1').trim();
-
     //capitalize first letter
     text = text.charAt(0).toUpperCase() + text.slice(1);
-
     return text;
 }
 
@@ -29,7 +25,7 @@ export const JsonEditor: React.FC<any> = () => {
     const initValidater = async () => {
         await loadSchema();
         // console.log('Remove----', removeNode(mauiA, [""]));
-        // console.log('Add---', addNode([""]));
+        console.log('Add---', addNode([]));
         // console.log('All Nodes---', getAllNodes());
         getAllNodes().map((node: any) => {
             const temp = {
@@ -42,7 +38,6 @@ export const JsonEditor: React.FC<any> = () => {
             }
             templates.push(temp);
         });
-        console.log("temp", templates);
     }
 
     useEffect(() => {
