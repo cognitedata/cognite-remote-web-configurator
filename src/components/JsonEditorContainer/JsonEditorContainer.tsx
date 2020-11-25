@@ -16,7 +16,8 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         onCreateMenu: (items: MenuItem[], node: MenuItemNode) => {
             const paths = node.paths[0];
             const isRemoveValid = removeNode(props.json, [...paths]);
-            const validMenuItems: MenuItem[] = []
+            const validInsertItems = Object.values(Object(addNode([...paths]).resultNode?.data));
+            const validMenuItems: MenuItem[] = [];
 
 
             // if removeNode validation returns error
@@ -25,13 +26,11 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 items = items.filter(item => item.text !== "Remove")
             }
 
-            // remove invalid menu items from insert
-            const validInsertItems = Object(addNode([...paths]).resultNode?.data);
-
+            // Creating a new MenuItem array that only contains valid items
             items.forEach(item => {
                 if (item.text === "Insert") {
                     item.submenu?.forEach(subItem => {
-                        Object.values(validInsertItems).forEach((validItem: any) => {
+                        validInsertItems.forEach((validItem: any) => {
                             if (validItem.description === subItem.title) {
                                 validMenuItems.push(subItem);
                             }
@@ -39,7 +38,8 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     })
                     item.submenu = validMenuItems;
                 }
-            })
+            });
+            
             return items;
         },
         onEvent: (node: EditableNode, event: any) => {
