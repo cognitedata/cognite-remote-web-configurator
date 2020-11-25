@@ -6,6 +6,7 @@ import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode, removeDataNode } from "./util/Helper";
+import { DataType } from "./enum/DataType.enum";
 
 export interface TemplateNode {
   key: string;
@@ -21,7 +22,7 @@ export const addNode = (
   paths: (string | number)[],
   group: string = defaultGroup
 ): IValidationResult => {
-  return getNode(rootDataNode[group], paths);
+  return getNode(group, rootDataNode, paths);
 };
 
 export const getAllNodes = (): TemplateNode[] => {
@@ -33,18 +34,20 @@ export const removeNode = (
   paths: (string | number)[],
   group: string = defaultGroup
 ): IValidationResult => {
-  const root = { ...rootDataNode[group] };
-  const result = getNode(root, paths);
+  const root = { ...rootDataNode };
+  const result = getNode(group, root, paths);
 
   if (!result.error) {
     if (result.resultNode?.isRequired) {
       return {
+        group,
         error: {
           type: ErrorType.RequiredNode,
         },
       };
     } else {
       return {
+        group,
         resultNode: null,
         resultData: removeDataNode(data, paths),
       };
@@ -66,11 +69,12 @@ export const loadSchema = (): Promise<void> => {
 
           // Populate root nodes
           for (const key1 of Object.keys(rootSchema)) {
+            
             const childrenNodes = rootDataNode[key1];
 
             if (childrenNodes.data) {
               for (const [key2, val2] of Object.entries(childrenNodes.data)) {
-                if (val2.data) {
+                if (childrenNodes.type === DataType.object) {
                   allNodes.push({
                     key: key1 + ":" + key2,
                     node: val2,
@@ -80,8 +84,8 @@ export const loadSchema = (): Promise<void> => {
               }
             }
           }
-          // console.log("Schema YML!", rootSchema[defaultGroup]);
-          // console.log("Schema Node!", rootDataNode[defaultGroup]);
+          console.log("Schema YML!", rootSchema);
+          console.log("Schema Node!", rootDataNode);
           // console.log('All Nodes', allNodes);
           // console.log('JSON->', getJson(rootDataNode[defaultGroup]));
           resolve();

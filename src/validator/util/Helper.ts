@@ -22,10 +22,11 @@ export const removeDataNode = (
 };
 
 export const getNode = (
-  rootDataNode: BaseNode,
+  group: string,
+  rootDataNode: BaseNodes,
   paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = rootDataNode;
+  let resultNode = rootDataNode[group];
 
   for (const path of paths) {
     let next;
@@ -42,6 +43,7 @@ export const getNode = (
         continue;
       } else {
         return {
+          group,
           resultNode: null,
           error: {
             type: ErrorType.InvalidPath,
@@ -53,7 +55,7 @@ export const getNode = (
   }
 
   const resultData = getJson(resultNode)
-  return { resultNode, resultData };
+  return { group, resultNode, resultData };
 };
 
 // TODO: change return type to specific
