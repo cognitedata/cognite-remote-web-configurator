@@ -17,7 +17,7 @@ export const JsonEditor: React.FC<any> = () => {
         // console.log('All Nodes---', getAllNodes());
         getAllNodes().map((node: any)=>{
             const temp = {
-                text: node.key,
+                text: node.key.split(":")[1],
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
                 field: node.key,
