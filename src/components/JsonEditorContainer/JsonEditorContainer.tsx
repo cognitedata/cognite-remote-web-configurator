@@ -41,7 +41,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
 
             const isRemoveValid = removeNode(props.json, [...paths]);
             const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
-            const validMenuItems: MenuItem[] = [];
+            let validMenuItems: MenuItem[]| undefined = undefined
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
@@ -52,29 +52,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
             menuItems.forEach(item => {
+                validMenuItems = cretaValidInsertMenu(item.submenu, validInsertItems);
+
                 if (item.text === "Insert") {
-                    item.submenu?.forEach(subItem => {
-                        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-                            Object.keys(validInsertItems).forEach((key: any) => {
-                                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
-                                    validMenuItems.push(subItem);
-                                }
-                            });
-                        }
-                    });
                     item.submenu = validMenuItems;
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
-                    item.submenu?.forEach(subItem => {
-                        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-                            Object.keys(validInsertItems).forEach((key: any) => {
-                                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
-                                    validMenuItems.push(subItem);
-                                }
-                            });
-                        }
-                    });
                     item.submenu = validMenuItems;
                 }
             });
