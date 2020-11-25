@@ -7,11 +7,14 @@ import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode, removeDataNode } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
+import { AdditionalNode } from "./nodes/AdditionalNode";
+import { ArrayNode } from "./nodes/ArrayNode";
 
 export interface TemplateNode {
   key: string;
   data: Record<string, unknown>;
   node: BaseNode;
+  sample: any;
 }
 const defaultGroup = "TwinConfiguration";
 
@@ -56,6 +59,15 @@ export const removeNode = (
   return result;
 };
 
+const getSample = (node: BaseNode) => {
+  if(node instanceof AdditionalNode || node instanceof ArrayNode){
+    const sample = node.sampleData;
+    const js = getJson(sample);
+    return js
+  }
+  return null;
+}
+
 export const loadSchema = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     YAML.load(ymlFile, (ymlJson: any) => {
@@ -72,15 +84,16 @@ export const loadSchema = (): Promise<void> => {
           // Populate root nodes
           for (const key1 of Object.keys(rootSchema)) {
             
-            const childrenNodes = rootDataNode[key1];
+            const group = rootDataNode[key1];
 
-            if (childrenNodes.data) {
-              for (const [key2, val2] of Object.entries(childrenNodes.data)) {
-                if (childrenNodes.type === DataType.object) {
+            if (group.data) {
+              for (const [key2, val2] of Object.entries(group.data)) {
+                if (group.type === DataType.object) {
                   allNodes.push({
                     key: key1 + ":" + key2,
                     node: val2,
-                    data: getJson(rootDataNode[key1])[key2],
+                    data: getJson(group)[key2],
+                    sample: getSample((group.data as any)[key2])
                   });
                 }
               }
@@ -89,7 +102,7 @@ export const loadSchema = (): Promise<void> => {
           console.log("Schema YML!", rootSchema);
           console.log("Schema Node!", rootDataNode);
           // console.log('All Nodes', allNodes);
-          // console.log('JSON->', getJson(rootDataNode[defaultGroup]));
+          console.log('JSON->', getJson(rootDataNode[defaultGroup]));
           resolve();
         } else {
           console.error(err);

@@ -57,7 +57,7 @@ export const populateChildren = (
       return obj;
     } else {
       const sampleData = populateChildren(schema.items, false, schema);
-      const obj = new ArrayNode(schema, {}, false, sampleData);
+      const obj = new ArrayNode(schema, [], false, sampleData);
       return obj;
     }
   } else {

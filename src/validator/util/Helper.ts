@@ -58,7 +58,7 @@ export const getNode = (
   return { group, resultNode, resultData };
 };
 
-const getPrimitiveValue = (obj: BaseNode) => {
+const getPrimitiveValue = (obj: BaseNode | undefined) => {
   switch (obj?.type) {
     case DataType.string:
       return "";
@@ -77,8 +77,7 @@ const getPrimitiveValue = (obj: BaseNode) => {
   }
 };
 
-// TODO: change return type to specific
-export const getJson = (obj: BaseNode) => {
+export const getJson = (obj: BaseNode | undefined): any=> {
   if (obj instanceof ObjectNode) {
     if (obj.data) {
       const dat: any = {};
@@ -86,23 +85,13 @@ export const getJson = (obj: BaseNode) => {
         dat[key] = getJson(val);
       }
       return dat;
-    }
-    else {
+    } else {
       return getPrimitiveValue(obj);
     }
   } else if (obj instanceof ArrayNode) {
     if (obj.minItems) {
       const dat: any = [];
-      let sampleVal: any;
-
-      if (obj.sampleData?.type === DataType.object) {
-        sampleVal = {};
-        for (const [key, val] of Object.entries(obj.sampleData?.data ?? "")) {
-          sampleVal[key] = getJson(val as BaseNode);
-        }
-      } else {
-        sampleVal = obj.sampleData?.data;
-      }
+      const sampleVal = getJson(obj.sampleData);
 
       for (let i = 0; i < obj.minItems; i++) {
         dat.push(sampleVal);
