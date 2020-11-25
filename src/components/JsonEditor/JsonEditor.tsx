@@ -25,11 +25,11 @@ export const JsonEditor: React.FC<any> = () => {
     const initValidater = async () => {
         await loadSchema();
         // console.log('Remove----', removeNode(mauiA, [""]));
-        console.log('Add---', addNode([]));
+        // console.log('Add---', addNode([]));
         // console.log('All Nodes---', getAllNodes());
         getAllNodes().map((node: any) => {
             const temp = {
-                text: generateCaption(node.key),
+                text: extractField(node.key),
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
                 field: extractField(node.key),

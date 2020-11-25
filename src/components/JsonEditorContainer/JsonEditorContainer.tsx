@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
-import { removeNode } from '../../validator/Validator'
+import { addNode, removeNode } from '../../validator/Validator'
 
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
@@ -14,15 +14,32 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             console.log(err.toString())
         },
         onCreateMenu: (items: MenuItem[], node: MenuItemNode) => {
-            const paths = node.paths[0]
-            const removeResult = removeNode(props.json, [...paths])
+            const paths = node.paths[0];
+            const isRemoveValid = removeNode(props.json, [...paths]);
+            const validMenuItems: MenuItem[] = []
+
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
-            if (removeResult.error) {
+            if (isRemoveValid.error) {
                 items = items.filter(item => item.text !== "Remove")
             }
 
+            // remove invalid menu items from insert
+            const validInsertItems = Object(addNode([...paths]).resultNode?.data);
+
+            items.forEach(item => {
+                if (item.text === "Insert") {
+                    item.submenu?.forEach(subItem => {
+                        Object.values(validInsertItems).forEach((validItem: any) => {
+                            if (validItem.description === subItem.title) {
+                                validMenuItems.push(subItem);
+                            }
+                        });
+                    })
+                    item.submenu = validMenuItems;
+                }
+            })
             return items;
         },
         onEvent: (node: EditableNode, event: any) => {
