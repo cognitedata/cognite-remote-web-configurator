@@ -37,7 +37,8 @@ export const JsonEditor: React.FC<any> = () => {
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
                 field: extractField(node.key),
-                value: node.data
+                value: node.data,
+                key: node.key
             }
             templates.push(temp);
         });
