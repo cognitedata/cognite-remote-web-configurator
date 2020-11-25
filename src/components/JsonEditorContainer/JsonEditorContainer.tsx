@@ -34,11 +34,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.submenu?.forEach(subItem => {
-                        Object.keys(validInsertItems).forEach((key: any) => {
-                            if (subItem.text === key && subItem.title === validInsertItems[key].description) {
-                                validMenuItems.push(subItem);
-                            }
-                        });
+                        if(validInsertItems !== undefined && validInsertItems.length !== 0){
+                            Object.keys(validInsertItems).forEach((key: any) => {
+                                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
+                                    validMenuItems.push(subItem);
+                                }
+                            });
+                        }
                     });
                     item.submenu = validMenuItems;
                 }
