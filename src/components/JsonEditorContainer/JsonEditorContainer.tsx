@@ -15,8 +15,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         },
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             const paths = node.paths[0];
+            // get parant Path for add function
+            const parantPaths: string[] = [...node.paths[0]]
+            parantPaths.pop()
+
             const isRemoveValid = removeNode(props.json, [...paths]);
-            const validInsertItems = Object(addNode([...paths]).resultNode?.data);
+            const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
             const validMenuItems: MenuItem[] = [];
 
             // if removeNode validation returns error
