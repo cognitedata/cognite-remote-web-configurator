@@ -6,6 +6,22 @@ import { addNode, getAllNodes, loadSchema, removeNode } from '../../validator/Va
 import { IValidationResult } from '../../validator/interfaces/IValidationResult';
 import { Template } from 'jsoneditor';
 
+const generateCaption = (key: string) => {
+    let text = extractField(key);
+
+    // add spaces
+    text = text.replace(/([A-Z])/g, ' $1').trim();
+
+    //capitalize first letter
+    text = text.charAt(0).toUpperCase() + text.slice(1);
+
+    return text;
+}
+
+const extractField = (key: string) => {
+    return key.split(":")[1]
+}
+
 
 export const JsonEditor: React.FC<any> = () => {
     const templates: Template[] = [];
@@ -15,12 +31,12 @@ export const JsonEditor: React.FC<any> = () => {
         // console.log('Remove----', removeNode(mauiA, [""]));
         // console.log('Add---', addNode([""]));
         // console.log('All Nodes---', getAllNodes());
-        getAllNodes().map((node: any)=>{
+        getAllNodes().map((node: any) => {
             const temp = {
-                text: node.key.split(":")[1],
+                text: generateCaption(node.key),
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
-                field: node.key.split(":")[1],
+                field: extractField(node.key),
                 value: node.data
             }
             templates.push(temp);
