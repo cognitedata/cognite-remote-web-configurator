@@ -24,9 +24,6 @@ export const JsonEditor: React.FC<any> = () => {
 
     const initValidater = async () => {
         await loadSchema();
-        // console.log('Remove----', removeNode(mauiA, [""]));
-        // console.log('Add---', addNode([]));
-        // console.log('All Nodes---', getAllNodes());
         getAllNodes().map((node: any) => {
             const temp = {
                 text: extractField(node.key),
