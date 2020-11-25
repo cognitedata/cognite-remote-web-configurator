@@ -27,19 +27,20 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
 
             // Creating a new MenuItem array that only contains valid items
+            // and replace submenu with valid items
             items.forEach(item => {
                 if (item.text === "Insert") {
                     item.submenu?.forEach(subItem => {
                         validInsertItems.forEach((validItem: any) => {
-                            if (validItem.description === subItem.title) {
+                            if (subItem.title === validItem.description) {
                                 validMenuItems.push(subItem);
                             }
                         });
-                    })
+                    });
                     item.submenu = validMenuItems;
                 }
             });
-            
+
             return items;
         },
         onEvent: (node: EditableNode, event: any) => {
