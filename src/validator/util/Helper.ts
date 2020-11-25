@@ -54,12 +54,31 @@ export const getNode = (
     resultNode = next as BaseNode;
   }
 
-  const resultData = getJson(resultNode)
+  const resultData = getJson(resultNode);
   return { group, resultNode, resultData };
 };
 
+const getPrimitiveValue = (obj: BaseNode) => {
+  switch (obj?.type) {
+    case DataType.string:
+      return "";
+    case DataType.number:
+      return 0;
+    case DataType.boolean:
+      return false;
+    case DataType.object:
+    case DataType.map:
+      return {};
+    case DataType.array:
+      return [];
+
+    default:
+      return undefined;
+  }
+};
+
 // TODO: change return type to specific
-export const getJson = (obj: BaseNode): any => {
+export const getJson = (obj: BaseNode) => {
   if (obj instanceof ObjectNode) {
     if (obj.data) {
       const dat: any = {};
@@ -68,8 +87,10 @@ export const getJson = (obj: BaseNode): any => {
       }
       return dat;
     }
+    else {
+      return getPrimitiveValue(obj);
+    }
   } else if (obj instanceof ArrayNode) {
-    // temp add one item
     if (obj.minItems) {
       const dat: any = [];
       let sampleVal: any;
@@ -82,28 +103,15 @@ export const getJson = (obj: BaseNode): any => {
       } else {
         sampleVal = obj.sampleData?.data;
       }
-      dat.push(sampleVal);
+
+      for (let i = 0; i < obj.minItems; i++) {
+        dat.push(sampleVal);
+      }
       return dat;
     } else {
       return [];
     }
   } else {
-    switch (obj?.type) {
-      case DataType.string:
-        return "";
-      case DataType.number:
-        return 0;
-      case DataType.boolean:
-        return false;
-      case DataType.object:
-      case DataType.map:
-        return {};
-      case DataType.array:
-        return [];
-
-      default:
-        return undefined;
-    }
+    return getPrimitiveValue(obj);
   }
-  return undefined;
 };
