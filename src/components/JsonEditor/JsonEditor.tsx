@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import classes from './JsonEditor.module.scss'
 import mauiA from '../../config/MauiA.json';
 import { JsonEditorContainer } from "../JsonEditorContainer/JsonEditorContainer";
-import { getAllNodes, loadSchema, addNode } from '../../validator/Validator';
+import { getAllNodes, loadSchema } from '../../validator/Validator';
 import { Template } from 'jsoneditor';
 
 const generateCaption = (key: string) => {
@@ -30,8 +30,7 @@ export const JsonEditor: React.FC<any> = () => {
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
                 field: extractField(node.key),
-                value: node.data,
-                key: node.key
+                value: node.data
             }
             templates.push(temp);
         });
