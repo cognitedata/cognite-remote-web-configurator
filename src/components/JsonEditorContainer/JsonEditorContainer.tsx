@@ -47,7 +47,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         },
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
-            let currentJson = jsonEditorInstance.current?.getText()
+            let currentJson = jsonEditorInstance.current?.getText();
             if (currentJson) {
                 currentJson = JSON.parse(currentJson);
             }
@@ -74,10 +74,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // and replace submenu with valid items
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
+                    item.text = "Add Before";
                     item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
+                    item.text = "Add After";
                     item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
             });
