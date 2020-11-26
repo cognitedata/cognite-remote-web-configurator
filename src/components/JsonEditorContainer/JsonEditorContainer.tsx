@@ -3,7 +3,7 @@ import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Te
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 
-const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any) => {
+const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
 
     if (submenu === undefined || submenu.length === 0) {
@@ -12,15 +12,34 @@ const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems:
 
     submenu?.forEach(subItem => {
         if (validInsertItems !== undefined && validInsertItems.length !== 0) {
+            let matchingItemCountWithSameDesc = 0;
+
             Object.keys(validInsertItems).forEach((key: any) => {
-                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
+                if (!existingKeys.includes(key) &&
+                    subItem.text === key &&
+                    subItem.title === validInsertItems[key].description) {
                     validMenuItems.push(subItem);
+                    matchingItemCountWithSameDesc++;
                 }
             });
+
+            if (matchingItemCountWithSameDesc > 1) {
+                alert("non-unique Menu Items, Please use the valid option");
+            }
         }
     });
 
     return validMenuItems;
+}
+
+const getExistingKeys = (json: any, path: (number | string)[]) => {
+    let subTree = json;
+    path.forEach((step: number | string) => {
+        subTree = subTree[step];
+    });
+    return Object.keys(subTree).map((key: number | string) => {
+        return key;
+    });
 }
 
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
@@ -34,14 +53,24 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             console.log(err.toString())
         },
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
-            const paths = node.paths[0];
-            // get parant Path for add function
-            const parantPaths: string[] = [...node.paths[0]]
-            parantPaths.pop()
+            // get current state
+            const currentJsonText = jsonEditorInstance.current?.getText();
+            let currentJson
+            if (currentJsonText) {
+                currentJson = JSON.parse(currentJsonText);
+            }
 
-            const isRemoveValid = removeNode(props.json, [...paths]);
-            const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
-            let validMenuItems: MenuItem[]| undefined = undefined
+            const path = node.path;
+            // get parant Path for add function
+            const parentPath: string[] = [...path];
+            //Skip case: adding first child
+            if (node.type !== "append") {
+                parentPath.pop();
+            }
+
+            const isRemoveValid = removeNode(props.json,[...path]);
+            const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
+            const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
@@ -52,14 +81,14 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
             menuItems.forEach(item => {
-                validMenuItems = cretaValidInsertMenu(item.submenu, validInsertItems);
-
                 if (item.text === "Insert") {
-                    item.submenu = validMenuItems;
+                    item.text = "Prepend Item";
+                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
-                    item.submenu = validMenuItems;
+                    item.text = "Append Item";
+                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
             });
 
