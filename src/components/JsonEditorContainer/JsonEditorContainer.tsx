@@ -16,7 +16,6 @@ const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems:
                 if (!existingKeys.includes(key) &&
                     subItem.text === key &&
                     subItem.title === validInsertItems[key].description) {
-
                     validMenuItems.push(subItem);
                 }
             });
@@ -48,9 +47,9 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         },
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
-            let currentJson;
-            if (jsonEditorInstance.current?.getText()) {
-                currentJson = JSON.parse(jsonEditorInstance.current?.getText());
+            let currentJson = jsonEditorInstance.current?.getText()
+            if (currentJson) {
+                currentJson = JSON.parse(currentJson);
             }
 
             const path = node.path;
