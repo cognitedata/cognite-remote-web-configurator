@@ -14,8 +14,10 @@ const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems:
     submenu?.forEach(subItem => {
         if (validInsertItems !== undefined && validInsertItems.length !== 0) {
             Object.keys(validInsertItems).forEach((key: any) => {
-                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
-
+                if (!existingKeys.includes(key) &&
+                    subItem.text === key &&
+                    subItem.title === validInsertItems[key].description) {
+                        
                     validMenuItems.push(subItem);
                 }
             });
