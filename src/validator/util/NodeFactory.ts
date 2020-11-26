@@ -18,8 +18,8 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
     return node;
   }
   switch (ParseType(schema.type)) {
-    case DataType.array:
-      return new ArrayNode(schema, [], isRequired);
+    // case DataType.array:
+    //   return new ArrayNode(schema, [], isRequired);
     case DataType.string:
       return new StringNode(schema, "", isRequired);
     case DataType.number:
@@ -41,7 +41,7 @@ export const populateChildren = (
   if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
     for (const [key, schem] of Object.entries(schema.properties)) {
-      const required = schema.required?.findIndex((s) => s === key) !== -1;
+      const required = schema.required ? schema.required.findIndex((s) => s === key) !== -1 : false;
       // Only keys are added as data of ObjectNode
       (obj.data as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
@@ -53,11 +53,11 @@ export const populateChildren = (
 
   } else if (schema.items) {
     if (schema.items === parentSchema){
-      const obj = new ArrayNode(schema, {}, false, {data: []});
+      const obj = new ArrayNode(schema, {}, isRequired, {data: []});
       return obj;
     } else {
       const sampleData = populateChildren(schema.items, false, schema);
-      const obj = new ArrayNode(schema, [], false, sampleData);
+      const obj = new ArrayNode(schema, [], isRequired, sampleData);
       return obj;
     }
   } else {
