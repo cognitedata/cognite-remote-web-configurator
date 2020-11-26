@@ -24,11 +24,11 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems
             });
 
             if (matchingCount > 1) {
-                console.error("non-unique Menu Items, Please use the valid option");
+                alert("non-unique Menu Items, Please use the valid option");
             }
         }
     });
-    
+
     return validMenuItems;
 }
 
