@@ -33,7 +33,6 @@ export const getAllNodes = (): TemplateNode[] => {
 };
 
 export const removeNode = (
-  data: Record<string, unknown>,
   paths: (string | number)[],
   group: string = defaultGroup
 ): IValidationResult => {
@@ -52,7 +51,6 @@ export const removeNode = (
       return {
         group,
         resultNode: null,
-        resultData: removeDataNode(data, paths),
       };
     }
   }

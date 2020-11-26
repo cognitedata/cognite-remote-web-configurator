@@ -1,52 +1,69 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
-import { removeNode } from '../../validator/Validator'
+import { addNode, removeNode } from '../../validator/Validator';
 
-export function JsonEditorContainer(props: { json: any }): JSX.Element {
+const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any) => {
+    const validMenuItems: MenuItem[] = [];
+
+    if (submenu === undefined || submenu.length === 0) {
+        return undefined;
+    }
+
+    submenu?.forEach(subItem => {
+        if (validInsertItems !== undefined && validInsertItems.length !== 0) {
+            Object.keys(validInsertItems).forEach((key: any) => {
+                if (subItem.text === key && subItem.title === validInsertItems[key].description) {
+                    validMenuItems.push(subItem);
+                }
+            });
+        }
+    });
+
+    return validMenuItems;
+}
+
+export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
 
     const options: JSONEditorOptions = {
         mode: 'tree',
-        templates: [
-            {
-                text: 'Person',
-                title: 'Insert a Person Node',
-                className: 'jsoneditor-type-object',
-                field: 'PersonTemplate',
-                value: {
-                    'firstName': 'John',
-                    'lastName': 'Do',
-                    'age': 28
-                }
-            },
-            {
-                text: 'Address',
-                title: 'Insert a Address Node',
-                field: 'AddressTemplate',
-                value: {
-                    'street': '',
-                    'city': '',
-                    'state': '',
-                    'ZIP code': ''
-                }
-            }
-        ],
+        templates: props.templates,
         onError: (err: any) => {
             console.log(err.toString())
         },
-        onCreateMenu: (items: MenuItem[], node: MenuItemNode) => {
-            const paths = node.paths[0]
-            const removeResult = removeNode(props.json, [...paths])
+        onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
+            const paths = node.paths[0];
+            // get parant Path for add function
+            const parantPaths: string[] = [...node.paths[0]]
+            parantPaths.pop()
+
+            const isRemoveValid = removeNode([...paths]);
+            const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
+            let validMenuItems: MenuItem[]| undefined = undefined
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
-            if (removeResult.error) {
-                items = items.filter(item => item.text !== "Remove")
+            if (isRemoveValid.error) {
+                menuItems = menuItems.filter(item => item.text !== "Remove")
             }
 
-            return items;
+            // Creating a new MenuItem array that only contains valid items
+            // and replace submenu with valid items
+            menuItems.forEach(item => {
+                validMenuItems = cretaValidInsertMenu(item.submenu, validInsertItems);
+
+                if (item.text === "Insert") {
+                    item.submenu = validMenuItems;
+                }
+                // adding samw logic to Append
+                if (item.text === "Append") {
+                    item.submenu = validMenuItems;
+                }
+            });
+
+            return menuItems;
         },
         onEvent: (node: EditableNode, event: any) => {
             if (node.field !== undefined) {
