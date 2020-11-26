@@ -12,16 +12,23 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems
 
     submenu?.forEach(subItem => {
         if (validInsertItems !== undefined && validInsertItems.length !== 0) {
+            let matchingCount = 0;
+
             Object.keys(validInsertItems).forEach((key: any) => {
                 if (!existingKeys.includes(key) &&
                     subItem.text === key &&
                     subItem.title === validInsertItems[key].description) {
                     validMenuItems.push(subItem);
+                    matchingCount++;
                 }
             });
+
+            if (matchingCount > 1) {
+                console.error("non-unique Menu Items, Please use the valid option");
+            }
         }
     });
-
+    
     return validMenuItems;
 }
 
