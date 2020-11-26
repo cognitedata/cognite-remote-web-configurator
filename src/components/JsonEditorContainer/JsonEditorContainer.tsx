@@ -57,7 +57,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             const isRemoveValid = removeNode([...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
             const existingKeys: (number | string)[] = getExistingKeys(props.json, [...parentPath]);
-            let validMenuItems: MenuItem[] | undefined = undefined;
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
@@ -68,14 +67,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
             menuItems.forEach(item => {
-                validMenuItems = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
-
                 if (item.text === "Insert") {
-                    item.submenu = validMenuItems;
+                    item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
-                    item.submenu = validMenuItems;
+                    item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
             });
 
