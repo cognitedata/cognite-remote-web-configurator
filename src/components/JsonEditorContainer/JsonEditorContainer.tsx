@@ -23,6 +23,19 @@ const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems:
     return validMenuItems;
 }
 
+const getExistingKeys = (json: any, path: any[]) => {
+    let subTree = json;
+
+    path.forEach((key: any) => {
+        subTree = subTree[key];
+    });
+
+
+    return Object.keys(subTree).map((key: any) => {
+        return key
+    })
+}
+
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
@@ -44,7 +57,8 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
 
             const isRemoveValid = removeNode([...path]);
             const validInsertItems = Object(addNode([...parantPath]).resultNode?.data);
-            let validMenuItems: MenuItem[] | undefined = undefined
+            let validMenuItems: MenuItem[] | undefined = undefined;
+            console.log("key", getExistingKeys(props.json, [...parantPath]))
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
