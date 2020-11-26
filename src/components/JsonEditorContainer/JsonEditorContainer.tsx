@@ -39,7 +39,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             const parantPaths: string[] = [...node.paths[0]]
             parantPaths.pop()
 
-            const isRemoveValid = removeNode([...paths]);
+            const isRemoveValid = removeNode(props.json, [...paths]);
             const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
             let validMenuItems: MenuItem[]| undefined = undefined
 

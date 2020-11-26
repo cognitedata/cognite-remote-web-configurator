@@ -3,6 +3,7 @@ import { BaseNode } from "../nodes/BaseNode";
 export enum ErrorType {
     InvalidPath = 'InvalidPath',
     RequiredNode = 'RequiredNode',
+    MinLength = 'MinLength'
 }
 
 export interface IValidationError {

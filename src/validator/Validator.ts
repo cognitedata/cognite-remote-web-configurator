@@ -33,11 +33,16 @@ export const getAllNodes = (): TemplateNode[] => {
 };
 
 export const removeNode = (
+  data: Record<string, unknown>,
   paths: (string | number)[],
   group: string = defaultGroup
 ): IValidationResult => {
   const root = { ...rootDataNode };
   const result = getNode(group, root, paths);
+  const resultParent =
+    paths.length > 1
+      ? getNode(group, root, paths.slice(0, paths.length - 1))
+      : null;
 
   if (!result.error) {
     if (result.resultNode?.isRequired) {
@@ -48,6 +53,22 @@ export const removeNode = (
         },
       };
     } else {
+      if (resultParent && resultParent.resultNode instanceof ArrayNode && resultParent.resultNode.minItems) {
+        let subTree = data;
+        paths.slice(0, paths.length - 1).forEach((step: number | string) => {
+          subTree = subTree[step] as Record<string, unknown>;
+        });
+
+        if((subTree as unknown as any[]).length <= resultParent.resultNode.minItems){
+          return {
+            group,
+            error: {
+              type: ErrorType.MinLength,
+            },
+          };
+        }
+      }
+
       return {
         group,
         resultNode: null,
@@ -58,13 +79,13 @@ export const removeNode = (
 };
 
 const getSample = (node: BaseNode) => {
-  if(node instanceof AdditionalNode || node instanceof ArrayNode){
+  if (node instanceof AdditionalNode || node instanceof ArrayNode) {
     const sample = node.sampleData;
     const js = getJson(sample);
-    return js
+    return js;
   }
   return null;
-}
+};
 
 export const loadSchema = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -72,16 +93,23 @@ export const loadSchema = (): Promise<void> => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;
-          const sampleSchema: ISchemaNode = {description: 'root', type: '', properties: {} };
+          const sampleSchema: ISchemaNode = {
+            description: "root",
+            type: "",
+            properties: {},
+          };
 
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = populateChildren(val as ISchemaNode, true, sampleSchema);
+            const childrenNodes = populateChildren(
+              val as ISchemaNode,
+              true,
+              sampleSchema
+            );
             rootDataNode[key] = childrenNodes;
           }
 
           // Populate root nodes
           for (const key1 of Object.keys(rootSchema)) {
-            
             const group = rootDataNode[key1];
 
             if (group.data) {
@@ -91,7 +119,7 @@ export const loadSchema = (): Promise<void> => {
                     key: key1 + ":" + key2,
                     node: val2,
                     data: getJson(group)[key2],
-                    sample: getSample((group.data as any)[key2])
+                    sample: getSample((group.data as any)[key2]),
                   });
                 }
               }
@@ -100,7 +128,7 @@ export const loadSchema = (): Promise<void> => {
           console.log("Schema YML!", rootSchema);
           console.log("Schema Node!", rootDataNode);
           // console.log('All Nodes', allNodes);
-          console.log('JSON->', getJson(rootDataNode[defaultGroup]));
+          console.log("JSON->", getJson(rootDataNode[defaultGroup]));
           resolve();
         } else {
           console.error(err);
