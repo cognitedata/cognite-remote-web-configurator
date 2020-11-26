@@ -3,7 +3,7 @@ import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Te
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 
-const cretaValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
+const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
 
     if (submenu === undefined || submenu.length === 0) {
@@ -76,12 +76,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.text = "Prepend Item";
-                    item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
                     item.text = "Append Item";
-                    item.submenu = cretaValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
             });
 
