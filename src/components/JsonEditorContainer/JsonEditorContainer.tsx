@@ -38,13 +38,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // get parant Path for add function
             const parantPaths: string[] = [...node.path];
             //Skip case: adding first child
-            if(node.type !== "append"){
+            if (node.type !== "append") {
                 parantPaths.pop();
             }
 
             const isRemoveValid = removeNode([...paths]);
             const validInsertItems = Object(addNode([...parantPaths]).resultNode?.data);
-            let validMenuItems: MenuItem[]| undefined = undefined
+            let validMenuItems: MenuItem[] | undefined = undefined
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
