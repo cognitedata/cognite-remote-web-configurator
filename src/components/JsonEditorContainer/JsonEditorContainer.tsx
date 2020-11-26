@@ -47,10 +47,10 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         },
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
-            let currentJson = jsonEditorInstance.current?.getText();
-            let c
-            if (currentJson) {
-                currentJson = JSON.parse(currentJson);
+            const currentJsonText = jsonEditorInstance.current?.getText();
+            let currentJson
+            if (currentJsonText) {
+                currentJson = JSON.parse(currentJsonText);
             }
 
             const path = node.path;
