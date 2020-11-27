@@ -64,7 +64,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             const path = node.path;
             // get parant Path for add function
             const parentPath: string[] = [...path];
-            //Skip case: adding first child
+            // Skip case: adding first child
             if (node.type !== "append") {
                 parentPath.pop();
             }
@@ -72,34 +72,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             const removePossibility = removeNode(currentJson, [...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
-
-            // if removeNode validation returns error
-            // Remove default Remove(Delete) function and alert the error
-            if (removePossibility.error) {
-                menuItems.forEach(item => {
-                    if (item.text === "Remove") {
-                        item.className = "warning-triangle";
-                        item.click = () => {
-                            switch (removePossibility.error?.type) {
-                                case ErrorType.InvalidPath:
-                                    alert("Error: Canot Remove. The request contains an invalid path");
-                                    break;
-                                // RequiredNode
-                                case ErrorType.RequiredNode:
-                                    alert("Error: Canot Remove. This field is mandatory");
-                                    break;
-                                // MinLength
-                                case ErrorType.MinLength:
-                                    alert("Error: Canot Remove. Array has a minimum length");
-                                    break;
-                                default:
-                                    alert("Error: Canot Remove.");
-                                    break;
-                            }
-                        };
-                    }
-                });
-            }
 
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
@@ -112,6 +84,36 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 if (item.text === "Append") {
                     item.text = "Append Item";
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                }
+
+                // if removeNode validation returns error
+                // Remove default Remove(Delete) function and alert the error
+                // except for ErrorType.InvalidPath
+                if (item.text === "Remove") {
+                    item.title = "Remove this field";
+                    if (removePossibility.error) {
+                        // allows Remove even it has InvalidPath error
+                        if (removePossibility.error.type === ErrorType.InvalidPath) {
+                            item.title = "Remove this field. This field contains an invalid path";
+                        }
+                        else {
+                            item.className = "warning-triangle";
+                            switch (removePossibility.error.type) {
+                                case ErrorType.RequiredNode:
+                                    item.title = "Canot Remove. This field is mandatory";
+                                    item.click = () => { alert("Error: Canot Remove. This field is mandatory"); }
+                                    break;
+                                case ErrorType.MinLength:
+                                    item.title = "Canot Remove. Array has a minimum length";
+                                    item.click = () => { alert("Error: Canot Remove. Array has a minimum length"); }
+                                    break;
+                                default:
+                                    item.title = "Canot Remove.";
+                                    item.click = () => { alert("Error: Canot Remove."); }
+                                    break;
+                            }
+                        }
+                    }
                 }
             });
 
