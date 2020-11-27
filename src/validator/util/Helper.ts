@@ -37,10 +37,8 @@ export const getNode = (
     }
 
     if (!next) {
-      if (resultNode instanceof AdditionalNode) {
+      if (resultNode instanceof AdditionalNode || resultNode instanceof ArrayNode) {
         next = resultNode.sampleData;
-        resultNode.data = next.data;
-        continue;
       } else {
         return {
           group,

@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
+import { ErrorType } from "../../validator/interfaces/IValidationResult";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -55,7 +56,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
             const currentJsonText = jsonEditorInstance.current?.getText();
-            let currentJson
+            let currentJson;
             if (currentJsonText) {
                 currentJson = JSON.parse(currentJsonText);
             }
@@ -68,13 +69,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 parentPath.pop();
             }
 
-            const isRemoveValid = removeNode([...path]);
+            const removePossibility = removeNode(currentJson,[...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // if removeNode validation returns error
             // Remove default Remove(Delete) function
-            if (isRemoveValid.error) {
+            if (removePossibility.error && (removePossibility.error.type !== ErrorType.InvalidPath)) {
                 menuItems = menuItems.filter(item => item.text !== "Remove")
             }
 
