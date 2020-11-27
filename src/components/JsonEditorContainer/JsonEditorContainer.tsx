@@ -69,14 +69,36 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 parentPath.pop();
             }
 
-            const removePossibility = removeNode(currentJson,[...path]);
+            const removePossibility = removeNode(currentJson, [...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // if removeNode validation returns error
-            // Remove default Remove(Delete) function
-            if (removePossibility.error && (removePossibility.error.type !== ErrorType.InvalidPath)) {
-                menuItems = menuItems.filter(item => item.text !== "Remove")
+            // Remove default Remove(Delete) function and alert the error
+            if (removePossibility.error) {
+                menuItems.forEach(item => {
+                    if (item.text === "Remove") {
+                        item.className = "warning-triangle";
+                        item.click = () => {
+                            switch (removePossibility.error?.type) {
+                                case ErrorType.InvalidPath:
+                                    alert("Error: Canot Remove. The request contains an invalid path");
+                                    break;
+                                // RequiredNode
+                                case ErrorType.RequiredNode:
+                                    alert("Error: Canot Remove. This field is mandatory");
+                                    break;
+                                // MinLength
+                                case ErrorType.MinLength:
+                                    alert("Error: Canot Remove. Array has a minimum length");
+                                    break;
+                                default:
+                                    alert("Error: Canot Remove.");
+                                    break;
+                            }
+                        };
+                    }
+                });
             }
 
             // Creating a new MenuItem array that only contains valid items
