@@ -55,7 +55,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
             const currentJsonText = jsonEditorInstance.current?.getText();
-            let currentJson
+            let currentJson;
             if (currentJsonText) {
                 currentJson = JSON.parse(currentJsonText);
             }
@@ -68,7 +68,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 parentPath.pop();
             }
 
-            const isRemoveValid = removeNode(props.json,[...path]);
+            const isRemoveValid = removeNode(currentJson,[...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 

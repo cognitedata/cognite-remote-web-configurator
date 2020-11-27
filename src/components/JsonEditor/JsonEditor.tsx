@@ -9,7 +9,6 @@ const extractField = (key: string) => {
     return key.split(":")[1]
 }
 
-
 export const JsonEditor: React.FC<any> = () => {
     const templates: Template[] = [];
 

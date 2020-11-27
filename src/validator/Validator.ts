@@ -5,7 +5,7 @@ import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
-import { getJson, getNode, removeDataNode } from "./util/Helper";
+import { getJson, getNode } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
 import { AdditionalNode } from "./nodes/AdditionalNode";
 import { ArrayNode } from "./nodes/ArrayNode";
