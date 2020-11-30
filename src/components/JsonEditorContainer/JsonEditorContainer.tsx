@@ -120,8 +120,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 }
             });
 
-            console.log('item', menuItems)
-
             // remove unwanted menu items
             menuItems = menuItems.filter(item => {
                 return item.text !== "Type" &&
