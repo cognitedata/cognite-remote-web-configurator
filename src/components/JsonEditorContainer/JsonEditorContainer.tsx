@@ -51,6 +51,11 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
     const options: JSONEditorOptions = {
         mode: 'tree',
         templates: props.templates,
+
+        // remove unwanted items from top Command Bar
+        enableSort: false,
+        enableTransform: false,
+
         onError: (err: any) => {
             console.log(err.toString())
         },
