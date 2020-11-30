@@ -118,6 +118,17 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 }
             });
 
+            console.log('item', menuItems)
+
+            menuItems = menuItems.filter(item => {
+                return item.text !== "Type" &&
+                    item.text !== "Sort" &&
+                    item.text !== "Transform" &&
+                    item.text !== "Extract" &&
+                    item.text !== "Duplicate" &&
+                    item.type !== "separator"
+            })
+
             return menuItems;
         },
         onEvent: (node: EditableNode, event: any) => {
