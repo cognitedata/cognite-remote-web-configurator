@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
+import { StringNode } from "../../validator/nodes/StringNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -77,19 +78,20 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // and replace submenu with valid items
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
-                    item.text = "Prepend Item";
+                    item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
-                // adding samw logic to Append
-                if (item.text === "Append") {
-                    item.text = "Append Item";
+                // adding same logic to Append
+                else if (node.type === "append" && item.text === "Append") {
+                    item.text = "Insert";
+                    item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
 
                 // if removeNode validation returns error
                 // Remove default Remove(Delete) function and alert the error
                 // except for ErrorType.InvalidPath
-                if (item.text === "Remove") {
+                else if (item.text === "Remove") {
                     item.title = "Remove this field";
                     if (removePossibility.error) {
                         // allows Remove even it has InvalidPath error
@@ -116,6 +118,17 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     }
                 }
             });
+
+            // remove unwanted menu items
+            menuItems = menuItems.filter(item => {
+                return item.text !== "Type" &&
+                    item.text !== "Sort" &&
+                    item.text !== "Transform" &&
+                    item.text !== "Extract" &&
+                    item.text !== "Duplicate" &&
+                    item.text !== "Append" &&
+                    item.type !== "separator"
+            })
 
             return menuItems;
         },
@@ -178,6 +191,22 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                         }
                     }
                 }
+            }
+        },
+        autocomplete: {
+            filter: 'start',
+            trigger: 'focus',
+            getOptions: (text: string, path: JSONPath) => {
+                return new Promise((resolve, reject) => {
+                    const options = addNode([...path]).resultNode;
+                    if (options && options instanceof StringNode) {
+                        if (options.possibleValues && options.possibleValues.length > 0) {
+                            resolve(options.possibleValues)
+                        } else {
+                            reject()
+                        }
+                    }
+                });
             }
         }
     }
