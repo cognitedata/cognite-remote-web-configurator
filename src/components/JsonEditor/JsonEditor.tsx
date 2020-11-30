@@ -32,7 +32,7 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: an
 
     return (
         <div className={classes.jsonView}>
-            <JsonEditorContainer json={props.jsonConfig?.data || {}} templates={templates} />
+            <JsonEditorContainer json={props.jsonConfig?.data} templates={templates} />
         </div>
     );
 }
