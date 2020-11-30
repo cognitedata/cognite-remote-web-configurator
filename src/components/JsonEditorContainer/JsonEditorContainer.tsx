@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { AutoCompleteElementType, EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template, ValidationError } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
-import { StringNode } from "../../validator/nodes/StringNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -47,7 +46,6 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
-    const ValidationErrors: ValidationError[] = [];
 
     const options: JSONEditorOptions = {
         mode: 'tree',
@@ -186,7 +184,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         autocomplete: {
             filter: 'contain',
             trigger: 'focus',
-            getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
+            getOptions: (text: string, path: JSONPath) => {
                 return new Promise((resolve, reject) => {
                     const options = addNode([...path]).resultNode?.possibleValues;
                     if (options && options.length > 0) {
@@ -196,13 +194,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     }
                 });
             }
-        },
-        onValidate: (json) => {
-            // if(!isNaN(json.age) && json.age < 30) {
-            //   errors.push({ path: ['age'], message: 'Member age must be 30 or higher' });
-            // }
-            console.log('validate');
-            return ValidationErrors;
         }
     }
 
