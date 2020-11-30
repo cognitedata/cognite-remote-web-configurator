@@ -11,7 +11,6 @@ export class BaseNode {
   public isRequired?: boolean;
   public possibleValues?: string[] | undefined;
 
-
   constructor(type: DataType, schema: ISchemaNode, data: IData, isRequired: boolean) {
     this.type = type;
     this.description = schema.description;

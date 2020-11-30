@@ -71,7 +71,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
 
             const removePossibility = removeNode(currentJson, [...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
-            console.log("auto", validInsertItems)
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // Creating a new MenuItem array that only contains valid items
