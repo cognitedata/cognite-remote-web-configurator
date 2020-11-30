@@ -78,13 +78,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // and replace submenu with valid items
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
-                    item.text = "Prepend Item";
                     item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
-                // adding samw logic to Append
-                if (item.text === "Append") {
-                    item.text = "Append Item";
+                // adding same logic to Append
+                if (node.type === "append" && item.text === "Append") {
+                    item.text = "Insert";
                     item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
@@ -127,6 +126,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     item.text !== "Transform" &&
                     item.text !== "Extract" &&
                     item.text !== "Duplicate" &&
+                    item.text !== "Append" &&
                     item.type !== "separator"
             })
 
