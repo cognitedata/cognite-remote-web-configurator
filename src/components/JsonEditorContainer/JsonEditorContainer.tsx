@@ -182,7 +182,15 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         },
         autocomplete: {
             getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
-                return ['apple', 'cranberry', 'raspberry', 'pie', 'mango', 'mandarine', 'melon', 'appleton'];
+                return new Promise((resolve, reject) => {
+                    const options = ['apple', 'cranberry', 'raspberry', 'pie', 'mango', 'mandarine', 'melon', 'appleton'];
+                    if (options.length > 0) {
+                        resolve(options)
+                    } else {
+                        // resolve(options)
+                        resolve(options)
+                    }
+                });
             }
         }
     }
