@@ -9,7 +9,6 @@ export class BaseNode {
   public description?: string;
   public data: IData;
   public isRequired?: boolean;
-  public possibleValues?: string[] | undefined;
 
   constructor(type: DataType, schema: ISchemaNode, data: IData, isRequired: boolean) {
     this.type = type;

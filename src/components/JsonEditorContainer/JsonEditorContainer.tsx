@@ -3,6 +3,7 @@ import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuIt
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
+import { StringNode } from "../../validator/nodes/StringNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -185,11 +186,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             trigger: 'focus',
             getOptions: (text: string, path: JSONPath) => {
                 return new Promise((resolve, reject) => {
-                    const options = addNode([...path]).resultNode?.possibleValues;
-                    if (options && options.length > 0) {
-                        resolve(options)
-                    } else {
-                        reject()
+                    const options = addNode([...path]).resultNode;
+                    if (options && options instanceof StringNode) {
+                        if (options.possibleValues && options.possibleValues.length > 0) {
+                            resolve(options.possibleValues)
+                        } else {
+                            reject()
+                        }
                     }
                 });
             }
