@@ -82,7 +82,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding same logic to Append
-                if (node.type === "append" && item.text === "Append") {
+                else if (node.type === "append" && item.text === "Append") {
                     item.text = "Insert";
                     item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
@@ -91,7 +91,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 // if removeNode validation returns error
                 // Remove default Remove(Delete) function and alert the error
                 // except for ErrorType.InvalidPath
-                if (item.text === "Remove") {
+                else if (item.text === "Remove") {
                     item.title = "Remove this field";
                     if (removePossibility.error) {
                         // allows Remove even it has InvalidPath error
