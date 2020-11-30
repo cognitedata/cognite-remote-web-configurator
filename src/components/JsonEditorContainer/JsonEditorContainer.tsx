@@ -182,7 +182,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
         },
         autocomplete: {
-            filter: 'contain',
+            filter: 'start',
             trigger: 'focus',
             getOptions: (text: string, path: JSONPath) => {
                 return new Promise((resolve, reject) => {
