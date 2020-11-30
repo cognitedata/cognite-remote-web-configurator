@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { AutoCompleteElementType, EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
@@ -178,6 +178,11 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                         }
                     }
                 }
+            }
+        },
+        autocomplete: {
+            getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
+                return ['apple', 'cranberry', 'raspberry', 'pie', 'mango', 'mandarine', 'melon', 'appleton'];
             }
         }
     }
