@@ -7,10 +7,11 @@
         "leftbar json-view";
     height: 100%;
     box-sizing: border-box;
+    background-color: white;
 }
 .leftbar {
     grid-area: leftbar;
-    padding: 0px 10px;
+    padding: 10px 10px;
     height: 100%;
     border-right: solid #cdcfd1;
 }
