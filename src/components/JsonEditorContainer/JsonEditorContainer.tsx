@@ -3,6 +3,7 @@ import JSONEditor, { AutoCompleteElementType, EditableNode, JSONEditorOptions, J
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
+import { StringNode } from "../../validator/nodes/StringNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -71,6 +72,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
 
             const removePossibility = removeNode(currentJson, [...path]);
             const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
+            console.log("auto", validInsertItems)
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // Creating a new MenuItem array that only contains valid items
@@ -183,12 +185,12 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         autocomplete: {
             getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
                 return new Promise((resolve, reject) => {
-                    const options = ['apple', 'cranberry', 'raspberry', 'pie', 'mango', 'mandarine', 'melon', 'appleton'];
-                    if (options.length > 0) {
+                    const options = addNode([...path]).resultNode?.possibleValues;
+
+                    if (options && options.length > 0) {
                         resolve(options)
                     } else {
-                        // resolve(options)
-                        resolve(options)
+                        reject()
                     }
                 });
             }
