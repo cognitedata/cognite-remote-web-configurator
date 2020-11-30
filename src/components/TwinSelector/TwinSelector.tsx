@@ -6,7 +6,7 @@ import { TwinItemContainer } from "../Util/TwinItemContainer/TwinItemContainer";
 
 const cogniteClient = Client.sdk;
 
-export const TwinSelector: React.FC<any> = () => {
+export const TwinSelector: React.FC<{onTwinSelect: (twin: any) => void}> = (props: any ) => {
     return (
         <>
             <h2>Unreal Digital Twin</h2>
@@ -14,7 +14,7 @@ export const TwinSelector: React.FC<any> = () => {
             <br />
             <p>Configure</p>
             <div className={classes.twinContainer}>
-                <TwinItemContainer sdk={cogniteClient}/>
+                <TwinItemContainer sdk={cogniteClient} onClick={props.onTwinSelect}/>
             </div>
         </>
     );

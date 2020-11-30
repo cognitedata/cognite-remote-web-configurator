@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import classes from './JsonEditor.module.scss'
-import mauiA from '../../config/MauiA.json';
 import { JsonEditorContainer } from "../JsonEditorContainer/JsonEditorContainer";
 import { getAllNodes, loadSchema } from '../../validator/Validator';
 import { Template } from 'jsoneditor';
+import { JsonConfig } from "../../types";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
 }
 
-export const JsonEditor: React.FC<any> = () => {
+export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: any) => {
     const templates: Template[] = [];
 
     const initValidater = async () => {
@@ -32,7 +32,7 @@ export const JsonEditor: React.FC<any> = () => {
 
     return (
         <div className={classes.jsonView}>
-            <JsonEditorContainer json={mauiA} templates={templates} />
+            <JsonEditorContainer json={props.jsonConfig?.data || {}} templates={templates} />
         </div>
     );
 }
