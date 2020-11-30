@@ -79,11 +79,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.text = "Prepend Item";
+                    item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
                 // adding samw logic to Append
                 if (item.text === "Append") {
                     item.text = "Append Item";
+                    item.click = undefined;
                     item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
                 }
 
@@ -120,6 +122,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
 
             console.log('item', menuItems)
 
+            // remove unwanted menu items
             menuItems = menuItems.filter(item => {
                 return item.text !== "Type" &&
                     item.text !== "Sort" &&
