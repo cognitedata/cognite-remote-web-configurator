@@ -42,6 +42,7 @@ export class BaseNode {
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
         result[key] = rootDataNode[schemaPath[schemaPath.length - 1]];
+        result[key].data[this.discriminator.propertyName] = key;
       }
       return result;
     } else {
