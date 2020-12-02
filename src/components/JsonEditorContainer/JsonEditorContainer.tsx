@@ -4,6 +4,7 @@ import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
+import { ArrayNode } from "../../validator/nodes/ArrayNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -44,6 +45,16 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
     });
 }
 
+const getValidInsertItems = (parentPath: (string | number)[]) => {
+    const resultNode = addNode([...parentPath]).resultNode;
+    if (resultNode instanceof ArrayNode) {
+        return resultNode.sampleData.data;
+    }
+    else {
+        return resultNode?.data;
+    }
+}
+
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
@@ -76,7 +87,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
 
             const removePossibility = removeNode(currentJson, [...path]);
-            const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
+            const validInsertItems = getValidInsertItems(parentPath);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // Creating a new MenuItem array that only contains valid items
