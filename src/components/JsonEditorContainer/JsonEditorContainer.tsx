@@ -44,10 +44,14 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
     });
 }
 
+const getValidInsertItems = (parentPath: (string | number)[]) => {
+    return Object(addNode([...parentPath]).resultNode?.data);
+}
+
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
-
+    
     const options: JSONEditorOptions = {
         mode: 'tree',
         templates: props.templates,
@@ -76,7 +80,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
 
             const removePossibility = removeNode(currentJson, [...path]);
-            const validInsertItems = Object(addNode([...parentPath]).resultNode?.data);
+            const validInsertItems = getValidInsertItems(parentPath);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
             const isArray: boolean = Number.isInteger(path[path.length - 1]);
             console.log('isArray', isArray)
