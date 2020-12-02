@@ -16,9 +16,9 @@ function App(): JSX.Element {
 
   return (
     <div className="App">
-        <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient}>
+        {/* <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient}> */}
             <JsonConfigurator />
-        </TenantLogin>
+        {/* </TenantLogin> */}
     </div>
   );
 }

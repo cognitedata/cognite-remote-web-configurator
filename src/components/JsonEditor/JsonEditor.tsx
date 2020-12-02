@@ -4,6 +4,7 @@ import { JsonEditorContainer } from "../JsonEditorContainer/JsonEditorContainer"
 import { getAllNodes, loadSchema } from '../../validator/Validator';
 import { Template } from 'jsoneditor';
 import { JsonConfig } from "../../types";
+import data from '../../config/MauiA.json';
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -32,7 +33,7 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: an
 
     return (
         <div className={classes.jsonView}>
-            <JsonEditorContainer json={props.jsonConfig?.data} templates={templates} />
+            <JsonEditorContainer json={data} templates={templates} />
         </div>
     );
 }
