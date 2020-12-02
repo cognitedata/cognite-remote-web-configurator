@@ -5,7 +5,6 @@ import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
 import { ArrayNode } from "../../validator/nodes/ArrayNode";
-import { ObjectNode } from "../../validator/nodes/ObjectNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -48,11 +47,11 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 
 const getValidInsertItems = (parentPath: (string | number)[]) => {
     const validationResult = addNode([...parentPath]).resultNode;
-    if (validationResult instanceof ObjectNode) {
-        return validationResult.data;
-    }
-    else if (validationResult instanceof ArrayNode){
+    if (validationResult instanceof ArrayNode) {
         return validationResult.sampleData.data;
+    }
+    else if (validationResult) {
+        return validationResult.data;
     }
     else {
         return [];
