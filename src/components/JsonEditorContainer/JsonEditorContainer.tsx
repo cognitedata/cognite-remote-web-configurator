@@ -54,6 +54,9 @@ const getValidInsertItems = (parentPath: (string | number)[]) => {
     else if (validationResult instanceof ArrayNode){
         return validationResult.sampleData.data;
     }
+    else {
+        return [];
+    }
 }
 
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
