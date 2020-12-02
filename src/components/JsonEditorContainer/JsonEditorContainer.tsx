@@ -46,15 +46,12 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 }
 
 const getValidInsertItems = (parentPath: (string | number)[]) => {
-    const validationResult = addNode([...parentPath]).resultNode;
-    if (validationResult instanceof ArrayNode) {
-        return validationResult.sampleData.data;
-    }
-    else if (validationResult) {
-        return validationResult.data;
+    const resultNode = addNode([...parentPath]).resultNode;
+    if (resultNode instanceof ArrayNode) {
+        return resultNode.sampleData.data;
     }
     else {
-        return [];
+        return resultNode?.data;
     }
 }
 
