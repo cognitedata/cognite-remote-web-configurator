@@ -1,5 +1,5 @@
 export interface ISchemaNode {
-  properties?: {[key: string]: any};
+  properties?: { [key: string]: any };
   type: string;
   description?: string;
 
@@ -14,8 +14,8 @@ export interface ISchemaNode {
   minimum?: number;
   maximum?: number;
   discriminator?: {
-    mapping: {[key: string]: string};
+    mapping: { [key: string]: string };
     propertyName: string;
-  }
+  };
   allOf?: ISchemaNode[];
 }
