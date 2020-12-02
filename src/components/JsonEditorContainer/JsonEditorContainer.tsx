@@ -6,6 +6,7 @@ import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
 import { ArrayNode } from "../../validator/nodes/ArrayNode";
 import { IData } from "../../validator/nodes/BaseNode";
+import { AdditionalNode } from "../../validator/nodes/AdditionalNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -49,9 +50,11 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 const getValidInsertItems = (parentPath: (string | number)[]): IData => {
     const key = parentPath[parentPath.length - 1]
     const resultNode = addNode([...parentPath]).resultNode;
-
-    // if array node: returning a IData object with matching key and description
-    if (resultNode instanceof ArrayNode) {
+    /**
+     * When adding items to an Array or a Map,
+     * returning a IData object with matching key and description
+     */
+    if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
         return {
             [`${key}-sample`]: {
                 data: undefined,

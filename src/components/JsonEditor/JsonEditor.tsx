@@ -27,8 +27,11 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null }> = (props: a
             }
             templates.push(temp);
 
-            // if array node: adding sample data to templates
-            if (node.node.type === "array") {
+            /**
+             * if node type is array or map
+             * adding sample data as a template
+             */
+            if (node.node.type === "array" || node.node.type === "map") {
                 const temp = {
                     text: `${key}-sample`,
                     title: `Add sample item to ${key}`,
