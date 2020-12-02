@@ -1,23 +1,36 @@
 import React from "react";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
-import { Button, Card, Form, Input } from "antd";
+// import { CustomLogin } from "./CustomLogin/CustomLogin";
+import { ClientSDKProvider, PureObject, TenantSelector } from "@cognite/gearbox";
 import styles from "./TenantLogin.module.scss";
+import { APP_NAME, LOGIN_CDF_ENVIRONMENT_OPT_TEXT, LOGIN_HEADER } from "../../../constants";
 
 export function TenantLogin(props: {
     children: any
     sdk: CogniteClient,
     signedIn: boolean,
-    onLogin: (status: boolean)=>void
+    onLogin: (...status: any) => void,
+    authOptions: { project?: string, apiKey?: string, oauthToken?: string }
 }): JSX.Element | null {
+
+    const { project, apiKey, oauthToken } = props.authOptions;
+    const advancedOptions = { cdfEnvironment: ''};
 
     if (isLoginPopupWindow()) {
         loginPopupHandler();
         return null;
     }
 
-    const onFinish = async (values: any) => {
-        if(values){
-            const project = values['tenantName'];
+    const oninvalidTenant = (value: any) => {
+        console.error("Tenant Error", value);
+    };
+
+    const onFinish = async (project: string, options: PureObject | null) => {
+        if(project){
+            const cdfEnv = options && options[LOGIN_CDF_ENVIRONMENT_OPT_TEXT];
+            if(cdfEnv) {
+                props.sdk.setBaseUrl(`https://${cdfEnv}.cognitedata.com`);
+            }
             const token = localStorage.getItem("token") || "";
             props.sdk.loginWithOAuth({
                 project: project,
@@ -34,40 +47,24 @@ export function TenantLogin(props: {
                 props.onLogin(true);
             }
         }
-        console.log('Success:', values);
+        console.log('Success:', project);
+        return true;
     };
 
-    const onFinishFailed = (errorInfo: any) => {
-        console.log('Failed:', errorInfo);
-    };
-
-    if(props.signedIn) {
+    if (props.signedIn) {
         return <>{props.children}</>;
-    }
-    else {
+    } else {
+        // return <CustomLogin sdk={props.sdk} onLogin={props.onLogin} />;
         return (
             <div className={styles.loginContainer}>
-                <Card title="Sign in To Tenant" style={{ width: 300 }}>
-                    <Form
-                        layout="vertical"
-                        name="basic"
-                        initialValues={{ remember: true }}
-                        onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
-                    >
-                        <Form.Item label="Tenant Name" name="tenantName" required tooltip="Input tenant name"
-                                   rules={[{ required: true, message: 'Please input your tenant name!' }]}>
-                            <Input placeholder="input placeholder" />
-                        </Form.Item>
-
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Card>
-            </div>
-        );
+                <ClientSDKProvider client={props.sdk}>
+                    <TenantSelector
+                        title={APP_NAME}
+                        header={LOGIN_HEADER}
+                        onTenantSelected={onFinish}
+                        advancedOptions={advancedOptions}
+                        onInvalidTenant={oninvalidTenant}/>
+                </ClientSDKProvider>
+            </div>);
     }
 }
