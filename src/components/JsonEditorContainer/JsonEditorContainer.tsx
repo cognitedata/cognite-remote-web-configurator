@@ -4,6 +4,8 @@ import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
+import { ArrayNode } from "../../validator/nodes/ArrayNode";
+import { ObjectNode } from "../../validator/nodes/ObjectNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -45,13 +47,19 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 }
 
 const getValidInsertItems = (parentPath: (string | number)[]) => {
-    return Object(addNode([...parentPath]).resultNode?.data);
+    const validationResult = addNode([...parentPath]).resultNode;
+    if (validationResult instanceof ObjectNode) {
+        return validationResult.data;
+    }
+    else if (validationResult instanceof ArrayNode){
+        return validationResult.sampleData.data;
+    }
 }
 
 export function JsonEditorContainer(props: { json: any, templates: Template[] }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const jsonEditorInstance = useRef<JSONEditor | null>(null);
-    
+
     const options: JSONEditorOptions = {
         mode: 'tree',
         templates: props.templates,
