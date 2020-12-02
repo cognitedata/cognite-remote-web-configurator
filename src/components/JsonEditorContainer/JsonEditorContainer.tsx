@@ -90,8 +90,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             const removePossibility = removeNode(currentJson, [...path]);
             const validInsertItems = getValidInsertItems(parentPath);
             const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
-            const isArray: boolean = Number.isInteger(path[path.length - 1]);
-            console.log('isArray', isArray)
 
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
