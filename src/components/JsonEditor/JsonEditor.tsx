@@ -9,14 +9,14 @@ const extractField = (key: string) => {
     return key.split(":")[1]
 }
 
-export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: any) => {
+export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null }> = (props: any) => {
     const templates: Template[] = [];
 
     const initValidater = async () => {
         await loadSchema();
-        
+
         getAllNodes().forEach((node: any) => {
-            const key =extractField(node.key)
+            const key = extractField(node.key)
 
             const temp = {
                 text: key,
@@ -27,7 +27,7 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: an
             }
             templates.push(temp);
 
-            if(node.node.type === "array"){
+            if (node.node.type === "array") {
                 const temp = {
                     text: `${key}-sample`,
                     title: `Add sample item to ${key}`,

@@ -5,6 +5,7 @@ import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
 import { ArrayNode } from "../../validator/nodes/ArrayNode";
+import { IData } from "../../validator/nodes/BaseNode";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -45,7 +46,7 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
     });
 }
 
-const getValidInsertItems = (parentPath: (string | number)[]) => {
+const getValidInsertItems = (parentPath: (string | number)[]): IData => {
     const key = parentPath[parentPath.length - 1]
     const resultNode = addNode([...parentPath]).resultNode;
 
