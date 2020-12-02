@@ -27,6 +27,7 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null }> = (props: a
             }
             templates.push(temp);
 
+            // if array node: adding sample data to templates
             if (node.node.type === "array") {
                 const temp = {
                     text: `${key}-sample`,

@@ -50,6 +50,7 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
     const key = parentPath[parentPath.length - 1]
     const resultNode = addNode([...parentPath]).resultNode;
 
+    // if array node: returning a IData object with matching key and description
     if (resultNode instanceof ArrayNode) {
         return {
             [`${key}-sample`]: {
