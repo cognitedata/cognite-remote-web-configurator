@@ -46,9 +46,16 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
 }
 
 const getValidInsertItems = (parentPath: (string | number)[]) => {
+    const key = parentPath[parentPath.length - 1]
     const resultNode = addNode([...parentPath]).resultNode;
+
     if (resultNode instanceof ArrayNode) {
-        return resultNode.sampleData.data;
+        return {
+            [`${key}-sample`]: {
+                data: undefined,
+                description: `Add sample item to ${key}`
+            }
+        }
     }
     else {
         return resultNode?.data;

@@ -14,15 +14,29 @@ export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: an
 
     const initValidater = async () => {
         await loadSchema();
-        getAllNodes().map((node: any) => {
+        
+        getAllNodes().forEach((node: any) => {
+            const key =extractField(node.key)
+
             const temp = {
-                text: extractField(node.key),
+                text: key,
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
-                field: extractField(node.key),
+                field: key,
                 value: node.data
             }
             templates.push(temp);
+
+            if(node.node.type === "array"){
+                const temp = {
+                    text: `${key}-sample`,
+                    title: `Add sample item to ${key}`,
+                    className: 'jsoneditor-type-object',
+                    field: `${key}-sample`,
+                    value: node.sample
+                }
+                templates.push(temp);
+            }
         });
     }
 
