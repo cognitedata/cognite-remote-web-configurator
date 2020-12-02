@@ -11,9 +11,9 @@ export class StringNode extends BaseNode {
       this.possibleValues = schema.enum;
     }
     if(isRequired){    
-      this.data = this.possibleValues ? this.possibleValues[0] : '';
+      this._data = this.possibleValues ? this.possibleValues[0] : '';
     } else {
-      this.data = undefined;
+      this._data = undefined;
     }
   }
 }

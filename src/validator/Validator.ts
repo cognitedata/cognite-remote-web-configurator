@@ -18,7 +18,7 @@ export interface TemplateNode {
 }
 const defaultGroup = "TwinConfiguration";
 
-const rootDataNode: { [key: string]: BaseNode } = {};
+export const rootDataNode: { [key: string]: BaseNode } = {};
 const allNodes: TemplateNode[] = [];
 
 export const addNode = (
@@ -126,7 +126,8 @@ export const loadSchema = (): Promise<void> => {
           }
           console.log("Schema YML!", rootSchema);
           console.log("Schema Node!", rootDataNode);
-          // console.log('All Nodes', allNodes);
+          (window as any)['nodes'] = rootDataNode;
+          console.log('All Nodes', allNodes);
           console.log("JSON->", getJson(rootDataNode[defaultGroup]));
           resolve();
         } else {

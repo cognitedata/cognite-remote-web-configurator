@@ -1,7 +1,7 @@
 export interface ISchemaNode {
-  properties: {[key: string]: any};
+  properties?: {[key: string]: any};
   type: string;
-  description: string;
+  description?: string;
 
   // optional props
   additionalProperties?: ISchemaNode;
@@ -13,4 +13,9 @@ export interface ISchemaNode {
   enum?: string[];
   minimum?: number;
   maximum?: number;
+  discriminator?: {
+    mapping: {[key: string]: string};
+    propertyName: string;
+  }
+  allOf?: ISchemaNode[];
 }
