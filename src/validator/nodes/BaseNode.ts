@@ -20,6 +20,7 @@ export class BaseNode {
   public description?: string;
   public _data: IData;
   public isRequired?: boolean;
+  public readOnlyFields: string[] = [];
   public discriminator?: Discriminator;
 
   constructor(
@@ -37,12 +38,16 @@ export class BaseNode {
 
   public get data(): IData {
     if (this.discriminator) {
-      const result: any = {};
+      const result: BaseNodes = {};
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
-        result[key] = rootDataNode[schemaPath[schemaPath.length - 1]];
-        result[key].data[this.discriminator.propertyName] = key;
+        const node = rootDataNode[schemaPath[schemaPath.length - 1]];
+        if(!node.readOnlyFields.includes(this.discriminator.propertyName)){
+          node.readOnlyFields.push(this.discriminator.propertyName);
+        }
+
+        result[key] = node;
       }
       return result;
     } else {
