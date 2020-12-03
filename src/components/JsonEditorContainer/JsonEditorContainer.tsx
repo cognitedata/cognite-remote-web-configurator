@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
@@ -90,9 +90,9 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         enableSort: false,
         enableTransform: false,
 
-        onError: (err: any) => {
-            console.log(err.toString())
-        },
+        indentation: 4,
+        escapeUnicode: true,
+
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
             const currentJsonText = jsonEditorInstance.current?.getText();
@@ -168,67 +168,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             })
 
             return menuItems;
-        },
-        onEvent: (node: EditableNode, event: any) => {
-            if (node.field !== undefined) {
-                // console.log(event, node);
-                if (event.type === "click") {
-                    // console.log(event.type + ' event ' +
-                    //     'on value ' + JSON.stringify(node.value) + ' ' +
-                    //     'at path ' + JSON.stringify(node.path)
-                    // )
-                }
-            }
-        },
-        onChange: function (...params) {
-            console.log('change', params);
-        },
-        onModeChange: (mode: any) => {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const treeMode: HTMLElement | null = domElement.querySelector('#treeModeSelection')
-                const textMode: HTMLElement | null = domElement.querySelector('#textModeSelection')
-
-                if (textMode && treeMode) {
-                    treeMode.style.display = textMode.style.display = 'none'
-
-                    if (mode === 'code' || mode === 'text') {
-                        textMode.style.display = 'inline'
-                    } else {
-                        treeMode.style.display = 'inline'
-                    }
-                }
-            }
-        },
-        indentation: 4,
-        escapeUnicode: true,
-        onTextSelectionChange: (start: any, end: any, text: string) => {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const rangeEl = domElement.querySelector('#textRange');
-                const textEl = domElement.querySelector('#selectedText');
-                if (rangeEl) {
-                    rangeEl.innerHTML = 'start: ' + JSON.stringify(start) + ', end: ' + JSON.stringify(end);
-                }
-                if (textEl) {
-                    textEl.innerHTML = text;
-                }
-            }
-        },
-        onSelectionChange: function (start: any, end: any) {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const nodesEl = domElement.querySelector('#selectedNodes');
-                if (nodesEl) {
-                    nodesEl.innerHTML = '';
-                    if (start) {
-                        nodesEl.innerHTML = ('start: ' + JSON.stringify(start));
-                        if (end) {
-                            nodesEl.innerHTML += ('<br/>end: ' + JSON.stringify(end));
-                        }
-                    }
-                }
-            }
         },
         autocomplete: {
             filter: 'start',
