@@ -12,6 +12,7 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
     const validMenuItems: MenuItem[] = [];
     const validInsertItems: any = getValidInsertItems(parentPath);
     const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
+    const resultNode = addNode([...parentPath]).resultNode;
 
     if (submenu === undefined || submenu.length === 0) {
         return undefined;
@@ -24,11 +25,17 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
             Object.keys(validInsertItems).forEach((key: any) => {
                 if (subItem.text === key &&
                     subItem.title === validInsertItems[key].description) {
-                    // filter alredy added items from insert menu
-                    if (!existingKeys.includes(key)) {
+                    /**
+                     * filter alredy added items from insert menu
+                     * unless it's map
+                     */
+                    if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
                         validMenuItems.push(subItem);
-                        matchingItemCountWithSameDesc++;
                     }
+                    if(resultNode instanceof AdditionalNode) {
+                        validMenuItems.push(subItem);
+                    }
+                    matchingItemCountWithSameDesc++;
                 }
             });
 
