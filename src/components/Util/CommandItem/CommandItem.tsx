@@ -1,19 +1,13 @@
 import React from 'react';
-import classes from './CommandItem.module.scss';
+import Button from "antd/es/button";
+import styles from "./CommandItem.module.scss";
 
-const onClickHandler = (onClick?: () => void) => {
-    if(!onClick){
-        console.warn("function is not implemented");
-    }
-    else{
-        onClick();
-    }
-}
-
-export const CommandItem: React.FC<{ onClick?: () => void }> = (props) => {
-    return (
-        <div className={classes.commandItem} onClick={()=>onClickHandler(props.onClick)}>
+export const CommandItem: React.FC<{ onClick?: () => void, icon?: string }> = (props) => {
+    return (<Button type="primary" className={styles.commandBtn}
+                    shape="round"
+                    icon={props.icon}
+                    size="large"
+                    onClick={props.onClick}>
             {props.children}
-        </div>
-    );
+    </Button>);
 }
