@@ -13,7 +13,8 @@ export class BaseNode {
   constructor(type: DataType, schema: ISchemaNode, data: IData, isRequired: boolean) {
     this.type = type;
     this.description = schema.description;
-    this.data = data;
+    // This rule overrides the data comes from constructor. But this is ok for now since we are using these logics for creating taplate nodes.
+    this.data = schema.example ?? data;
     this.isRequired = isRequired;
   }
 }

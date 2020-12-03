@@ -13,4 +13,5 @@ export interface ISchemaNode {
   enum?: string[];
   minimum?: number;
   maximum?: number;
+  example?: any;
 }

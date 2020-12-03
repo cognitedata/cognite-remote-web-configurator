@@ -10,10 +10,9 @@ export class StringNode extends BaseNode {
     if (schema.enum) {
       this.possibleValues = schema.enum;
     }
-    if(isRequired){    
-      this.data = this.possibleValues ? this.possibleValues[0] : '';
-    } else {
-      this.data = undefined;
+    // If example exists, it will be handled by BaseNode
+    if(!schema.example && this.possibleValues){    
+      this.data = this.possibleValues[0];
     }
   }
 }
