@@ -20,11 +20,13 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems
             let matchingItemCountWithSameDesc = 0;
 
             Object.keys(validInsertItems).forEach((key: any) => {
-                if (!existingKeys.includes(key) &&
-                    subItem.text === key &&
+                if (subItem.text === key &&
                     subItem.title === validInsertItems[key].description) {
-                    validMenuItems.push(subItem);
-                    matchingItemCountWithSameDesc++;
+                    // filter alredy added items from insert menu
+                    if (!existingKeys.includes(key)) {
+                        validMenuItems.push(subItem);
+                        matchingItemCountWithSameDesc++;
+                    }
                 }
             });
 
