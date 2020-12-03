@@ -1,13 +1,18 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../validator/Validator';
 import { ErrorType } from "../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../validator/nodes/StringNode";
 import { ArrayNode } from "../../validator/nodes/ArrayNode";
+import { IData } from "../../validator/nodes/BaseNode";
+import { AdditionalNode } from "../../validator/nodes/AdditionalNode";
 
-const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
+const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]) => {
     const validMenuItems: MenuItem[] = [];
+    const validInsertItems: any = getValidInsertItems(parentPath);
+    const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
+    const resultNode = addNode([...parentPath]).resultNode;
 
     if (submenu === undefined || submenu.length === 0) {
         return undefined;
@@ -18,10 +23,18 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems
             let matchingItemCountWithSameDesc = 0;
 
             Object.keys(validInsertItems).forEach((key: any) => {
-                if (!existingKeys.includes(key) &&
-                    subItem.text === key &&
+                if (subItem.text === key &&
                     subItem.title === validInsertItems[key].description) {
-                    validMenuItems.push(subItem);
+                    /**
+                     * filter alredy added items from insert menu
+                     * unless it's map
+                     */
+                    if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
+                        validMenuItems.push(subItem);
+                    }
+                    if(resultNode instanceof AdditionalNode) {
+                        validMenuItems.push(subItem);
+                    }
                     matchingItemCountWithSameDesc++;
                 }
             });
@@ -45,10 +58,20 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
     });
 }
 
-const getValidInsertItems = (parentPath: (string | number)[]) => {
+const getValidInsertItems = (parentPath: (string | number)[]): IData => {
+    const key = parentPath[parentPath.length - 1]
     const resultNode = addNode([...parentPath]).resultNode;
-    if (resultNode instanceof ArrayNode) {
-        return resultNode.sampleData.data;
+    /**
+     * When adding items to an Array or a Map,
+     * returning a IData object with matching key and description
+     */
+    if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
+        return {
+            [`${key}-sample`]: {
+                data: undefined,
+                description: `Add sample item to ${key}`
+            }
+        }
     }
     else {
         return resultNode?.data;
@@ -67,13 +90,13 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         enableSort: false,
         enableTransform: false,
 
-        onError: (err: any) => {
-            console.log(err.toString())
-        },
+        indentation: 4,
+        escapeUnicode: true,
+
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
             const currentJsonText = jsonEditorInstance.current?.getText();
-            let currentJson;
+            let currentJson: any;
             if (currentJsonText) {
                 currentJson = JSON.parse(currentJsonText);
             }
@@ -87,21 +110,19 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
 
             const removePossibility = removeNode(currentJson, [...path]);
-            const validInsertItems = getValidInsertItems(parentPath);
-            const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.click = undefined;
-                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, currentJson, parentPath);
                 }
                 // adding same logic to Append
                 else if (node.type === "append" && item.text === "Append") {
                     item.text = "Insert";
                     item.click = undefined;
-                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, currentJson, parentPath);
                 }
 
                 // if removeNode validation returns error
@@ -147,67 +168,6 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             })
 
             return menuItems;
-        },
-        onEvent: (node: EditableNode, event: any) => {
-            if (node.field !== undefined) {
-                // console.log(event, node);
-                if (event.type === "click") {
-                    // console.log(event.type + ' event ' +
-                    //     'on value ' + JSON.stringify(node.value) + ' ' +
-                    //     'at path ' + JSON.stringify(node.path)
-                    // )
-                }
-            }
-        },
-        onChange: function (...params) {
-            console.log('change', params);
-        },
-        onModeChange: (mode: any) => {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const treeMode: HTMLElement | null = domElement.querySelector('#treeModeSelection')
-                const textMode: HTMLElement | null = domElement.querySelector('#textModeSelection')
-
-                if (textMode && treeMode) {
-                    treeMode.style.display = textMode.style.display = 'none'
-
-                    if (mode === 'code' || mode === 'text') {
-                        textMode.style.display = 'inline'
-                    } else {
-                        treeMode.style.display = 'inline'
-                    }
-                }
-            }
-        },
-        indentation: 4,
-        escapeUnicode: true,
-        onTextSelectionChange: (start: any, end: any, text: string) => {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const rangeEl = domElement.querySelector('#textRange');
-                const textEl = domElement.querySelector('#selectedText');
-                if (rangeEl) {
-                    rangeEl.innerHTML = 'start: ' + JSON.stringify(start) + ', end: ' + JSON.stringify(end);
-                }
-                if (textEl) {
-                    textEl.innerHTML = text;
-                }
-            }
-        },
-        onSelectionChange: function (start: any, end: any) {
-            const domElement = jsonEditorElm.current;
-            if (domElement) {
-                const nodesEl = domElement.querySelector('#selectedNodes');
-                if (nodesEl) {
-                    nodesEl.innerHTML = '';
-                    if (start) {
-                        nodesEl.innerHTML = ('start: ' + JSON.stringify(start));
-                        if (end) {
-                            nodesEl.innerHTML += ('<br/>end: ' + JSON.stringify(end));
-                        }
-                    }
-                }
-            }
         },
         autocomplete: {
             filter: 'start',
