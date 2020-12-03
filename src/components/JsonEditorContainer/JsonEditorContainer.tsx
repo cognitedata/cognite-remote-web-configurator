@@ -8,8 +8,10 @@ import { ArrayNode } from "../../validator/nodes/ArrayNode";
 import { IData } from "../../validator/nodes/BaseNode";
 import { AdditionalNode } from "../../validator/nodes/AdditionalNode";
 
-const createValidInsertMenu = (submenu: MenuItem[] | undefined, validInsertItems: any, existingKeys: (number | string)[]) => {
+const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]) => {
     const validMenuItems: MenuItem[] = [];
+    const validInsertItems: any = getValidInsertItems(parentPath);
+    const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
     if (submenu === undefined || submenu.length === 0) {
         return undefined;
@@ -87,7 +89,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         onCreateMenu: (menuItems: MenuItem[], node: MenuItemNode) => {
             // get current state
             const currentJsonText = jsonEditorInstance.current?.getText();
-            let currentJson;
+            let currentJson: any;
             if (currentJsonText) {
                 currentJson = JSON.parse(currentJsonText);
             }
@@ -101,21 +103,19 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             }
 
             const removePossibility = removeNode(currentJson, [...path]);
-            const validInsertItems = getValidInsertItems(parentPath);
-            const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
 
             // Creating a new MenuItem array that only contains valid items
             // and replace submenu with valid items
             menuItems.forEach(item => {
                 if (item.text === "Insert") {
                     item.click = undefined;
-                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, currentJson, parentPath);
                 }
                 // adding same logic to Append
                 else if (node.type === "append" && item.text === "Append") {
                     item.text = "Insert";
                     item.click = undefined;
-                    item.submenu = createValidInsertMenu(item.submenu, validInsertItems, existingKeys);
+                    item.submenu = createValidInsertMenu(item.submenu, currentJson, parentPath);
                 }
 
                 // if removeNode validation returns error
