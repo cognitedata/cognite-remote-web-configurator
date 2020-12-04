@@ -10,20 +10,38 @@ const extractField = (key: string) => {
     return key.split(":")[1]
 }
 
-export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null}> = (props: any) => {
+export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null }> = (props: any) => {
     const templates: Template[] = [];
 
     const initValidater = async () => {
         await loadSchema();
-        getAllNodes().map((node: any) => {
+
+        getAllNodes().forEach((node: any) => {
+            const key = extractField(node.key)
+
             const temp = {
-                text: extractField(node.key),
+                text: key,
                 title: node.node.description,
                 className: 'jsoneditor-type-object',
-                field: extractField(node.key),
+                field: key,
                 value: node.data
             }
             templates.push(temp);
+
+            /**
+             * if node type is array or map
+             * adding sample data as a template
+             */
+            if (node.node.type === "array" || node.node.type === "map") {
+                const temp = {
+                    text: `${key}-sample`,
+                    title: `Add sample item to ${key}`,
+                    className: 'jsoneditor-type-object',
+                    field: `${key}-sample`,
+                    value: node.sample
+                }
+                templates.push(temp);
+            }
         });
     }
 

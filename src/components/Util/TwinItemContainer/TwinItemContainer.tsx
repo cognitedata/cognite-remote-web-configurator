@@ -40,7 +40,7 @@ export const TwinItemContainer: React.FC<{ sdk: CogniteClient, onClick: (item: a
                 bordered
                 dataSource={digitalTwins}
                 renderItem={item => (
-                    <List.Item className={classes.twinItem} onClick={() => onListItemClick(item)} key={item}>
+                    <List.Item className={`${classes.twinItem}`} onClick={() => onListItemClick(item)} key={item}>
                         {item}
                     </List.Item>
                 )}

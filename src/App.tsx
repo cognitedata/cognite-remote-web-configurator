@@ -6,7 +6,8 @@ import { TenantLogin } from "./components/TwinSelector/TenantLogin/TenantLogin";
 
 const cogniteClient = Client.sdk;
 
-function App(): JSX.Element {
+function App(props: { auth?: { project?: string, apiKey?: string, oauthToken?: string}}): JSX.Element {
+    const authOptions = props.auth || {};
     const [signedIn, setSignIn] = useState(false);
     const onSignIn = (status: boolean) => {
         if(status) {
@@ -16,7 +17,7 @@ function App(): JSX.Element {
 
   return (
     <div className="App">
-        {/* <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient}> */}
+        {/* <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient} authOptions={authOptions}> */}
             <JsonConfigurator />
         {/* </TenantLogin> */}
     </div>
