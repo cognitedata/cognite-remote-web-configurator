@@ -189,8 +189,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                 });
             }
         },
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        onEditable: (node: object | EditableNode) => {
+        onEditable: (node: any) => {
             const path: (string | number)[] = (node as EditableNode).path;
 
             if (path && path?.length !== 0) {
