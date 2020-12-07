@@ -11,11 +11,12 @@ import { ParseType } from "./Parsers";
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
   if (!schema) {
-    const node: BaseNode = {
-      type: DataType.unspecified,
-      data: {},
-    };
-    return node;
+    return new BaseNode(
+      DataType.unspecified,
+      { type: DataType.unspecified },
+      undefined,
+      isRequired
+    );
   }
   switch (ParseType(schema.type)) {
     // case DataType.array:
@@ -38,22 +39,49 @@ export const populateChildren = (
   isRequired: boolean,
   parentSchema: ISchemaNode
 ): BaseNode => {
-  if (schema.properties) {
+  if (schema.allOf) {
+    const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
+    let dat: any = {};
+    for (const schema1 of schema.allOf) {
+      const children = populateChildren(schema1, isRequired, schema);
+      dat = { ...dat, ...(children._data as Record<string, unknown>) };
+      // TODO: Avoid this invalid casting
+    }
+    obj._data = dat;
+    return obj;
+  } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
     for (const [key, schem] of Object.entries(schema.properties)) {
-      const required = schema.required ? schema.required.findIndex((s) => s === key) !== -1 : false;
+      const required = schema.required
+        ? schema.required.findIndex((s) => s === key) !== -1
+        : false;
       // Only keys are added as data of ObjectNode
-      (obj.data as BaseNodes)[key] = populateChildren(schem, required, schema);
+      (obj._data as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
     return obj;
   } else if (schema.additionalProperties) {
-    const sampleData = populateChildren(schema.additionalProperties, false, schema);
+    const sampleData = populateChildren(
+      schema.additionalProperties,
+      false,
+      schema
+    );
     const obj = new AdditionalNode(schema, {}, false, sampleData);
     return obj;
-
   } else if (schema.items) {
-    if (schema.items === parentSchema){
-      const obj = new ArrayNode(schema, {}, isRequired, {data: []});
+    if (schema.items === parentSchema) {
+      const sampleData = new BaseNode(
+        DataType.unspecified,
+        { type: DataType.unspecified },
+        {},
+        isRequired
+      );
+      // TODO: fix circular issue here
+      const obj = new ArrayNode(
+        { type: DataType.array },
+        [],
+        isRequired,
+        sampleData
+      );
       return obj;
     } else {
       const sampleData = populateChildren(schema.items, false, schema);

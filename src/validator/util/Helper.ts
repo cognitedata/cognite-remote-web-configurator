@@ -59,16 +59,16 @@ export const getNode = (
 const getPrimitiveValue = (obj: BaseNode | undefined) => {
   switch (obj?.type) {
     case DataType.string:
-      return "";
+      return obj.data ?? "";
     case DataType.number:
-      return 0;
+      return obj.data ?? 0;
     case DataType.boolean:
-      return false;
+      return obj.data ?? false;
     case DataType.object:
     case DataType.map:
-      return {};
+      return obj.data ?? {};
     case DataType.array:
-      return [];
+      return obj.data ?? [];
 
     default:
       return undefined;

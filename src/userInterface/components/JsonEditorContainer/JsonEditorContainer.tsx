@@ -5,9 +5,10 @@ import { addNode, removeNode } from '../../../validator/Validator';
 import { ErrorType } from "../../../validator/interfaces/IValidationResult";
 import { StringNode } from "../../../validator/nodes/StringNode";
 import { ArrayNode } from "../../../validator/nodes/ArrayNode";
-import { IData } from "../../../validator/nodes/BaseNode";
+import { BaseNode, BaseNodes, IData } from "../../../validator/nodes/BaseNode";
 import { AdditionalNode } from "../../../validator/nodes/AdditionalNode";
 import { JsonConfigCommandCenter } from "../../util/JsonConfigCommandCenter";
+import { DataType } from "../../../validator/enum/DataType.enum";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -67,12 +68,14 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
      * returning a IData object with matching key and description
      */
     if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-        return {
-            [`${key}-sample`]: {
-                data: undefined,
-                description: `Add sample item to ${key}`
-            }
+        if (resultNode.sampleData.discriminator){
+            // TODO: Check is this possible for other type of nodes
+            return resultNode.sampleData.data;
         }
+        const ret: BaseNodes = {
+            [`${key}-sample`]: new BaseNode(DataType.unspecified, {type: DataType.object, description: `Add sample item to ${key}`}, undefined, true)
+        }
+        return ret;
     }
     else {
         return resultNode?.data;

@@ -18,7 +18,7 @@ export interface TemplateNode {
 }
 const defaultGroup = "TwinConfiguration";
 
-const rootDataNode: { [key: string]: BaseNode } = {};
+export const rootDataNode: { [key: string]: BaseNode } = {};
 const allNodes: TemplateNode[] = [];
 
 export const addNode = (
@@ -53,13 +53,20 @@ export const removeNode = (
         },
       };
     } else {
-      if (resultParent && resultParent.resultNode instanceof ArrayNode && resultParent.resultNode.minItems) {
+      if (
+        resultParent &&
+        resultParent.resultNode instanceof ArrayNode &&
+        resultParent.resultNode.minItems
+      ) {
         let subTree = data;
         paths.slice(0, paths.length - 1).forEach((step: number | string) => {
           subTree = subTree[step] as Record<string, unknown>;
         });
 
-        if((subTree as unknown as any[]).length <= resultParent.resultNode.minItems){
+        if (
+          ((subTree as unknown) as any[]).length <=
+          resultParent.resultNode.minItems
+        ) {
           return {
             group,
             error: {
@@ -95,15 +102,11 @@ export const loadSchema = (): Promise<void> => {
           const rootSchema = api.components.schemas;
 
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = populateChildren(
-              val as ISchemaNode,
-              true,
-              {
-                description: "root",
-                type: "",
-                properties: {},
-              }
-            );
+            const childrenNodes = populateChildren(val as ISchemaNode, true, {
+              description: "root",
+              type: "",
+              properties: {},
+            });
             rootDataNode[key] = childrenNodes;
           }
 
@@ -126,7 +129,8 @@ export const loadSchema = (): Promise<void> => {
           }
           console.log("Schema YML!", rootSchema);
           console.log("Schema Node!", rootDataNode);
-          // console.log('All Nodes', allNodes);
+          (window as any)["nodes"] = rootDataNode;
+          console.log("All Nodes", allNodes);
           console.log("JSON->", getJson(rootDataNode[defaultGroup]));
           resolve();
         } else {
