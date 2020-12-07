@@ -1,6 +1,8 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { rootDataNode } from "../Validator";
+import { BooleanNode } from "./BooleanNode";
+import { StringNode } from "./StringNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
 export type IData =
@@ -46,7 +48,12 @@ export class BaseNode {
         if(!node.readOnlyFields.includes(this.discriminator.propertyName)){
           node.readOnlyFields.push(this.discriminator.propertyName);
         }
-
+        if(node._data instanceof Object){
+          (node._data as any)[this.discriminator.propertyName] = {
+            type: 'string',
+            data: key
+          };
+        }
         result[key] = node;
       }
       return result;
