@@ -3,7 +3,7 @@ import classes from './EditorPanel.module.scss'
 import { Template } from 'jsoneditor';
 import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { getAllNodes, loadSchema } from '../../../validator/Validator';
-import { JsonConfig } from "../../../validator/types";
+import { JsonConfig } from "../../util/types";
 
 const extractField = (key: string) => {
     return key.split(":")[1]

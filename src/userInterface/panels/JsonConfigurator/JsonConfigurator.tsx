@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
-import { JsonConfig } from "../../../validator/types";
+import { JsonConfig } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../util/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
