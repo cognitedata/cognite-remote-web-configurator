@@ -18,4 +18,5 @@ export interface ISchemaNode {
     propertyName: string;
   };
   allOf?: ISchemaNode[];
+  example?: any;
 }

@@ -34,7 +34,8 @@ export class BaseNode {
     this.type = type;
     this.description = schema.description;
     this.discriminator = schema.discriminator;
-    this._data = data;
+    // This rule overrides the data comes from constructor. But this is ok for now since we are using these logics for creating taplate nodes.
+    this._data = schema.example ?? data;
     this.isRequired = isRequired;
   }
 
