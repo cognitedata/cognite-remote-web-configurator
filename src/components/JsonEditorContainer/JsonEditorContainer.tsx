@@ -68,6 +68,7 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
      */
     if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
         if (resultNode.sampleData.discriminator){
+            // TODO: Check is this possible for other type of nodes
             return resultNode.sampleData.data;
         }
         const ret: BaseNodes = {
