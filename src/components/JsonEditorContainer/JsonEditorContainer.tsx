@@ -67,6 +67,9 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
      * returning a IData object with matching key and description
      */
     if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
+        if (resultNode.sampleData.discriminator){
+            return resultNode.sampleData.data;
+        }
         const ret: BaseNodes = {
             [`${key}-sample`]: new BaseNode(DataType.unspecified, {type: DataType.object, description: `Add sample item to ${key}`}, undefined, true)
         }
