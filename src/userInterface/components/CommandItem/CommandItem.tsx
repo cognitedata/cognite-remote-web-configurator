@@ -2,8 +2,8 @@ import React from 'react';
 import Button from "antd/es/button";
 import styles from "./CommandItem.module.scss";
 
-export const CommandItem: React.FC<{ onClick?: () => void, icon?: string }> = (props) => {
-    return (<Button type="primary" className={styles.commandBtn}
+export const CommandItem: React.FC<{ className?: string, onClick?: () => void, icon?: string }> = (props) => {
+    return (<Button type="primary" className={`${styles.commandBtn} ${props.className}`}
                     shape="round"
                     icon={props.icon}
                     size="large"

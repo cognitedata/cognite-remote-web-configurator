@@ -1,6 +1,5 @@
 import React from "react";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
-// import { CustomLogin } from "./CustomLogin/CustomLogin";
 import { ClientSDKProvider, PureObject, TenantSelector } from "@cognite/gearbox";
 import styles from "./TenantLogin.module.scss";
 import { APP_NAME, LOGIN_CDF_ENVIRONMENT_OPT_TEXT, LOGIN_HEADER } from "../../../constants";

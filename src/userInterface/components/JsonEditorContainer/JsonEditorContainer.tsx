@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import JSONEditor, { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
-import { addNode, removeNode } from '../../validator/Validator';
-import { ErrorType } from "../../validator/interfaces/IValidationResult";
-import { StringNode } from "../../validator/nodes/StringNode";
-import { ArrayNode } from "../../validator/nodes/ArrayNode";
-import { IData } from "../../validator/nodes/BaseNode";
-import { AdditionalNode } from "../../validator/nodes/AdditionalNode";
+import { addNode, removeNode } from '../../../validator/Validator';
+import { ErrorType } from "../../../validator/interfaces/IValidationResult";
+import { StringNode } from "../../../validator/nodes/StringNode";
+import { ArrayNode } from "../../../validator/nodes/ArrayNode";
+import { IData } from "../../../validator/nodes/BaseNode";
+import { AdditionalNode } from "../../../validator/nodes/AdditionalNode";
+import { JsonConfigCommandCenter } from "../../util/JsonConfigCommandCenter";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]) => {
     const validMenuItems: MenuItem[] = [];
@@ -192,6 +193,7 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
             // create the editor
             const container = jsonEditorElm.current;
             jsonEditorInstance.current = new JSONEditor(container, options);
+            JsonConfigCommandCenter.editorInstance = jsonEditorInstance.current;
         }
     }, []);
 

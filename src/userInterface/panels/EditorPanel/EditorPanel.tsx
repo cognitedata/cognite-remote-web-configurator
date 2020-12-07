@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import classes from './JsonEditor.module.scss'
-import { JsonEditorContainer } from "../JsonEditorContainer/JsonEditorContainer";
-import { getAllNodes, loadSchema } from '../../validator/Validator';
+import classes from './EditorPanel.module.scss'
 import { Template } from 'jsoneditor';
-import { JsonConfig } from "../../types";
+import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
+import { getAllNodes, loadSchema } from '../../../validator/Validator';
+import { JsonConfig } from "../../../validator/types";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
 }
 
-export const JsonEditor: React.FC<{ jsonConfig: JsonConfig | null }> = (props: any) => {
+export const EditorPanel: React.FC<{ jsonConfig: JsonConfig | null }> = (props: any) => {
     const templates: Template[] = [];
 
     const initValidater = async () => {
