@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import classes from './TwinItemContainer.module.scss';
+import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
 import { CogniteClient } from "@cognite/sdk";
 
-export const TwinItemContainer: React.FC<{ sdk: CogniteClient, onClick: (item: any) => void }> = (props) => {
+export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (item: any) => void }> = (props) => {
 
     const [digitalTwins, setDigitalTwins]= useState<any[]>([]);
     const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);

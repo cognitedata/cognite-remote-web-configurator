@@ -1,0 +1,26 @@
+.commandsContainer {
+    display: grid;
+    grid-template-columns: 150px auto 150px 150px;
+    grid-template-areas: "paste . update delete";
+    grid-gap: 10px;
+    padding: 20px;
+    border-bottom: solid #cdcfd1;
+}
+
+.modeSwitch {
+    grid-area: paste;
+    display: flex;
+    margin: auto;
+
+    span{
+        margin-right: 5px;
+    }
+}
+
+.update {
+    grid-area: update;
+}
+
+.delete {
+    grid-area: delete;
+}

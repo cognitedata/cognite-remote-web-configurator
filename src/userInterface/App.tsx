@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './App.scss';
-import { JsonConfigurator } from './views/JsonConfigurator/JsonConfigurator';
-import { Client } from "./cdf/client";
-import { TenantLogin } from "./components/TwinSelector/TenantLogin/TenantLogin";
+import { JsonConfigurator } from './panels/JsonConfigurator/JsonConfigurator';
+import { Client } from "../cdf/client";
+import { TenantLogin } from "./components/TenantLogin/TenantLogin";
 
 const cogniteClient = Client.sdk;
 
