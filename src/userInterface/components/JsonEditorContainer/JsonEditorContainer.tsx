@@ -192,23 +192,26 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
         // eslint-disable-next-line @typescript-eslint/ban-types
         onEditable: (node: object | EditableNode) => {
             const path: (string | number)[] = (node as EditableNode).path;
-            // const parentPath: (string | number)[] = [...path];
-            let resultNode;
-            if (path && path.length !== 0) {
-                console.log('as path', path);
-                resultNode = addNode([...path])
+
+            if (path && path?.length !== 0) {
+                const parentPath = [...path];
+                const leafNode = parentPath.pop();
+                const resultNode = addNode(parentPath).resultNode;
+                const readOnlyFields = resultNode?.readOnlyFields;
+
+                /**
+                 * if read only fields exists and 
+                 * current considering node (leafNode) is a read only field
+                 */
+                if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
+                    return {
+                        field: true,
+                        value: false,
+                        path: path
+                    }
+                }
             }
-
-            console.log('node', node);
-            console.log('resultNode', resultNode);
-
-
-            // the field is read-only but has an editable value on the path
-            return {
-                field: true,
-                value: false,
-                // path: ['camera', 'hierarchy', 'type']
-            }
+            return true;
         }
     }
 
