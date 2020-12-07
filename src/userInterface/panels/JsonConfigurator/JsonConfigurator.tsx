@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
 import { JsonConfig } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
-import { JsonConfigCommandCenter } from "../../util/JsonConfigCommandCenter";
+import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
