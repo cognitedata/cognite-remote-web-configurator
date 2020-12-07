@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../../validator/Validator';
 import { ErrorType } from "../../../validator/interfaces/IValidationResult";
@@ -34,7 +34,7 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
                     if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
                         validMenuItems.push(subItem);
                     }
-                    if(resultNode instanceof AdditionalNode) {
+                    if (resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
                     }
                     matchingItemCountWithSameDesc++;
@@ -68,12 +68,12 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
      * returning a IData object with matching key and description
      */
     if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-        if (resultNode.sampleData.discriminator){
+        if (resultNode.sampleData.discriminator) {
             // TODO: Check is this possible for other type of nodes
             return resultNode.sampleData.data;
         }
         const ret: BaseNodes = {
-            [`${key}-sample`]: new BaseNode(DataType.unspecified, {type: DataType.object, description: `Add sample item to ${key}`}, undefined, true)
+            [`${key}-sample`]: new BaseNode(DataType.unspecified, { type: DataType.object, description: `Add sample item to ${key}` }, undefined, true)
         }
         return ret;
     }
@@ -188,6 +188,29 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                     }
                 });
             }
+        },
+        onEditable: (node: any) => {
+            const path: (string | number)[] = (node as EditableNode).path;
+
+            if (path && path?.length !== 0) {
+                const parentPath = [...path];
+                const leafNode = parentPath.pop();
+                const resultNode = addNode(parentPath).resultNode;
+                const readOnlyFields = resultNode?.readOnlyFields;
+
+                /**
+                 * if read only fields exists and 
+                 * current considering node (leafNode) is a read only field
+                 */
+                if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
+                    return {
+                        field: true,
+                        value: false,
+                        path: path
+                    }
+                }
+            }
+            return true;
         }
     }
 
