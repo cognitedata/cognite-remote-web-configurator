@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import JSONEditor, { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
+import JSONEditor, { EditableNode, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode, Template } from "jsoneditor";
 import "./JsonEditorContainer.scss";
 import { addNode, removeNode } from '../../../validator/Validator';
 import { ErrorType } from "../../../validator/interfaces/IValidationResult";
@@ -34,7 +34,7 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
                     if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
                         validMenuItems.push(subItem);
                     }
-                    if(resultNode instanceof AdditionalNode) {
+                    if (resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
                     }
                     matchingItemCountWithSameDesc++;
@@ -68,12 +68,12 @@ const getValidInsertItems = (parentPath: (string | number)[]): IData => {
      * returning a IData object with matching key and description
      */
     if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-        if (resultNode.sampleData.discriminator){
+        if (resultNode.sampleData.discriminator) {
             // TODO: Check is this possible for other type of nodes
             return resultNode.sampleData.data;
         }
         const ret: BaseNodes = {
-            [`${key}-sample`]: new BaseNode(DataType.unspecified, {type: DataType.object, description: `Add sample item to ${key}`}, undefined, true)
+            [`${key}-sample`]: new BaseNode(DataType.unspecified, { type: DataType.object, description: `Add sample item to ${key}` }, undefined, true)
         }
         return ret;
     }
@@ -187,6 +187,27 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                         }
                     }
                 });
+            }
+        },
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        onEditable: (node: object | EditableNode) => {
+            const path: (string | number)[] = (node as EditableNode).path;
+            // const parentPath: (string | number)[] = [...path];
+            let resultNode;
+            if (path && path.length !== 0) {
+                console.log('as path', path);
+                resultNode = addNode([...path])
+            }
+
+            console.log('node', node);
+            console.log('resultNode', resultNode);
+
+
+            // the field is read-only but has an editable value on the path
+            return {
+                field: true,
+                value: false,
+                // path: ['camera', 'hierarchy', 'type']
             }
         }
     }
