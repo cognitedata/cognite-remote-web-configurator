@@ -1,15 +1,15 @@
 import React from 'react';
-import classes from './TwinSelector.module.scss';
-import { CommandItem } from '../Util/CommandItem/CommandItem'
-import { Client } from "../../cdf/client";
-import { TwinItemContainer } from "../Util/TwinItemContainer/TwinItemContainer";
-import { Divider } from "antd";
-import logo from "../../assets/cognite.png";
+import classes from './SideNavPanel.module.scss';
+import logo from "../../../assets/cognite.png";
+import { Client } from "../../../cdf/client";
+import { CommandItem } from '../../components/CommandItem/CommandItem'
+import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
+import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 
 const cogniteClient = Client.sdk;
 
-export const TwinSelector: React.FC<{onTwinSelect: (twin: any) => void}> = (props: any ) => {
+export const SideNavPanel: React.FC<{onTwinSelect: (twin: any) => void}> = (props: any ) => {
     return (
         <>
             <div className={classes.top}>
@@ -26,7 +26,7 @@ export const TwinSelector: React.FC<{onTwinSelect: (twin: any) => void}> = (prop
             <div>
                 <Text>Configurations</Text>
                 <div className={classes.twinContainer}>
-                    <TwinItemContainer sdk={cogniteClient} onClick={props.onTwinSelect}/>
+                    <ConfigSelector sdk={cogniteClient} onClick={props.onTwinSelect}/>
                 </div>
             </div>
         </>
