@@ -17,9 +17,9 @@ function App(props: { auth?: { project?: string, apiKey?: string, oauthToken?: s
 
   return (
     <div className="App">
-        {/* <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient} authOptions={authOptions}> */}
+        <TenantLogin signedIn={signedIn} onLogin={onSignIn} sdk={cogniteClient} authOptions={authOptions}>
             <JsonConfigurator />
-        {/* </TenantLogin> */}
+        </TenantLogin>
     </div>
   );
 }
