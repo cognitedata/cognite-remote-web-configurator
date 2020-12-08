@@ -12,9 +12,10 @@ import { DataType } from "../../../validator/enum/DataType.enum";
 
 const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]) => {
     const validMenuItems: MenuItem[] = [];
-    const validInsertItems: any = getValidInsertItems(parentPath);
-    const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]);
     const resultNode = addNode([...parentPath]).resultNode;
+
+    const validInsertItems: any = getValidInsertItems(parentPath, currentJson, resultNode);
+    const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]); 
 
     if (submenu === undefined || submenu.length === 0) {
         return undefined;
@@ -25,17 +26,20 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
             let matchingItemCountWithSameDesc = 0;
 
             Object.keys(validInsertItems).forEach((key: any) => {
-                if (subItem.text === key &&
-                    subItem.title === validInsertItems[key].description) {
+                if ((subItem.text === key)
+                    && (subItem.title === validInsertItems[key].description)
+                    && !existingKeys.includes(key)) {
                     /**
                      * filter alredy added items from insert menu
                      * unless it's map
                      */
-                    if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
+                    if (!(resultNode instanceof AdditionalNode)) {
                         validMenuItems.push(subItem);
+                        existingKeys.push(key);
                     }
                     if(resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
+                        existingKeys.push(key);
                     }
                     matchingItemCountWithSameDesc++;
                 }
@@ -60,9 +64,25 @@ const getExistingKeys = (json: any, path: (number | string)[]) => {
     });
 }
 
-const getValidInsertItems = (parentPath: (string | number)[]): IData => {
+const getPathObject = (json: any, path: (number | string)[]) => {
+    let subTree = json;
+    path.forEach((step: number | string) => {
+        subTree = subTree[step];
+    });
+    return subTree;
+}
+
+const getValidInsertItems = (parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData => {
     const key = parentPath[parentPath.length - 1]
-    const resultNode = addNode([...parentPath]).resultNode;
+    let resultNode = addNode([...parentPath]).resultNode;
+
+    if(node?.discriminator){
+        const currentData = getPathObject(currentJson, parentPath);
+        const typeKey = node.discriminator.propertyName;
+        const dataType = currentData[typeKey];
+        resultNode = (node.data as BaseNodes)[dataType];
+    }
+
     /**
      * When adding items to an Array or a Map,
      * returning a IData object with matching key and description
