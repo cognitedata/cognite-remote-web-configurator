@@ -209,9 +209,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
-        const validInsertItems: any = this.getValidInsertItems(parentPath);
-        const existingKeys: (number | string)[] = this.getExistingKeys(currentJson, [...parentPath]);
         const resultNode = addNode([...parentPath]).resultNode;
+
+        const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
+        const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
 
         if (submenu === undefined || submenu.length === 0) {
             return undefined;
@@ -219,47 +220,56 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         submenu?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-                let matchingItemCountWithSameDesc = 0;
+                // let matchingItemCountWithSameDesc = 0;
 
                 Object.keys(validInsertItems).forEach((key: any) => {
-                    if (subItem.text === key &&
-                        subItem.title === validInsertItems[key].description) {
+                    if ((subItem.text === key)
+                        && (subItem.title === validInsertItems[key].description)
+                        && !existingKeys.includes(key)) {
                         /**
                          * filter already added items from insert menu
                          * unless it's map
                          */
-                        if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
-                            validMenuItems.push(subItem);
-                        }
-                        if(resultNode instanceof AdditionalNode) {
-                            validMenuItems.push(subItem);
-                        }
-                        matchingItemCountWithSameDesc++;
+                        // if (!(resultNode instanceof AdditionalNode)) {
+                        //     validMenuItems.push(subItem);
+                        //     existingKeys.push(key);
+                        // }
+                        // if(resultNode instanceof AdditionalNode) {
+                        validMenuItems.push(subItem);
+                        existingKeys.push(key);
+                        // }
+                        // matchingItemCountWithSameDesc++;
                     }
                 });
 
-                if (matchingItemCountWithSameDesc > 1) {
-                    alert("non-unique Menu Items, Please use the valid option");
-                }
+                // if (matchingItemCountWithSameDesc > 1) {
+                //     alert("Invalid schema. Different keys should not exists with same description.");
+                // }
             }
         });
 
         return validMenuItems;
     }
 
-    private getExistingKeys(json: any, path: (number | string)[]): any {
+    private getPathObject(json: any, path: (number | string)[]): any {
         let subTree = json;
         path.forEach((step: number | string) => {
             subTree = subTree[step];
         });
-        return Object.keys(subTree).map((key: number | string) => {
-            return key;
-        });
+        return subTree;
     }
 
-    private getValidInsertItems(parentPath: (string | number)[]): IData {
+    private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
-        const resultNode = addNode([...parentPath]).resultNode;
+        let resultNode = addNode([...parentPath]).resultNode;
+
+        if(node?.discriminator){
+            const currentData = this.getPathObject(currentJson, parentPath);
+            const typeKey = node.discriminator.propertyName;
+            const dataType = currentData[typeKey];
+            resultNode = (node.data as BaseNodes)[dataType];
+        }
+
         /**
          * When adding items to an Array or a Map,
          * returning a IData object with matching key and description
