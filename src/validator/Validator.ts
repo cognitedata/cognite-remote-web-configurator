@@ -21,7 +21,7 @@ const defaultGroup = "TwinConfiguration";
 export const rootDataNode: { [key: string]: BaseNode } = {};
 const allNodes: TemplateNode[] = [];
 
-export const addNode = (
+export const getNodeMeta = (
   paths: (string | number)[],
   group: string = defaultGroup
 ): IValidationResult => {
