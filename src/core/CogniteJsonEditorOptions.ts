@@ -200,8 +200,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
                 return {
                     field: true,
-                    value: false,
-                   // path: path
+                    value: false
                 }
             }
         }
