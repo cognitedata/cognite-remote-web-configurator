@@ -163,15 +163,15 @@ export function JsonEditorContainer(props: { json: any, templates: Template[] })
                             item.className = "warning-triangle";
                             switch (removePossibility.error.type) {
                                 case ErrorType.RequiredNode:
-                                    item.title = "Canot Remove. This field is mandatory";
+                                    item.title = "Cannot Remove. This field is mandatory";
                                     item.click = () => { alert("Error: Canot Remove. This field is mandatory"); }
                                     break;
                                 case ErrorType.MinLength:
-                                    item.title = "Canot Remove. Array has a minimum length";
+                                    item.title = "Cannot Remove. Array has a minimum length";
                                     item.click = () => { alert("Error: Canot Remove. Array has a minimum length"); }
                                     break;
                                 default:
-                                    item.title = "Canot Remove.";
+                                    item.title = "Cannot Remove.";
                                     item.click = () => { alert("Error: Canot Remove."); }
                                     break;
                             }
