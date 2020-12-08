@@ -1,4 +1,12 @@
-import { EditableNode, FieldEditable, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
+import {
+    EditableNode,
+    FieldEditable,
+    JSONEditorOptions,
+    JSONPath,
+    MenuItem,
+    MenuItemNode,
+    ValidationError
+} from "jsoneditor";
 import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
@@ -15,6 +23,7 @@ const extractField = (key: string) => {
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JSONEditorOptions {
+
         return {
             mode: this.mode,
             templates: this.templates,
@@ -27,6 +36,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return this.onCreateMenu(menuItems, node);
             }),
             onEditable: this.onEditable,
+            onValidate: this.onValidate,
         }
     }
 
@@ -205,6 +215,47 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
         }
         return true;
+    }
+
+    public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
+        // rules:
+        // - team, names, and ages must be filled in and be of correct type
+        // - a team must have 4 members
+        // - at lease one member of the team must be adult
+        const errors = this.validateMissingFields(json);
+
+        return errors;
+    }
+
+    private validateMissingFields(json: any, paths: string[] = [], errors: ValidationError[] = []): ValidationError[] {
+
+        const rootNodeMeta = getNodeMeta(paths);
+        if (rootNodeMeta) {
+            const subNodeMeta = rootNodeMeta.resultNode?.data as BaseNodes;
+
+            const missingRequiredFields = [];
+
+            for (const childKey of Object.keys(subNodeMeta)) {
+                const childNode = subNodeMeta[childKey] as BaseNode;
+                const isRequired = childNode.isRequired;
+                if (isRequired) {
+
+                    const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
+                    if (!hasKey) {
+                        missingRequiredFields.push(childKey);
+                    } else {
+                        const value = json[childKey];
+                        const newPath = paths.concat([childKey]);
+                        this.validateMissingFields(value, newPath, errors);
+                    }
+                }
+
+            }
+            if(missingRequiredFields.length) {
+                errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
+            }
+        }
+        return errors;
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
