@@ -30,10 +30,12 @@ export const getNode = (
 
   for (const path of paths) {
     let next;
-    if (typeof path === "number") {
-      next = (resultNode.data as BaseNode[])[path];
-    } else {
-      next = (resultNode.data as BaseNodes)[path];
+    if (resultNode) {
+      if (typeof path === "number") {
+        next = (resultNode.data as BaseNode[])[path];
+      } else {
+        next = (resultNode.data as BaseNodes)[path];
+      }
     }
 
     if (!next) {
@@ -75,7 +77,7 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
   }
 };
 
-export const getJson = (obj: BaseNode | undefined): any=> {
+export const getJson = (obj: BaseNode | undefined): any => {
   if (obj instanceof ObjectNode) {
     if (obj.data) {
       const dat: any = {};
