@@ -23,7 +23,7 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
 
     submenu?.forEach(subItem => {
         if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-            let matchingItemCountWithSameDesc = 0;
+            // let matchingItemCountWithSameDesc = 0;
 
             Object.keys(validInsertItems).forEach((key: any) => {
                 if ((subItem.text === key)
@@ -33,21 +33,21 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
                      * filter alredy added items from insert menu
                      * unless it's map
                      */
-                    if (!(resultNode instanceof AdditionalNode)) {
+                    // if (!(resultNode instanceof AdditionalNode)) {
+                    //     validMenuItems.push(subItem);
+                    //     existingKeys.push(key);
+                    // }
+                    // if(resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
-                    }
-                    if(resultNode instanceof AdditionalNode) {
-                        validMenuItems.push(subItem);
-                        existingKeys.push(key);
-                    }
-                    matchingItemCountWithSameDesc++;
+                    // }
+                    // matchingItemCountWithSameDesc++;
                 }
             });
 
-            if (matchingItemCountWithSameDesc > 1) {
-                alert("non-unique Menu Items, Please use the valid option");
-            }
+            // if (matchingItemCountWithSameDesc > 1) {
+            //     alert("Invalid schema. Different keys should not exists with same description.");
+            // }
         }
     });
 
