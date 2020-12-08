@@ -1,4 +1,4 @@
-import { JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
+import { EditableNode, FieldEditable, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
 import { addNode, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
@@ -26,6 +26,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onCreateMenu: ((menuItems: MenuItem[], node: MenuItemNode) => {
                 return this.onCreateMenu(menuItems, node);
             }),
+            onEditable: this.onEditable,
         }
     }
 
@@ -91,7 +92,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         }
 
         const path = node.path;
-        // get parant Path for add function
+        // get parent Path for add function
         const parentPath: string[] = [...path];
         // Skip case: adding first child
         if (node.type !== "append") {
@@ -127,21 +128,21 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         item.className = "warning-triangle";
                         switch (removePossibility.error.type) {
                             case ErrorType.RequiredNode:
-                                item.title = "Canot Remove. This field is mandatory";
+                                item.title = "Cannot Remove. This field is mandatory";
                                 item.click = () => {
-                                    alert("Error: Canot Remove. This field is mandatory");
+                                    alert("Error: Cannot Remove. This field is mandatory");
                                 }
                                 break;
                             case ErrorType.MinLength:
-                                item.title = "Canot Remove. Array has a minimum length";
+                                item.title = "Cannot Remove. Array has a minimum length";
                                 item.click = () => {
-                                    alert("Error: Canot Remove. Array has a minimum length");
+                                    alert("Error: Cannot Remove. Array has a minimum length");
                                 }
                                 break;
                             default:
-                                item.title = "Canot Remove.";
+                                item.title = "Cannot Remove.";
                                 item.click = () => {
-                                    alert("Error: Canot Remove.");
+                                    alert("Error: Cannot Remove.");
                                 }
                                 break;
                         }
@@ -183,6 +184,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         };
     }
 
+    public onEditable(node: any): boolean | FieldEditable {
+        const path: (string | number)[] = (node as EditableNode).path;
+
+        if (path && path?.length !== 0) {
+            const parentPath = [...path];
+            const leafNode = parentPath.pop();
+            const resultNode = addNode(parentPath).resultNode;
+            const readOnlyFields = resultNode?.readOnlyFields;
+
+            /**
+             * if read only fields exists and
+             * current considering node (leafNode) is a read only field
+             */
+            if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
+                return {
+                    field: true,
+                    value: false,
+                   // path: path
+                }
+            }
+        }
+        return true;
+    }
+
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
         const validInsertItems: any = this.getValidInsertItems(parentPath);
@@ -201,7 +226,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     if (subItem.text === key &&
                         subItem.title === validInsertItems[key].description) {
                         /**
-                         * filter alredy added items from insert menu
+                         * filter already added items from insert menu
                          * unless it's map
                          */
                         if (!(resultNode instanceof AdditionalNode) && !existingKeys.includes(key)) {
@@ -241,12 +266,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * returning a IData object with matching key and description
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-            if (resultNode.sampleData.discriminator){
+            if (resultNode.sampleData.discriminator) {
                 // TODO: Check is this possible for other type of nodes
                 return resultNode.sampleData.data;
             }
             const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.unspecified, {type: DataType.object, description: `Add sample item to ${key}`}, undefined, true)
+                [`${key}-sample`]: new BaseNode(DataType.unspecified, { type: DataType.object, description: `Add sample item to ${key}` }, undefined, true)
             }
             return ret;
         }
