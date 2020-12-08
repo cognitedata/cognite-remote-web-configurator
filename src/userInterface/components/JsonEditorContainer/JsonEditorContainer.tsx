@@ -15,7 +15,7 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
     const resultNode = addNode([...parentPath]).resultNode;
 
     const validInsertItems: any = getValidInsertItems(parentPath, currentJson, resultNode);
-    const existingKeys: (number | string)[] = getExistingKeys(currentJson, [...parentPath]); 
+    const existingKeys: (number | string)[] = Object.keys(getPathObject(currentJson, [...parentPath])); 
 
     if (submenu === undefined || submenu.length === 0) {
         return undefined;
@@ -54,15 +54,15 @@ const createValidInsertMenu = (submenu: MenuItem[] | undefined, currentJson: any
     return validMenuItems;
 }
 
-const getExistingKeys = (json: any, path: (number | string)[]) => {
-    let subTree = json;
-    path.forEach((step: number | string) => {
-        subTree = subTree[step];
-    });
-    return Object.keys(subTree).map((key: number | string) => {
-        return key;
-    });
-}
+// const getExistingKeys = (json: any, path: (number | string)[]) => {
+//     let subTree = json;
+//     path.forEach((step: number | string) => {
+//         subTree = subTree[step];
+//     });
+//     return Object.keys(subTree).map((key: number | string) => {
+//         return key;
+//     });
+// }
 
 const getPathObject = (json: any, path: (number | string)[]) => {
     let subTree = json;
