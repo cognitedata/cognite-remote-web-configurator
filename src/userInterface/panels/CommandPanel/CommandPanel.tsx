@@ -15,16 +15,22 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
     }
     return (
         <div className={classes.commandsContainer}>
-            <div className={classes.modeSwitch}>
+            <div className={classes.leftPanel}>
                 <span>Select Mode:</span>
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
             </div>
-            {props.selectedTwin &&
-                <>
-                    <CommandItem className={classes.update} icon={"upload"}>UPDATE</CommandItem>
-                    <CommandItem className={classes.delete} icon={"delete"}>DELETE</CommandItem>
-                </>
-            }
+            <div className={classes.rightPanel}>
+                {props.selectedTwin ?
+                    <>
+                        <CommandItem className={classes.btn} icon={"upload"}>UPDATE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"delete"}>DELETE</CommandItem>
+                    </> :
+                    <>
+                        <CommandItem className={classes.btn} icon={"upload"}>SAVE</CommandItem>
+                    </>
+                }
+            </div>
+
 
         </div>
     );
