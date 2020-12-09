@@ -3,10 +3,9 @@ import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
 import { CogniteClient } from "@cognite/sdk";
 
-export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (item: any) => void }> = (props) => {
+export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (configName:string, item: any) => void, selectedTwin: string }> = (props) => {
 
     const [digitalTwins, setDigitalTwins] = useState<any[]>([]);
-    const [selectedTwin, setSelectedTwin] = useState<any>();
     const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
 
     useEffect(() => {
@@ -32,9 +31,8 @@ export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (item: any)
         const configMap = digitalTwinConfigMap.current;
         if (configMap && configMap.size > 0) {
             const config = configMap.get(configName);
-            props.onClick(config);
+            props.onClick(configName, config);
         }
-        setSelectedTwin(configName);
     }
 
     if (digitalTwins.length) {
@@ -43,7 +41,7 @@ export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (item: any)
                 bordered
                 dataSource={digitalTwins}
                 renderItem={item => (
-                    <List.Item className={`${classes.twinItem} ` + (item === selectedTwin ? classes.selected: "")} onClick={() => onListItemClick(item)} key={item}>
+                    <List.Item className={`${classes.twinItem} ` + (item === props.selectedTwin ? classes.selected : "")} onClick={() => onListItemClick(item)} key={item}>
                         {item}
                     </List.Item>
                 )}

@@ -9,9 +9,11 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 
 export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<null | JsonConfig>(null);
+    const [selectedTwin, setSelectedTwin] = useState<any>();
 
-    const onJsonConfigSelect = (config: JsonConfig) => {
-        if(config){
+    const onJsonConfigSelect = (configName: string, config: JsonConfig) => {
+        setSelectedTwin(configName);
+        if (config) {
             setJsonConfig(config);
         }
     }
@@ -26,9 +28,9 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     return (
         <div className={classes.configurator}>
-            <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect}/></div>
-            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand}/></div>
-            <div className={classes.jsonView}><EditorPanel jsonConfig={jsonConfig}/></div>
+            <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect} selectedTwin={selectedTwin} /></div>
+            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} /></div>
+            <div className={classes.jsonView}><EditorPanel jsonConfig={jsonConfig} /></div>
         </div>
     );
 }
