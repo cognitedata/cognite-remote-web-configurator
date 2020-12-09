@@ -10,7 +10,6 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<null | JsonConfig>(null);
     const [selectedTwin, setSelectedTwin] = useState<any>();
-    // const [fileMode, setFileMode] = useState<"NEW" | "EDIT">("NEW");
 
 
     // call with undefind values to create new config
@@ -30,9 +29,28 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {
         switch (command) {
-            case CommandEvent.Mode: {
+            case CommandEvent.mode: {
                 JsonConfigCommandCenter.onModeChange(args[0]);
+                break;
             }
+            case CommandEvent.update: {
+                console.warn("Update function not implemented");
+                break;
+            }
+            case CommandEvent.delete: {
+                console.warn("Delete As function not implemented");
+                break;
+            }
+            case CommandEvent.saveAs: {
+                console.warn("Save As function not implemented");
+                break;
+            }
+            case CommandEvent.download: {
+                console.warn("Download function not implemented");
+                break;
+            }
+            default:
+                break;
         }
     }
 

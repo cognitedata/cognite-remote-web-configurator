@@ -8,11 +8,12 @@ import { Modes } from "../../util/enums/Modes";
 export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void, selectedTwin: string }> = (props: any) => {
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
-            props.commandEvent(CommandEvent.Mode, Modes.default, evt);
+            props.commandEvent(CommandEvent.mode, Modes.default, evt);
         } else {
-            props.commandEvent(CommandEvent.Mode, Modes.paste, evt);
+            props.commandEvent(CommandEvent.mode, Modes.paste, evt);
         }
     }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
@@ -22,13 +23,14 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
             <div className={classes.rightPanel}>
                 {props.selectedTwin ?
                     <>
-                        <CommandItem className={classes.btn} icon={"upload"}>UPDATE</CommandItem>
-                        <CommandItem className={classes.btn} icon={"delete"}>DELETE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"upload"} onClick={() => props.commandEvent(CommandEvent.update)}>UPDATE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"delete"} onClick={() => props.commandEvent(CommandEvent.delete)}>DELETE</CommandItem>
                     </> :
                     <>
-                        <CommandItem className={classes.btn} icon={"save"}>SAVE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"save"} onClick={() => props.commandEvent(CommandEvent.saveAs)}>SAVE</CommandItem>
                     </>
                 }
+                <CommandItem className={classes.btn} icon={"download"} onClick={() => props.commandEvent(CommandEvent.download)}>DOWNLOAD</CommandItem>
             </div>
 
 
