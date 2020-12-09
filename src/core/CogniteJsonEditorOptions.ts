@@ -1,5 +1,5 @@
 import { EditableNode, FieldEditable, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
-import { addNode, getAllNodes, removeNode } from "../validator/Validator";
+import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
@@ -38,7 +38,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             .reduce((acc: any[], singleNodeArr: any[]): any[] => {
                 const node = singleNodeArr.pop();
 
-                if (node) {
+                let templates = acc;
+
+                const transformToTemplate = (templateArr: any[], node: any)=> {
                     const key = extractField(node.key)
 
                     const temp = {
@@ -48,7 +50,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         field: key,
                         value: node.data
                     }
-                    acc.push(temp);
+                    templateArr.push(temp);
 
                     /**
                      * if node type is array or map
@@ -62,10 +64,20 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             field: `${key}-sample`,
                             value: node.sample
                         }
-                        acc.push(temp);
+                        templateArr.push(temp);
                     }
                 }
-                return acc;
+
+                if(acc.length === 1) { // transform first acc value
+                    const firstNode = acc.pop();
+                    templates = [];
+                    transformToTemplate(templates, firstNode);
+                }
+
+                if (node) {
+                    transformToTemplate(templates, node);
+                }
+                return templates;
             });
     }
 
@@ -158,7 +170,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             trigger: 'focus',
             getOptions: (text: string, path: JSONPath) => {
                 return new Promise((resolve, reject) => {
-                    const options = addNode([...path]).resultNode;
+                    const options = getNodeMeta([...path]).resultNode;
                     if (options && options instanceof StringNode) {
                         if (options.possibleValues && options.possibleValues.length > 0) {
                             resolve(options.possibleValues)
@@ -177,7 +189,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (path && path?.length !== 0) {
             const parentPath = [...path];
             const leafNode = parentPath.pop();
-            const resultNode = addNode(parentPath).resultNode;
+            const resultNode = getNodeMeta(parentPath).resultNode;
             const readOnlyFields = resultNode?.readOnlyFields;
 
             /**
@@ -196,7 +208,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
-        const resultNode = addNode([...parentPath]).resultNode;
+        const resultNode = getNodeMeta([...parentPath]).resultNode;
 
         const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
         const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
@@ -248,7 +260,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
-        let resultNode = addNode([...parentPath]).resultNode;
+        let resultNode = getNodeMeta([...parentPath]).resultNode;
 
         if(node?.discriminator){
             const currentData = this.getPathObject(currentJson, parentPath);
