@@ -6,7 +6,6 @@ import { loadSchema } from "../validator/Validator";
 export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
 
-
     public static async createEditor(elm: HTMLElement): Promise<void> {
         await loadSchema();
         const options = new CogniteJsonEditorOptions();
@@ -22,6 +21,13 @@ export class JsonConfigCommandCenter {
         }
     }
 
+    public static get currentJson(): any {
+        const currentJsonText = JsonConfigCommandCenter.editor?.getText();
+        if (currentJsonText) {
+            return JSON.parse(currentJsonText);
+        }
+    }
+
     public static onModeChange(mode: Modes): void {
         if (JsonConfigCommandCenter.editorInstance) {
             JsonConfigCommandCenter.editorInstance.setMode(mode);
@@ -30,6 +36,7 @@ export class JsonConfigCommandCenter {
 
     public static onUpdate(): void {
         console.warn("Update function not implemented");
+        console.log("as currentJson", JsonConfigCommandCenter.currentJson)
     }
 
     public static onDelete(): void {

@@ -8,13 +8,12 @@ import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 
 export const JsonConfigurator: React.FC<any> = () => {
-    const [jsonConfig, setJsonConfig] = useState<null | JsonConfig>(null);
+    const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [selectedTwin, setSelectedTwin] = useState<any>();
 
 
     // call with undefind values to create new config
     const onJsonConfigSelect = (configName?: string, config?: JsonConfig) => {
-
         if (configName && config) {
             setJsonConfig(config);
             setSelectedTwin(configName);
