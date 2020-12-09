@@ -38,7 +38,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             .reduce((acc: any[], singleNodeArr: any[]): any[] => {
                 const node = singleNodeArr.pop();
 
-                if (node) {
+                let templates = acc;
+
+                const transformToTemplate = (templateArr: any[], node: any)=> {
                     const key = extractField(node.key)
 
                     const temp = {
@@ -48,7 +50,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         field: key,
                         value: node.data
                     }
-                    acc.push(temp);
+                    templateArr.push(temp);
 
                     /**
                      * if node type is array or map
@@ -62,10 +64,20 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             field: `${key}-sample`,
                             value: node.sample
                         }
-                        acc.push(temp);
+                        templateArr.push(temp);
                     }
                 }
-                return acc;
+
+                if(acc.length === 1) { // transform first acc value
+                    const firstNode = acc.pop();
+                    templates = [];
+                    transformToTemplate(templates, firstNode);
+                }
+
+                if (node) {
+                    transformToTemplate(templates, node);
+                }
+                return templates;
             });
     }
 
