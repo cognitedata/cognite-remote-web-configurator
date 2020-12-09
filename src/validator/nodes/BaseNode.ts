@@ -18,10 +18,11 @@ export type Discriminator = {
 export class BaseNode {
   public type?: DataType;
   public description?: string;
-  public _data: IData;
   public isRequired?: boolean;
   public readOnlyFields: string[] = [];
   public discriminator?: Discriminator;
+
+  private _data: IData;
 
   constructor(
     type: DataType,
@@ -60,5 +61,13 @@ export class BaseNode {
     } else {
       return this._data;
     }
+  }
+
+  public set data(data: IData) {
+    this._data = data;
+  }
+
+  public get rowData(): IData {
+    return this._data;
   }
 }

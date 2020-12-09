@@ -44,10 +44,10 @@ export const populateChildren = (
     let dat: any = {};
     for (const schema1 of schema.allOf) {
       const children = populateChildren(schema1, isRequired, schema);
-      dat = { ...dat, ...(children._data as Record<string, unknown>) };
+      dat = { ...dat, ...(children.rowData as Record<string, unknown>) };
       // TODO: Avoid this invalid casting
     }
-    obj._data = dat;
+    obj.data = dat;
     return obj;
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
@@ -56,7 +56,7 @@ export const populateChildren = (
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       // Only keys are added as data of ObjectNode
-      (obj._data as BaseNodes)[key] = populateChildren(schem, required, schema);
+      (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
     return obj;
   } else if (schema.additionalProperties) {
