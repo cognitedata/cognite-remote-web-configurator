@@ -3,7 +3,7 @@ import { CogniteJsonEditor } from "./CogniteJsonEditor";
 import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { loadSchema } from "../validator/Validator";
 
-export class JsonConfigCommandCenter{
+export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
 
 
@@ -14,7 +14,7 @@ export class JsonConfigCommandCenter{
     }
 
     public static get editor(): CogniteJsonEditor | null {
-        if(JsonConfigCommandCenter.editorInstance) {
+        if (JsonConfigCommandCenter.editorInstance) {
             return JsonConfigCommandCenter.editorInstance;
         } else {
             console.error("Cannot retrieve editor before instantiation!");
@@ -22,10 +22,25 @@ export class JsonConfigCommandCenter{
         }
     }
 
-
     public static onModeChange(mode: Modes): void {
-        if(JsonConfigCommandCenter.editorInstance) {
+        if (JsonConfigCommandCenter.editorInstance) {
             JsonConfigCommandCenter.editorInstance.setMode(mode);
         }
+    }
+
+    public static onUpdate(): void {
+        console.warn("Update function not implemented");
+    }
+
+    public static onDelete(): void {
+        console.warn("Delete As function not implemented");
+    }
+
+    public static onSaveAs(): void {
+        console.warn("Save As function not implemented");
+    }
+
+    public static onDownload(): void {
+        console.warn("Download function not implemented");
     }
 }

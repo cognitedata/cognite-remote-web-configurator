@@ -34,19 +34,19 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.update: {
-                console.warn("Update function not implemented");
+                JsonConfigCommandCenter.onUpdate();
                 break;
             }
             case CommandEvent.delete: {
-                console.warn("Delete As function not implemented");
+                JsonConfigCommandCenter.onDelete();
                 break;
             }
             case CommandEvent.saveAs: {
-                console.warn("Save As function not implemented");
+                JsonConfigCommandCenter.onSaveAs();
                 break;
             }
             case CommandEvent.download: {
-                console.warn("Download function not implemented");
+                JsonConfigCommandCenter.onDownload();
                 break;
             }
             default:
