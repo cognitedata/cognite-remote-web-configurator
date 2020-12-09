@@ -275,7 +275,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * returning a IData object with matching key and description
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-            if (resultNode.sampleData.discriminator) {
+            if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
                 return resultNode.sampleData.data;
             }
