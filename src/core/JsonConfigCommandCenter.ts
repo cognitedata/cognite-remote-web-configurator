@@ -46,20 +46,7 @@ export class JsonConfigCommandCenter {
     }
 
     public static onUpdate(): void {
-        const options: HttpRequestOptions = JsonConfigCommandCenter.currentJson;
-
-        if (confirm("Do you want to save changes?")) {
-            (async () => {
-                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options)
-                    .then(response => {
-                        console.log(response);
-                        alert("Data saved successfully!");
-                    })
-                    .catch(error => {
-                        errorAlert("Save Cancelled!", error);
-                    });
-            })();
-        }
+        console.warn("Update As function not implemented");
     }
 
     public static onDelete(): void {
