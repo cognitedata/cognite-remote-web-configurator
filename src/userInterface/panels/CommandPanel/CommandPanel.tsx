@@ -26,7 +26,7 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
                         <CommandItem className={classes.btn} icon={"delete"}>DELETE</CommandItem>
                     </> :
                     <>
-                        <CommandItem className={classes.btn} icon={"upload"}>SAVE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"save"}>SAVE</CommandItem>
                     </>
                 }
             </div>
