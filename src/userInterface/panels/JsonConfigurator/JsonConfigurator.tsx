@@ -10,11 +10,21 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<null | JsonConfig>(null);
     const [selectedTwin, setSelectedTwin] = useState<any>();
+    // const [fileMode, setFileMode] = useState<"NEW" | "EDIT">("NEW");
 
-    const onJsonConfigSelect = (configName: string, config: JsonConfig) => {
-        setSelectedTwin(configName);
-        if (config) {
+
+    // call with undefind values to create new config
+    const onJsonConfigSelect = (configName?: string, config?: JsonConfig) => {
+
+        if (configName && config) {
             setJsonConfig(config);
+            setSelectedTwin(configName);
+        }
+        else {
+            setJsonConfig({
+                data: {}
+            } as JsonConfig);
+            setSelectedTwin(null);
         }
     }
 
@@ -29,7 +39,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     return (
         <div className={classes.configurator}>
             <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect} selectedTwin={selectedTwin} /></div>
-            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} /></div>
+            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} selectedTwin={selectedTwin} /></div>
             <div className={classes.jsonView}><EditorPanel jsonConfig={jsonConfig} /></div>
         </div>
     );

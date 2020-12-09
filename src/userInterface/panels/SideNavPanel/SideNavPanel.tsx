@@ -10,7 +10,7 @@ import { JsonConfig } from '../../util/types';
 
 const cogniteClient = Client.sdk;
 
-export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string, config: JsonConfig) => void, selectedTwin: string }> = (props: any) => {
+export const SideNavPanel: React.FC<{ onTwinSelect: (configName?: string, config?: JsonConfig) => void, selectedTwin: string }> = (props: any) => {
     return (
         <>
             <div className={classes.top}>
@@ -20,7 +20,7 @@ export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string, config:
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <div className={classes.createNewBtn}>
+            <div className={classes.createNewBtn} onClick={props.onTwinSelect}>
                 <CommandItem icon={"plus"}>Create New</CommandItem>
             </div>
             <Divider />
