@@ -54,97 +54,14 @@ export class JsonConfigCommandCenter {
     }
 
     public static onSaveAs(): void {
-        // const options: HttpRequestOptions = JsonConfigCommandCenter.currentJson;
+        const currentJson = { "data": JsonConfigCommandCenter.currentJson };
         const options: HttpRequestOptions = {
-            data:{
+            data: {
                 "items": [
-                    {
-                        "data": {
-                            "assets": {
-                                "geometries": {}
-                            },
-                            "header": {
-                                "name": "Windmill Island GDE 2"
-                            },
-                            "scenes": [
-                                {
-                                    "actors": [
-                                        {
-                                            "name": "<UNIQUE NAME FOR THE ACTOR>",
-                                            "type": "actor",
-                                            "transform": {
-                                                "type": "unrealTransform",
-                                                "scale": [
-                                                    1,
-                                                    1,
-                                                    1
-                                                ],
-                                                "position": [
-                                                    0,
-                                                    0,
-                                                    0
-                                                ],
-                                                "rotation": [
-                                                    0,
-                                                    0,
-                                                    0
-                                                ]
-                                            },
-                                            "components": []
-                                        }
-                                    ],
-                                    "camera": {
-                                        "initialCoordinates": {
-                                            "type": "unrealTransform",
-                                            "scale": [
-                                                1,
-                                                1,
-                                                1
-                                            ],
-                                            "position": [
-                                                0,
-                                                0,
-                                                10000
-                                            ],
-                                            "rotation": [
-                                                -25,
-                                                0,
-                                                0
-                                            ]
-                                        }
-                                    },
-                                    "visibilityLayers": [],
-                                    "waterPlane": {
-                                        "transform": {
-                                            "type": "unrealTransform",
-                                            "scale": [
-                                                10,
-                                                10,
-                                                10
-                                            ],
-                                            "position": [
-                                                0,
-                                                0,
-                                                0
-                                            ],
-                                            "rotation": [
-                                                0,
-                                                0,
-                                                0
-                                            ]
-                                        },
-                                        "followCamera": false
-                                    },
-                                    "environmentControl": {
-                                        "renderSkySphere": true
-                                    }
-                                }
-                            ]
-                        }
-                    }
+                    currentJson
                 ]
             }
-        } 
+        }
 
         console.warn("Save As function not implemented");
         if (confirm("Do you want to cretate new twin?")) {
