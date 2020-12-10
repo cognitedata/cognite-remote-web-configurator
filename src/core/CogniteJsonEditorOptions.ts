@@ -230,42 +230,69 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
-        // rules:
-        // - team, names, and ages must be filled in and be of correct type
-        // - a team must have 4 members
-        // - at lease one member of the team must be adult
-        const errors = this.validateMissingFields(json);
+
+        const schemaMeta = getNodeMeta([])?.resultNode?.data; // meta of root node from schema
+        const errors = this.validateMissingFields(json, schemaMeta);
 
         return errors;
     }
 
-    private validateMissingFields(json: any, paths: string[] = [], errors: ValidationError[] = []): ValidationError[] {
+    private validateMissingFields(json: any, schemaMeta: any, paths: any[] = [], errors: ValidationError[] = []): ValidationError[] {
 
-        const rootNodeMeta = getNodeMeta(paths);
-        if (rootNodeMeta) {
-            const subNodeMeta = rootNodeMeta.resultNode?.data as BaseNodes;
+        const missingRequiredFields = [];
 
-            const missingRequiredFields = [];
+        for (const childKey of Object.keys(schemaMeta)) {
+            const childNode = (schemaMeta)[childKey] as BaseNode;
+            const isRequired = childNode.isRequired;
 
-            for (const childKey of Object.keys(subNodeMeta)) {
-                const childNode = subNodeMeta[childKey] as BaseNode;
-                const isRequired = childNode.isRequired;
+            const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
+
+            if (!hasKey) {
                 if (isRequired) {
+                    missingRequiredFields.push(childKey);
+                }
+            } else {
+                const value = json[childKey];
+                const newPath = paths.concat([childKey]);
+                const childMeta = schemaMeta[childKey];
+                let nextMeta;
 
-                    const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
-                    if (!hasKey) {
-                        missingRequiredFields.push(childKey);
-                    } else {
-                        const value = json[childKey];
-                        const newPath = paths.concat([childKey]);
-                        this.validateMissingFields(value, newPath, errors);
+                if(childMeta.type === DataType.map) {
+                    nextMeta = childMeta.sampleData.data;
+
+                    for(const mapChildKey of Object.keys(value)) {
+                        const mapChild = value[mapChildKey];
+                        const childPath = newPath.concat([mapChildKey]);
+                        if(nextMeta) {
+                            const childErrors = this.validateMissingFields(mapChild, nextMeta, childPath);
+                            errors = childErrors.concat(errors);
+                        }
+                    }
+                } else if (childMeta.type === DataType.array) {
+                    nextMeta = childMeta.sampleData.data;
+
+                    for(let i = 0; i < value.length; i++) {
+                        const mapChild = value[i];
+                        const childPath = newPath.concat([i]);
+                        if(nextMeta) {
+                            const childErrors = this.validateMissingFields(mapChild, nextMeta, childPath);
+                            errors = childErrors.concat(errors);
+                        }
+                    }
+                } else {
+                    nextMeta = childMeta.data;
+
+                    if(nextMeta) {
+                        const childErrors = this.validateMissingFields(value, nextMeta, newPath);
+                        errors = childErrors.concat(errors);
                     }
                 }
+            }
 
-            }
-            if(missingRequiredFields.length) {
-                errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
-            }
+
+        }
+        if(missingRequiredFields.length) {
+            errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
         }
         return errors;
     }
