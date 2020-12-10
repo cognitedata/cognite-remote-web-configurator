@@ -2,7 +2,7 @@ import React from 'react';
 import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
 
-export const ConfigSelector: React.FC<{ onClick: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string, }> = (props) => {
+export const ConfigSelector: React.FC<{ onClick: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string | null }> = (props) => {
 
     if (props.digitalTwinNames.length) {
         return (

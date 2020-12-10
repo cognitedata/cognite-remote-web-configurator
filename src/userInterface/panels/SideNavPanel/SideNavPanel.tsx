@@ -6,7 +6,7 @@ import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 
-export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string }> = (props: any) => {
+export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string | null }> = (props: any) => {
     return (
         <>
             <div className={classes.top}>
@@ -16,7 +16,7 @@ export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string) => void
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <div className={classes.createNewBtn} onClick={props.onTwinSelect}>
+            <div className={classes.createNewBtn} onClick={() => props.onTwinSelect()}>
                 <CommandItem icon={"plus"}>Create New</CommandItem>
             </div>
             <Divider />

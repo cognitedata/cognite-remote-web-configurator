@@ -9,33 +9,17 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 
 export const JsonConfigurator: React.FC<any> = () => {
     const [digitalTwinNames, setDigitalTwinNames] = useState<string[]>([]);
-    const [selectedTwinName, setSelectedTwinName] = useState<any>();
-    const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
+    const [selectedTwinName, setSelectedTwinName] = useState<string | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
-
-    // call with undefind values to create new config
-    const onJsonConfigSelect = (configName: string) => {
-        if (configName) {
-            setSelectedTwinName(configName);
-            const configMap = digitalTwinConfigMap.current;
-            if (configMap && configMap.size > 0) {
-                const config = configMap.get(configName);
-                if (config) {
-                    setJsonConfig(config as JsonConfig);
-                    setSelectedTwinName(configName);
-                }
-            }
-        }
-        else {
-            setJsonConfig({
-                data: {}
-            } as JsonConfig);
-            setSelectedTwinName(null);
-        }
-    }
+    const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
 
     const loadDigitalTwins = () => {
         JsonConfigCommandCenter.loadDigitalTwins(setDigitalTwinNames, digitalTwinConfigMap);
+    }
+
+    // call with undefind values to create new config
+    const onJsonConfigSelect = (configName: string) => {
+        JsonConfigCommandCenter.onJsonConfigSelect(configName, digitalTwinConfigMap, setSelectedTwinName, setJsonConfig);
     }
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {

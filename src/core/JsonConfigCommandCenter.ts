@@ -5,6 +5,7 @@ import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { loadSchema } from "../validator/Validator";
 import { Client } from "../cdf/client";
 import { HttpRequestOptions } from "@cognite/sdk/dist/src";
+import { JsonConfig } from "../userInterface/util/types";
 
 const cogniteClient = Client.sdk;
 
@@ -33,7 +34,7 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static loadDigitalTwins(setDigitalTwinNames: (twinNames: string[]) => void, digitalTwinConfigMap: MutableRefObject<Map<string, unknown> | null>): any {
+    public static loadDigitalTwins = (setDigitalTwinNames: (twinNames: string[]) => void, digitalTwinConfigMap: MutableRefObject<Map<string, unknown> | null>): void => {
         (async () => {
             await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
                 .then(response => {
@@ -55,6 +56,32 @@ export class JsonConfigCommandCenter {
                     JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
                 });
         })();
+    }
+
+    // call with undefind values to create new config
+    public static onJsonConfigSelect = (
+        configName: string,
+        digitalTwinConfigMap: MutableRefObject<Map<string, unknown> | null>,
+        setSelectedTwinName: (twinName: string | null) => void,
+        setJsonConfig: (jsonConfig: JsonConfig | null) => void
+    ): void => {
+        if (configName) {
+            setSelectedTwinName(configName);
+            const configMap = digitalTwinConfigMap.current;
+            if (configMap && configMap.size > 0) {
+                const config = configMap.get(configName);
+                if (config) {
+                    setJsonConfig(config as JsonConfig);
+                    setSelectedTwinName(configName);
+                }
+            }
+        }
+        else {
+            setJsonConfig({
+                data: {}
+            } as JsonConfig);
+            setSelectedTwinName(null);
+        }
     }
 
     public static errorAlert = (message: string, error: string): void => {
