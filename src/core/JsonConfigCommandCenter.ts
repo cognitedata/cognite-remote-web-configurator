@@ -54,7 +54,25 @@ export class JsonConfigCommandCenter {
     }
 
     public static onSaveAs(): void {
-        const options: HttpRequestOptions = JsonConfigCommandCenter.currentJson;
+        // const options: HttpRequestOptions = JsonConfigCommandCenter.currentJson;
+        const options: HttpRequestOptions = {
+            "data": {
+                "header": {
+                    "name": "test gde",
+                    "thumbnailImageId": 14197756
+                },
+                "assets": {
+                    "geometries": {},
+                    "splines": {}
+                },
+                "scenes": [],
+                "hierarchy": {
+                    "type": "customHierarchy"
+                },
+                "simulations": [],
+                "timeseriesFilters": {}
+            }
+        }
 
         console.warn("Save As function not implemented");
         if (confirm("Do you want to cretate new twin?")) {
