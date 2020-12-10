@@ -255,36 +255,49 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 const value = json[childKey];
                 const newPath = paths.concat([childKey]);
                 const childMeta = schemaMeta[childKey];
-                let nextMeta;
 
-                if(childMeta.type === DataType.map) {
+                let nextMeta: any;
+
+                if(childMeta.type === DataType.map || childMeta.type === DataType.array) {
                     nextMeta = childMeta.sampleData.data;
+                    const discriminator = childMeta.sampleData.discriminator;
 
-                    for(const mapChildKey of Object.keys(value)) {
-                        const mapChild = value[mapChildKey];
-                        const childPath = newPath.concat([mapChildKey]);
-                        if(nextMeta) {
-                            const childErrors = this.validateMissingFields(mapChild, nextMeta, childPath);
+                    const callNextIteration = (childKey: any, childValue: any) => {
+                        if(discriminator) {
+                            const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, newPath);
                             errors = childErrors.concat(errors);
+                        } else {
+                            const childPath = newPath.concat([childKey]);
+                            if(nextMeta) {
+                                const childErrors = this.validateMissingFields(childValue, nextMeta, childPath);
+                                errors = childErrors.concat(errors);
+                            }
                         }
                     }
-                } else if (childMeta.type === DataType.array) {
-                    nextMeta = childMeta.sampleData.data;
 
-                    for(let i = 0; i < value.length; i++) {
-                        const mapChild = value[i];
-                        const childPath = newPath.concat([i]);
-                        if(nextMeta) {
-                            const childErrors = this.validateMissingFields(mapChild, nextMeta, childPath);
-                            errors = childErrors.concat(errors);
+                    if(childMeta.type === DataType.map) {
+                        for(const mapChildKey of Object.keys(value)) {
+                            const mapChild = value[mapChildKey];
+                            callNextIteration(mapChildKey, mapChild);
+                        }
+                    } else {
+                        for(let i = 0; i < value.length; i++) {
+                            const mapChild = value[i];
+                            callNextIteration(i, mapChild);
                         }
                     }
                 } else {
                     nextMeta = childMeta.data;
-
-                    if(nextMeta) {
-                        const childErrors = this.validateMissingFields(value, nextMeta, newPath);
+                    const discriminator = childMeta.discriminator;
+                    if(discriminator) {
+                        const childErrors = this.validateDiscriminator(value, nextMeta, discriminator, newPath);
                         errors = childErrors.concat(errors);
+                    } else {
+
+                        if(nextMeta) {
+                            const childErrors = this.validateMissingFields(value, nextMeta, newPath);
+                            errors = childErrors.concat(errors);
+                        }
                     }
                 }
             }
@@ -295,6 +308,23 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
         }
         return errors;
+    }
+
+    private validateDiscriminator(json: any, schema: any, discriminator: { propertyName: string }, paths: any[], errors: ValidationError[] = []): ValidationError[] {
+        const discriminatorType = json[discriminator.propertyName];
+
+        if(discriminatorType) {
+            const discriminatorMeta = schema[discriminatorType];
+            if(discriminatorMeta) {
+                const childErrors = this.validateMissingFields(json, discriminatorMeta.data, paths);
+                errors = childErrors.concat(errors);
+            } else {
+                errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!`});
+            }
+        } else {
+            errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!`});
+        }
+        return  errors;
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
