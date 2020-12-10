@@ -21,6 +21,11 @@ export const JsonConfigurator: React.FC<any> = () => {
     const onJsonConfigSelect = (configName: string) => {
         JsonConfigCommandCenter.onJsonConfigSelect(configName, digitalTwinConfigMap, setSelectedTwinName, setJsonConfig);
     }
+    
+    const reloadSavedTwin = (configName: string) => {
+        JsonConfigCommandCenter.loadDigitalTwins(setDigitalTwinNames, digitalTwinConfigMap);
+        JsonConfigCommandCenter.onJsonConfigSelect(configName, digitalTwinConfigMap, setSelectedTwinName, setJsonConfig);
+    }
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {
         switch (command) {
@@ -37,7 +42,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.saveAs: {
-                JsonConfigCommandCenter.onSaveAs(loadDigitalTwins);
+                JsonConfigCommandCenter.onSaveAs(reloadSavedTwin);
                 break;
             }
             case CommandEvent.download: {

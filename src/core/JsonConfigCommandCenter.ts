@@ -105,12 +105,14 @@ export class JsonConfigCommandCenter {
         console.warn("Delete As function not implemented");
     }
 
-    public static onSaveAs = (loadDigitalTwins: () => void): void => {
-        const currentJson = { "data": JsonConfigCommandCenter.currentJson };
+    public static onSaveAs = (reloadSavedTwin: (configName: string,) => void): void => {
+        const currentJson =JsonConfigCommandCenter.currentJson;
+        const configName = currentJson.header.name;
+
         const options: HttpRequestOptions = {
             data: {
                 "items": [
-                    currentJson
+                    { "data": currentJson }
                 ]
             }
         };
@@ -119,9 +121,9 @@ export class JsonConfigCommandCenter {
             (async () => {
                 await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options,)
                     .then(response => {
-                        console.log(response);
+                        // console.log("as response", response);
+                        reloadSavedTwin(configName);
                         alert("Data saved successfully!");
-                        loadDigitalTwins();
                     })
                     .catch(error => {
                         JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
