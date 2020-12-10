@@ -60,9 +60,18 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     return (
         <div className={classes.configurator}>
-            <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect} digitalTwinConfigMap={digitalTwinConfigMap} selectedTwinId={selectedTwinId} /></div>
-            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} selectedTwinId={selectedTwinId} /></div>
-            <div className={classes.jsonView}><EditorPanel jsonConfig={jsonConfig} /></div>
+            <div className={classes.sideNavPanel}>
+                <SideNavPanel
+                    onTwinSelect={onJsonConfigSelect}
+                    digitalTwinConfigMap={digitalTwinConfigMap}
+                    selectedTwinId={selectedTwinId} />
+            </div>
+            <div className={classes.commandPanel}>
+                <CommandPanel commandEvent={onCommand} selectedTwinId={selectedTwinId} />
+            </div>
+            <div className={classes.editorPanel}>
+                <EditorPanel jsonConfig={jsonConfig} />
+            </div>
         </div>
     );
 }
