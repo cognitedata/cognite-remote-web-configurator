@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
 import { JsonConfig } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
@@ -8,22 +8,34 @@ import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 
 export const JsonConfigurator: React.FC<any> = () => {
+    const [digitalTwinNames, setDigitalTwinNames] = useState<string[]>([]);
+    const [selectedTwinName, setSelectedTwinName] = useState<any>();
+    const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
-    const [selectedTwin, setSelectedTwin] = useState<any>();
-
 
     // call with undefind values to create new config
-    const onJsonConfigSelect = (configName?: string, config?: JsonConfig) => {
-        if (configName && config) {
-            setJsonConfig(config);
-            setSelectedTwin(configName);
+    const onJsonConfigSelect = (configName: string) => {
+        if (configName) {
+            setSelectedTwinName(configName);
+            const configMap = digitalTwinConfigMap.current;
+            if (configMap && configMap.size > 0) {
+                const config = configMap.get(configName);
+                if (config) {
+                    setJsonConfig(config as JsonConfig);
+                    setSelectedTwinName(configName);
+                }
+            }
         }
         else {
             setJsonConfig({
                 data: {}
             } as JsonConfig);
-            setSelectedTwin(null);
+            setSelectedTwinName(null);
         }
+    }
+
+    const loadDigitalTwins = () => {
+        JsonConfigCommandCenter.loadDigitalTwins(setDigitalTwinNames, digitalTwinConfigMap);
     }
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {
@@ -41,7 +53,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.saveAs: {
-                JsonConfigCommandCenter.onSaveAs();
+                JsonConfigCommandCenter.onSaveAs(loadDigitalTwins);
                 break;
             }
             case CommandEvent.download: {
@@ -53,10 +65,14 @@ export const JsonConfigurator: React.FC<any> = () => {
         }
     }
 
+    useEffect(() => {
+        loadDigitalTwins();
+    }, []);
+
     return (
         <div className={classes.configurator}>
-            <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect} selectedTwin={selectedTwin} /></div>
-            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} selectedTwin={selectedTwin} /></div>
+            <div className={classes.leftbar}><SideNavPanel onTwinSelect={onJsonConfigSelect} digitalTwinNames={digitalTwinNames} selectedTwinName={selectedTwinName} /></div>
+            <div className={classes.fileCommands}><CommandPanel commandEvent={onCommand} selectedTwinName={selectedTwinName} /></div>
             <div className={classes.jsonView}><EditorPanel jsonConfig={jsonConfig} /></div>
         </div>
     );
