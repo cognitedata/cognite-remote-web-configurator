@@ -1,4 +1,3 @@
-import { MutableRefObject } from "react";
 import { Modes } from "../userInterface/util/enums/Modes";
 import { CogniteJsonEditor } from "./CogniteJsonEditor";
 import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
@@ -34,22 +33,19 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static loadDigitalTwins = (setDigitalTwinNames: (twinNames: string[]) => void, digitalTwinConfigMap: MutableRefObject<Map<string, unknown> | null>): void => {
+    public static loadDigitalTwins = (digitalTwinConfigMap: (twinNames: Map<number, unknown> | null) => void): void => {
         (async () => {
             await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
                 .then(response => {
                     console.log("Retrieved Digital Twin List successfully");
                     const twins = response.data.data?.items;
-                    const twinNames = [];
                     const twinMap = new Map();
 
                     for (const twin of twins) {
-                        const twinName = twin?.data?.header?.name || twin.id;
-                        twinNames.push(twinName);
-                        twinMap.set(twinName, twin);
+                        const twinId = twin.id;
+                        twinMap.set(twinId, twin);
                     }
-                    setDigitalTwinNames(twinNames);
-                    digitalTwinConfigMap.current = twinMap;
+                    digitalTwinConfigMap(twinMap);
                 })
                 .catch(error => {
                     console.error("Retrieved Digital Twin List failed");
@@ -60,19 +56,19 @@ export class JsonConfigCommandCenter {
 
     // call with undefind values to create new config
     public static onJsonConfigSelect = (
-        configName: string,
-        digitalTwinConfigMap: MutableRefObject<Map<string, unknown> | null>,
-        setSelectedTwinName: (twinName: string | null) => void,
+        configId: number,
+        digitalTwinConfigMap: Map<number, unknown> | null,
+        setSelectedTwinId: (configId: number | null) => void,
         setJsonConfig: (jsonConfig: JsonConfig | null) => void
     ): void => {
-        if (configName) {
-            setSelectedTwinName(configName);
-            const configMap = digitalTwinConfigMap.current;
+        if (configId) {
+            setSelectedTwinId(configId);
+            const configMap = digitalTwinConfigMap;
             if (configMap && configMap.size > 0) {
-                const config = configMap.get(configName);
+                const config = configMap.get(configId);
                 if (config) {
                     setJsonConfig(config as JsonConfig);
-                    setSelectedTwinName(configName);
+                    setSelectedTwinId(configId);
                 }
             }
         }
@@ -80,7 +76,7 @@ export class JsonConfigCommandCenter {
             setJsonConfig({
                 data: {}
             } as JsonConfig);
-            setSelectedTwinName(null);
+            setSelectedTwinId(null);
         }
     }
 
@@ -105,9 +101,8 @@ export class JsonConfigCommandCenter {
         console.warn("Delete As function not implemented");
     }
 
-    public static onSaveAs = (reloadSavedTwin: (configName: string,) => void): void => {
-        const currentJson =JsonConfigCommandCenter.currentJson;
-        const configName = currentJson.header.name;
+    public static onSaveAs = (reloadSavedTwin: (configId: number) => void): void => {
+        const currentJson = JsonConfigCommandCenter.currentJson;
 
         const options: HttpRequestOptions = {
             data: {
@@ -121,8 +116,8 @@ export class JsonConfigCommandCenter {
             (async () => {
                 await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options,)
                     .then(response => {
-                        // console.log("as response", response);
-                        reloadSavedTwin(configName);
+                        const createdId = response.data.data.items[0].id;
+                        reloadSavedTwin(createdId);
                         alert("Data saved successfully!");
                     })
                     .catch(error => {

@@ -6,7 +6,11 @@ import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 
-export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string | null }> = (props: any) => {
+export const SideNavPanel: React.FC<{
+    onTwinSelect: (configId: number) => void,
+    digitalTwinConfigMap: Map<number, unknown> | null,
+    selectedTwinId: number | null
+}> = (props: any) => {
     return (
         <>
             <div className={classes.top}>
@@ -23,7 +27,7 @@ export const SideNavPanel: React.FC<{ onTwinSelect: (configName: string) => void
             <div>
                 <Text>Configurations</Text>
                 <div className={classes.twinContainer}>
-                    <ConfigSelector onClick={props.onTwinSelect} digitalTwinNames={props.digitalTwinNames} selectedTwinName={props.selectedTwinName} />
+                    <ConfigSelector onClick={props.onTwinSelect} digitalTwinConfigMap={props.digitalTwinConfigMap} selectedTwinId={props.selectedTwinId} />
                 </div>
             </div>
         </>
