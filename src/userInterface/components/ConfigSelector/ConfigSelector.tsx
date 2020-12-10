@@ -1,47 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
-import { CogniteClient } from "@cognite/sdk";
 
-export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (configName:string, item: any) => void, selectedTwin: string }> = (props) => {
+export const ConfigSelector: React.FC<{ onClick: (configName: string) => void, digitalTwinNames: string[], selectedTwinName: string, }> = (props) => {
 
-    const [digitalTwins, setDigitalTwins] = useState<any[]>([]);
-    const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
-
-    useEffect(() => {
-        (async () => {
-            const response = await props.sdk.get(`${props.sdk.getBaseUrl()}/api/playground/projects/${props.sdk.project}/twins`);
-            if (response) {
-                const twins = response.data.data?.items;
-                const twinNames = [];
-                const twinMap = new Map();
-
-                for (const twin of twins) {
-                    const twinName = twin?.data?.header?.name || twin.id;
-                    twinNames.push(twinName);
-                    twinMap.set(twinName, twin);
-                }
-                setDigitalTwins(twinNames);
-                digitalTwinConfigMap.current = twinMap;
-            }
-        })();
-    }, []);
-
-    const onListItemClick = (configName: string) => {
-        const configMap = digitalTwinConfigMap.current;
-        if (configMap && configMap.size > 0) {
-            const config = configMap.get(configName);
-            props.onClick(configName, config);
-        }
-    }
-
-    if (digitalTwins.length) {
+    if (props.digitalTwinNames.length) {
         return (
             <List
                 bordered
-                dataSource={digitalTwins}
+                dataSource={props.digitalTwinNames}
                 renderItem={item => (
-                    <List.Item className={`${classes.twinItem} ` + (item === props.selectedTwin ? classes.selected : "")} onClick={() => onListItemClick(item)} key={item}>
+                    <List.Item className={`${classes.twinItem} ` + (item === props.selectedTwinName ? classes.selected : "")} onClick={() => props.onClick(item)} key={item}>
                         {item}
                     </List.Item>
                 )}
