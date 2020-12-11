@@ -62,15 +62,14 @@ export class JsonConfigCommandCenter {
         setJsonConfig: (jsonConfig: JsonConfig | null) => void
     ): void => {
         if (configId) {
-            setSelectedTwinId(configId);
             const configMap = digitalTwinConfigMap;
             if (configMap && configMap.size > 0) {
                 const config = configMap.get(configId);
                 if (config) {
                     setJsonConfig(config as JsonConfig);
-                    setSelectedTwinId(configId);
                 }
             }
+            setSelectedTwinId(configId);
         }
         else {
             setJsonConfig({
