@@ -3,28 +3,28 @@ import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
 
 export const ConfigSelector: React.FC<{
-    onClick: (configId: number) => void,
-    digitalTwinConfigMap: Map<number, unknown> | null,
-    selectedTwinId: number | null
+    onJsonConfigSelect: (jsonConfigId: number) => void,
+    jsonConfigMap: Map<number, unknown> | null,
+    selectedJsonConfigId: number | null
 }> = (props) => {
 
-    const digitalTwins: { id: number, name: string }[] = [];
+    const jsonConfigs: { id: number, name: string }[] = [];
 
-    props.digitalTwinConfigMap?.forEach((element: any) => {
-        digitalTwins.push({
+    props.jsonConfigMap?.forEach((element: any) => {
+        jsonConfigs.push({
             id: element.id,
             name: element.data?.header?.name
         });
 
     });
 
-    if (digitalTwins.length) {
+    if (jsonConfigs.length) {
         return (
             <List
                 bordered
-                dataSource={digitalTwins}
+                dataSource={jsonConfigs}
                 renderItem={item => (
-                    <List.Item className={`${classes.twinItem} ` + (item.id === props.selectedTwinId ? classes.selected : "")} onClick={() => props.onClick(item.id)} key={item.id}>
+                    <List.Item className={`${classes.jsonConfigItem} ` + (item.id === props.selectedJsonConfigId ? classes.selected : "")} onClick={() => props.onJsonConfigSelect(item.id)} key={item.id}>
                         {item.name}
                     </List.Item>
                 )}

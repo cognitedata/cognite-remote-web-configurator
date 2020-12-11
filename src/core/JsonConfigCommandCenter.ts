@@ -33,48 +33,48 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static loadDigitalTwins = (digitalTwinConfigMap: (twinNames: Map<number, unknown> | null) => void): void => {
+    public static loadJsonConfigs = (setJsonConfigMap: (jsonConfigId: Map<number, unknown> | null) => void): void => {
         (async () => {
             await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
                 .then(response => {
-                    console.log("Retrieved Digital Twin List successfully");
-                    const twins = response.data.data?.items;
-                    const twinMap = new Map();
+                    console.log("Retrieved Json Config List successfully");
+                    const jsonConfigs = response.data.data?.items;
+                    const jsonConfigMap = new Map();
 
-                    for (const twin of twins) {
-                        const twinId = twin.id;
-                        twinMap.set(twinId, twin);
+                    for (const jsonConfig of jsonConfigs) {
+                        const jsonConfigId = jsonConfig.id;
+                        jsonConfigMap.set(jsonConfigId, jsonConfig);
                     }
-                    digitalTwinConfigMap(twinMap);
+                    setJsonConfigMap(jsonConfigMap);
                 })
                 .catch(error => {
-                    JsonConfigCommandCenter.errorAlert("Load Digital Twin list failed!", error);
+                    JsonConfigCommandCenter.errorAlert("Load Json Config list failed!", error);
                 });
         })();
     }
 
-    // call with undefind values to create new config
+    // call with undefind values to create new json Config
     public static onJsonConfigSelect = (
-        configId: number | null,
-        digitalTwinConfigMap: Map<number, unknown> | null,
-        setSelectedTwinId: (configId: number | null) => void,
+        jsonConfigId: number | null,
+        jsonConfigMap: Map<number, unknown> | null,
+        setSelectedJsonConfigId: (jsonConfigId: number | null) => void,
         setJsonConfig: (jsonConfig: JsonConfig | null) => void
     ): void => {
-        if (configId) {
-            const configMap = digitalTwinConfigMap;
+        if (jsonConfigId) {
+            const configMap = jsonConfigMap;
             if (configMap && configMap.size > 0) {
-                const config = configMap.get(configId);
-                if (config) {
-                    setJsonConfig(config as JsonConfig);
+                const jsonConfig = configMap.get(jsonConfigId);
+                if (jsonConfig) {
+                    setJsonConfig(jsonConfig as JsonConfig);
                 }
             }
-            setSelectedTwinId(configId);
+            setSelectedJsonConfigId(jsonConfigId);
         }
         else {
             setJsonConfig({
                 data: {}
             } as JsonConfig);
-            setSelectedTwinId(null);
+            setSelectedJsonConfigId(null);
         }
     }
 
@@ -92,26 +92,26 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onUpdate = (selectedTwinId: number | null, reloadSavedTwin: (configId: number | null) => void): void => {
+    public static onUpdate = (selectedJsonConfigId: number | null, reloadJsonConfigs: (jsonConfigId: number | null) => void): void => {
         const currentJson = JsonConfigCommandCenter.currentJson;
 
         const options: HttpRequestOptions = {
             data: {
                 "items": [
                     {
-                        "id": selectedTwinId,
+                        "id": selectedJsonConfigId,
                         "data": currentJson
                     }
                 ]
             }
         };
 
-        if (confirm("Do you want to cretate new twin?")) {
+        if (confirm("Do you want to cretate new Json Config?")) {
             (async () => {
                 await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options,)
                     .then(response => {
                         const createdId = response.data.data.items[0].id;
-                        reloadSavedTwin(createdId);
+                        reloadJsonConfigs(createdId);
                         alert("Data updated successfully!");
                     })
                     .catch(error => {
@@ -121,10 +121,10 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onDelete = (selectedTwinId: number | null, reloadSavedTwin: (configId: number | null) => void): void => {
+    public static onDelete = (selectedJsonConfigId: number | null, reloadJsonConfigs: (jsonConfigId: number | null) => void): void => {
         const items: number[] = []
-        if (selectedTwinId) {
-            items.push(selectedTwinId);
+        if (selectedJsonConfigId) {
+            items.push(selectedJsonConfigId);
         }
         const options: HttpRequestOptions = {
             data: {
@@ -134,12 +134,12 @@ export class JsonConfigCommandCenter {
             }
         };
 
-        if (confirm("Do You Want to Remove This Twin Config?")) {
+        if (confirm("Do You Want to Remove This Json Config?")) {
             (async () => {
                 await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options,)
                     .then(() => {
-                        reloadSavedTwin(null);
-                        alert("Twin Config Deleted successfully!");
+                        reloadJsonConfigs(null);
+                        alert("Json Config Deleted successfully!");
                     })
                     .catch(error => {
                         JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
@@ -148,7 +148,7 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onSaveAs = (reloadSavedTwin: (configId: number) => void): void => {
+    public static onSaveAs = (reloadJsonConfigs: (jsonConfigId: number) => void): void => {
         const currentJson = JsonConfigCommandCenter.currentJson;
 
         const options: HttpRequestOptions = {
@@ -159,12 +159,12 @@ export class JsonConfigCommandCenter {
             }
         };
 
-        if (confirm("Do you want to cretate new twin?")) {
+        if (confirm("Do you want to cretate new Json Config?")) {
             (async () => {
                 await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options,)
                     .then(response => {
                         const createdId = response.data.data.items[0].id;
-                        reloadSavedTwin(createdId);
+                        reloadJsonConfigs(createdId);
                         alert("Data saved successfully!");
                     })
                     .catch(error => {

@@ -7,9 +7,9 @@ import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 
 export const SideNavPanel: React.FC<{
-    onTwinSelect: (configId: number) => void,
-    digitalTwinConfigMap: Map<number, unknown> | null,
-    selectedTwinId: number | null
+    onJsonConfigSelect: (jsonConfigId: number) => void,
+    jsonConfigMap: Map<number, unknown> | null,
+    selectedJsonConfigId: number | null
 }> = (props: any) => {
     return (
         <>
@@ -20,14 +20,14 @@ export const SideNavPanel: React.FC<{
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <div className={classes.createNewBtn} onClick={() => props.onTwinSelect()}>
+            <div className={classes.createNewBtn} onClick={() => props.onJsonConfigSelect()}>
                 <CommandItem icon={"plus"}>Create New</CommandItem>
             </div>
             <Divider />
             <div>
                 <Text>Configurations</Text>
-                <div className={classes.twinContainer}>
-                    <ConfigSelector onClick={props.onTwinSelect} digitalTwinConfigMap={props.digitalTwinConfigMap} selectedTwinId={props.selectedTwinId} />
+                <div className={classes.jsonConfigContainer}>
+                    <ConfigSelector onJsonConfigSelect={props.onJsonConfigSelect} jsonConfigMap={props.jsonConfigMap} selectedJsonConfigId={props.selectedJsonConfigId} />
                 </div>
             </div>
         </>

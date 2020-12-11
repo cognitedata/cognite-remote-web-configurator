@@ -8,22 +8,22 @@ import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 
 export const JsonConfigurator: React.FC<any> = () => {
-    const [digitalTwinConfigMap, setDigitalTwinConfigMap] = useState<Map<number, unknown> | null>(null);
-    const [selectedTwinId, setSelectedTwinId] = useState<number | null>(null);
+    const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
+    const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
 
-    const loadDigitalTwins = () => {
-        JsonConfigCommandCenter.loadDigitalTwins(setDigitalTwinConfigMap);
+    const loadJsonConfigs = () => {
+        JsonConfigCommandCenter.loadJsonConfigs(setJsonConfigMap);
     }
 
-    // call with undefind values to create new config
-    const onJsonConfigSelect = (configId: number | null) => {
-        JsonConfigCommandCenter.onJsonConfigSelect(configId, digitalTwinConfigMap, setSelectedTwinId, setJsonConfig);
+    // call with undefind values to create new json config
+    const onJsonConfigSelect = (jsonConfigId: number | null) => {
+        JsonConfigCommandCenter.onJsonConfigSelect(jsonConfigId, jsonConfigMap, setSelectedJsonConfigId, setJsonConfig);
     }
 
-    const reloadSavedTwin = (configId: number | null) => {
-        loadDigitalTwins();
-        onJsonConfigSelect(configId);
+    const reloadJsonConfigs = (jsonConfigId: number | null) => {
+        loadJsonConfigs();
+        onJsonConfigSelect(jsonConfigId);
     }
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {
@@ -33,15 +33,15 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.update: {
-                JsonConfigCommandCenter.onUpdate(selectedTwinId, reloadSavedTwin);
+                JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, reloadJsonConfigs);
                 break;
             }
             case CommandEvent.delete: {
-                JsonConfigCommandCenter.onDelete(selectedTwinId, reloadSavedTwin);
+                JsonConfigCommandCenter.onDelete(selectedJsonConfigId, reloadJsonConfigs);
                 break;
             }
             case CommandEvent.saveAs: {
-                JsonConfigCommandCenter.onSaveAs(reloadSavedTwin);
+                JsonConfigCommandCenter.onSaveAs(reloadJsonConfigs);
                 break;
             }
             case CommandEvent.download: {
@@ -54,7 +54,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     useEffect(() => {
-        loadDigitalTwins();
+        loadJsonConfigs();
 
     }, []);
 
@@ -62,12 +62,12 @@ export const JsonConfigurator: React.FC<any> = () => {
         <div className={classes.configurator}>
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
-                    onTwinSelect={onJsonConfigSelect}
-                    digitalTwinConfigMap={digitalTwinConfigMap}
-                    selectedTwinId={selectedTwinId} />
+                    onJsonConfigSelect={onJsonConfigSelect}
+                    jsonConfigMap={jsonConfigMap}
+                    selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.commandPanel}>
-                <CommandPanel commandEvent={onCommand} selectedTwinId={selectedTwinId} />
+                <CommandPanel commandEvent={onCommand} selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.editorPanel}>
                 <EditorPanel jsonConfig={jsonConfig} />
