@@ -1,5 +1,13 @@
-import { EditableNode, FieldEditable, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
-import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
+import {
+    EditableNode,
+    FieldEditable,
+    JSONEditorOptions,
+    JSONPath,
+    MenuItem,
+    MenuItemNode,
+    ValidationError
+} from "jsoneditor";
+import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
@@ -15,6 +23,7 @@ const extractField = (key: string) => {
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JSONEditorOptions {
+
         return {
             mode: this.mode,
             templates: this.templates,
@@ -27,6 +36,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return this.onCreateMenu(menuItems, node);
             }),
             onEditable: this.onEditable,
+            onValidate: this.onValidate,
         }
     }
 
@@ -229,6 +239,125 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
         }
         return true;
+    }
+
+    public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
+
+        const schemaMeta = getNodeMeta([])?.resultNode?.data; // meta of root node from schema
+        const errors = this.validateFields(json, schemaMeta);
+
+        return errors;
+    }
+
+    /**
+     * Validates if
+     * 1. All required keys from schema are available
+     * 2. there are no invalid keys
+     * 3. Discriminate properties are available and follows the schema
+     * @param json
+     * @param schemaMeta
+     * @param paths
+     * @param errors
+     * @private
+     */
+    private validateFields(json: any, schemaMeta: any, paths: any[] = [], errors: ValidationError[] = []): ValidationError[] {
+
+        const missingRequiredFields = [];
+        const validatedKeys = new Set<string>();
+
+        for (const childKey of Object.keys(schemaMeta)) {
+            const childNode = (schemaMeta)[childKey] as BaseNode;
+            const isRequired = childNode.isRequired;
+
+            const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
+
+            if (!hasKey) {
+                if (isRequired) {
+                    missingRequiredFields.push(childKey);
+                }
+            } else {
+                validatedKeys.add(childKey);
+                const value = json[childKey];
+                const newPath = paths.concat([childKey]);
+                const childMeta = schemaMeta[childKey];
+
+                let nextMeta: any;
+
+                if(childMeta.type === DataType.map || childMeta.type === DataType.array) {
+                    nextMeta = childMeta.sampleData.data;
+                    const discriminator = childMeta.sampleData.discriminator;
+
+                    const callNextIteration = (childKey: any, childValue: any) => {
+                        if(discriminator) {
+                            const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, newPath);
+                            errors = childErrors.concat(errors);
+                        } else {
+                            const childPath = newPath.concat([childKey]);
+                            if(nextMeta) {
+                                const childErrors = this.validateFields(childValue, nextMeta, childPath);
+                                errors = childErrors.concat(errors);
+                            }
+                        }
+                    }
+
+                    if(childMeta.type === DataType.map) {
+                        for(const mapChildKey of Object.keys(value)) {
+                            const mapChild = value[mapChildKey];
+                            callNextIteration(mapChildKey, mapChild);
+                        }
+                    } else {
+                        for(let i = 0; i < value.length; i++) {
+                            const mapChild = value[i];
+                            callNextIteration(i, mapChild);
+                        }
+                    }
+                } else {
+                    nextMeta = childMeta.data;
+                    const discriminator = childMeta.discriminator;
+                    if(discriminator) {
+                        const childErrors = this.validateDiscriminator(value, nextMeta, discriminator, newPath);
+                        errors = childErrors.concat(errors);
+                    } else {
+
+                        if(nextMeta) {
+                            const childErrors = this.validateFields(value, nextMeta, newPath);
+                            errors = childErrors.concat(errors);
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        if(missingRequiredFields.length) {
+            errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
+        }
+
+        for(const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
+            if(!validatedKeys.has(jsonChildKey)) {
+                const newPath = paths.concat([jsonChildKey]);
+                errors.push({path: newPath, message: `key: ${jsonChildKey}, is not a valid key!`});
+            }
+        }
+        return errors;
+    }
+
+    private validateDiscriminator(json: any, schema: any, discriminator: { propertyName: string }, paths: any[], errors: ValidationError[] = []): ValidationError[] {
+        const discriminatorType = json[discriminator.propertyName];
+
+        if(discriminatorType) { // whether discriminator property is available
+            const discriminatorMeta = schema[discriminatorType];
+            if(discriminatorMeta) {
+                const childErrors = this.validateFields(json, discriminatorMeta.data, paths);
+                errors = childErrors.concat(errors);
+            } else {
+                errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!`});
+            }
+        } else {
+            errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!`});
+        }
+        return  errors;
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
