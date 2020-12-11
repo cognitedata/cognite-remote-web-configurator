@@ -1,5 +1,5 @@
 import { EditableNode, FieldEditable, JSONEditorOptions, JSONPath, MenuItem, MenuItemNode } from "jsoneditor";
-import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
+import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
@@ -40,7 +40,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
                 let templates = acc;
 
-                const transformToTemplate = (templateArr: any[], node: any)=> {
+                const transformToTemplate = (templateArr: any[], node: any) => {
                     const key = extractField(node.key)
 
                     const temp = {
@@ -68,7 +68,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     }
                 }
 
-                if(acc.length === 1) { // transform first acc value
+                if (acc.length === 1) { // transform first acc value
                     const firstNode = acc.pop();
                     templates = [];
                     transformToTemplate(templates, firstNode);
@@ -183,14 +183,26 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         };
     }
 
-    public onEditable(node: any): boolean | FieldEditable {
+    public onEditable(node: EditableNode | any): boolean | FieldEditable {
         const path: (string | number)[] = (node as EditableNode).path;
 
         if (path && path?.length !== 0) {
             const parentPath = [...path];
             const leafNode = parentPath.pop();
             const resultNode = getNodeMeta(parentPath).resultNode;
-            const readOnlyFields = resultNode?.readOnlyFields;
+            let readOnlyFields: string[] = [];
+
+            if (resultNode?.discriminator) { // get readonly fields from all discriminated types
+                const discriminatorTypes = resultNode.data as BaseNodes;
+                const readonlyFieldsInDiscriminatorTypes = new Set<string>();
+                for (const key of Object.keys(discriminatorTypes)) {
+                    const value = discriminatorTypes[key];
+                    value.readOnlyFields.forEach(val => readonlyFieldsInDiscriminatorTypes.add(val));
+                }
+                readOnlyFields = Array.from(readonlyFieldsInDiscriminatorTypes);
+            } else {
+                readOnlyFields = resultNode?.readOnlyFields ?? [];
+            }
 
             /**
              * if read only fields exists and
@@ -262,7 +274,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const key = parentPath[parentPath.length - 1]
         let resultNode = getNodeMeta([...parentPath]).resultNode;
 
-        if(node?.discriminator){
+        if (node?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);
             const typeKey = node.discriminator.propertyName;
             const dataType = currentData[typeKey];
@@ -279,11 +291,13 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return resultNode.sampleData.data;
             }
             const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.unspecified, { type: DataType.object, description: `Add sample item to ${key}` }, undefined, true)
+                [`${key}-sample`]: new BaseNode(DataType.unspecified, {
+                    type: DataType.object,
+                    description: `Add sample item to ${key}`
+                }, undefined, true)
             }
             return ret;
-        }
-        else {
+        } else {
             return resultNode?.data;
         }
     }
