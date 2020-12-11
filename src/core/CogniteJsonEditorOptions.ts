@@ -232,14 +232,26 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
         const schemaMeta = getNodeMeta([])?.resultNode?.data; // meta of root node from schema
-        const errors = this.validateMissingFields(json, schemaMeta);
+        const errors = this.validateFields(json, schemaMeta);
 
         return errors;
     }
 
-    private validateMissingFields(json: any, schemaMeta: any, paths: any[] = [], errors: ValidationError[] = []): ValidationError[] {
+    /**
+     * Validates if
+     * 1. All required keys from schema are available
+     * 2. there are no invalid keys
+     * 3. Discriminate properties are available and follows the schema
+     * @param json
+     * @param schemaMeta
+     * @param paths
+     * @param errors
+     * @private
+     */
+    private validateFields(json: any, schemaMeta: any, paths: any[] = [], errors: ValidationError[] = []): ValidationError[] {
 
         const missingRequiredFields = [];
+        const validatedKeys = new Set<string>();
 
         for (const childKey of Object.keys(schemaMeta)) {
             const childNode = (schemaMeta)[childKey] as BaseNode;
@@ -252,6 +264,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     missingRequiredFields.push(childKey);
                 }
             } else {
+                validatedKeys.add(childKey);
                 const value = json[childKey];
                 const newPath = paths.concat([childKey]);
                 const childMeta = schemaMeta[childKey];
@@ -269,7 +282,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         } else {
                             const childPath = newPath.concat([childKey]);
                             if(nextMeta) {
-                                const childErrors = this.validateMissingFields(childValue, nextMeta, childPath);
+                                const childErrors = this.validateFields(childValue, nextMeta, childPath);
                                 errors = childErrors.concat(errors);
                             }
                         }
@@ -295,7 +308,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     } else {
 
                         if(nextMeta) {
-                            const childErrors = this.validateMissingFields(value, nextMeta, newPath);
+                            const childErrors = this.validateFields(value, nextMeta, newPath);
                             errors = childErrors.concat(errors);
                         }
                     }
@@ -304,8 +317,16 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
 
         }
+
         if(missingRequiredFields.length) {
             errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
+        }
+
+        for(const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
+            if(!validatedKeys.has(jsonChildKey)) {
+                const newPath = paths.concat([jsonChildKey]);
+                errors.push({path: newPath, message: `key: ${jsonChildKey}, is not a valid key!`});
+            }
         }
         return errors;
     }
@@ -313,10 +334,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     private validateDiscriminator(json: any, schema: any, discriminator: { propertyName: string }, paths: any[], errors: ValidationError[] = []): ValidationError[] {
         const discriminatorType = json[discriminator.propertyName];
 
-        if(discriminatorType) {
+        if(discriminatorType) { // whether discriminator property is available
             const discriminatorMeta = schema[discriminatorType];
             if(discriminatorMeta) {
-                const childErrors = this.validateMissingFields(json, discriminatorMeta.data, paths);
+                const childErrors = this.validateFields(json, discriminatorMeta.data, paths);
                 errors = childErrors.concat(errors);
             } else {
                 errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!`});
