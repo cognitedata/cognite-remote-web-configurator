@@ -261,31 +261,14 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         submenu?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-                // let matchingItemCountWithSameDesc = 0;
-
                 Object.keys(validInsertItems).forEach((key: any) => {
                     if ((subItem.text === key)
                         && (subItem.title === validInsertItems[key].description)
                         && !existingKeys.includes(key)) {
-                        /**
-                         * filter already added items from insert menu
-                         * unless it's map
-                         */
-                        // if (!(resultNode instanceof AdditionalNode)) {
-                        //     validMenuItems.push(subItem);
-                        //     existingKeys.push(key);
-                        // }
-                        // if(resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
-                        // }
-                        // matchingItemCountWithSameDesc++;
                     }
                 });
-
-                // if (matchingItemCountWithSameDesc > 1) {
-                //     alert("Invalid schema. Different keys should not exists with same description.");
-                // }
             }
         });
 
