@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
 import { ClientSDKProvider, PureObject, TenantSelector } from "@cognite/gearbox";
 import styles from "./TenantLogin.module.scss";
-import { APP_NAME, LOGIN_CDF_ENVIRONMENT_OPT_TEXT, LOGIN_HEADER } from "../../../constants";
+import {APP_NAME, DEV_MODE, LOGIN_CDF_ENVIRONMENT_OPT_TEXT, LOGIN_HEADER} from "../../../constants";
+import {Client} from "../../../cdf/client";
 
 export function TenantLogin(props: {
     children: any
@@ -14,6 +15,24 @@ export function TenantLogin(props: {
 
     const { project, apiKey, oauthToken } = props.authOptions;
     const advancedOptions = { cdfEnvironment: ''};
+
+
+    useEffect(() => {
+        if (DEV_MODE) {
+            Client.sdk.loginWithOAuth({
+                project: process.env.REACT_APP_PROJECT || '',
+                accessToken: localStorage.getItem('token') || '',
+                onAuthenticate: (login: any) => {
+                    login.skip();
+                },
+                onTokens: ({accessToken}) => {
+                    localStorage.setItem("token", accessToken);
+                },
+            });
+            Client.sdk.authenticate();
+            props.onLogin(true);
+        }
+    }, []);
 
     if (isLoginPopupWindow()) {
         loginPopupHandler();
