@@ -56,7 +56,7 @@ export const populateChildren = (
       const required = schema.required
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
-      // Only keys are added as data of ObjectNode
+      // Since `{}` is passed as data for obj, type can be BaseNodes
       (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
     return obj;
