@@ -7,6 +7,7 @@ import { AdditionalNode } from "../validator/nodes/AdditionalNode";
 import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
+import { getJson } from "../validator/util/Helper";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -63,6 +64,22 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             value: node.sample
                         }
                         acc.push(temp);
+                    }
+
+                    // TODO: try to implement these logics with `if else` to reduce duplicates and unnecessary cases
+                    if (node.node.discriminator) {
+                        if (node.node.data) {
+                        Object.entries(node.node.data).forEach(([subKey, subVal]) => {
+                            const temp = {
+                            text: `${key}-${subKey}`,
+                            title: `Add sample item to ${key}`,
+                            className: "jsoneditor-type-object",
+                            field: `${key}`,
+                            value: getJson(subVal as BaseNode),
+                            };
+                            acc.push(temp);
+                        });
+                        }
                     }
                 }
                 return acc;
@@ -285,7 +302,24 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             return ret;
         }
         else {
-            return resultNode?.data;
+            const res: any = resultNode?.data ?? {};
+
+            Object.entries(resultNode?.data as Record<string, unknown>).forEach(
+              ([subKey, subVal]) => {
+                if ((subVal as BaseNode).discriminator) {
+                    delete res[subKey];
+                  Object.keys(
+                    (subVal as BaseNode).data as Record<string, unknown>
+                  ).forEach((desKey) => {
+                    res[`${subKey}-${desKey}`] = {
+                      description: `Add sample item to ${subKey}`,
+                    };
+                  });
+                }
+              }
+            );
+      
+            return res;
         }
     }
 }
