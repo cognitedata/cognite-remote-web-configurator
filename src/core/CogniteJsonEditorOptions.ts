@@ -44,68 +44,46 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public mode: "tree" | "code" | "preview" | undefined = 'tree';
 
     public get templates(): any {
-        return getAllNodes()
-            .map(node => [node])// each node is put to its own array for reduce function
-            .reduce((acc: any[], singleNodeArr: any[]): any[] => {
-                const node = singleNodeArr.pop();
+        const allTemplates: any = [];
+        getAllNodes().forEach(ele => {
+            const key = extractField(ele.key);
+            const pureObj = {
+                text: key,
+                title: ele.node.description,
+                className: 'jsoneditor-type-object',
+                field: key,
+                value: ele.data
+            }
+            allTemplates.push(pureObj);
 
-                let templates = acc;
-
-                const transformToTemplate = (templateArr: any[], node: any) => {
-                    const key = extractField(node.key)
-
+            if (ele.node.discriminator && ele.node.data) {
+                // If discriminator exists, add all sub types as templates
+                Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
                     const temp = {
-                        text: key,
-                        title: node.node.description,
-                        className: 'jsoneditor-type-object',
-                        field: key,
-                        value: node.data
-                    }
-                    templateArr.push(temp);
+                        text: `${key}-${subKey}`,
+                        title: `Add sample item to ${key}`,
+                        className: "jsoneditor-type-object",
+                        field: `${key}`,
+                        value: getJson(subVal as BaseNode),
+                    };
+                    allTemplates.push(temp);
+                });
+            }
 
-                    /**
-                     * if node type is array or map
-                     * adding sample data as a template
-                     */
-                    if (node.node.type === "array" || node.node.type === "map") {
-                        const temp = {
-                            text: `${key}-sample`,
-                            title: `Add sample item to ${key}`,
-                            className: 'jsoneditor-type-object',
-                            field: `${key}-sample`,
-                            value: node.sample
-                        }
-                        templateArr.push(temp);
-                    }
-
-                    // TODO: try to implement these logics with `if else` to reduce duplicates and unnecessary cases
-                    if (node.node.discriminator) {
-                        if (node.node.data) {
-                        Object.entries(node.node.data).forEach(([subKey, subVal]) => {
-                            const temp = {
-                            text: `${key}-${subKey}`,
-                            title: `Add sample item to ${key}`,
-                            className: "jsoneditor-type-object",
-                            field: `${key}`,
-                            value: getJson(subVal as BaseNode),
-                            };
-                            acc.push(temp);
-                        });
-                        }
-                    }
+            if (ele.node.type === "array" || ele.node.type === "map") {
+                const temp = {
+                    text: `${key}-sample`,
+                    title: `Add sample item to ${key}`,
+                    className: 'jsoneditor-type-object',
+                    field: `${key}-sample`,
+                    value: ele.sample
                 }
+                allTemplates.push(temp);
+            }
 
-                if (acc.length === 1) { // transform first acc value
-                    const firstNode = acc.pop();
-                    templates = [];
-                    transformToTemplate(templates, firstNode);
-                }
+        });
 
-                if (node) {
-                    transformToTemplate(templates, node);
-                }
-                return templates;
-            });
+        return allTemplates;
     }
 
     // remove unwanted items from top Command Bar
@@ -393,7 +371,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 Object.keys(validInsertItems).forEach((key: any) => {
                     if ((subItem.text === key)
                         && (subItem.title === validInsertItems[key].description)
-                        && !existingKeys.includes(key)) {
+                        && !existingKeys.includes(key.split('-')[0])) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
                     }
@@ -441,7 +419,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             return ret;
         }
         else {
-            const res: any = resultNode?.data ?? {};
+            const res: any = resultNode?.data ? {...(resultNode.data as BaseNodes)} : {};
 
             Object.entries(resultNode?.data as Record<string, unknown>).forEach(
               ([subKey, subVal]) => {
