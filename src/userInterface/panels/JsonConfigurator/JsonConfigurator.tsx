@@ -17,13 +17,13 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     // call with undefind values to create new config
-    const onJsonConfigSelect = (configId: number) => {
+    const onJsonConfigSelect = (configId: number | null) => {
         JsonConfigCommandCenter.onJsonConfigSelect(configId, digitalTwinConfigMap, setSelectedTwinId, setJsonConfig);
     }
 
-    const reloadSavedTwin = (configId: number) => {
-        JsonConfigCommandCenter.loadDigitalTwins(setDigitalTwinConfigMap);
-        JsonConfigCommandCenter.onJsonConfigSelect(configId, digitalTwinConfigMap, setSelectedTwinId, setJsonConfig);
+    const reloadSavedTwin = (configId: number | null) => {
+        loadDigitalTwins();
+        onJsonConfigSelect(configId);
     }
 
     const onCommand = (command: CommandEvent, ...args: any[]) => {
@@ -33,11 +33,11 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.update: {
-                JsonConfigCommandCenter.onUpdate();
+                JsonConfigCommandCenter.onUpdate(selectedTwinId, reloadSavedTwin);
                 break;
             }
             case CommandEvent.delete: {
-                JsonConfigCommandCenter.onDelete();
+                JsonConfigCommandCenter.onDelete(selectedTwinId, reloadSavedTwin);
                 break;
             }
             case CommandEvent.saveAs: {

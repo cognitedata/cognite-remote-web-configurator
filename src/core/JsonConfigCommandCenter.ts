@@ -48,15 +48,14 @@ export class JsonConfigCommandCenter {
                     digitalTwinConfigMap(twinMap);
                 })
                 .catch(error => {
-                    console.error("Retrieved Digital Twin List failed");
-                    JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
+                    JsonConfigCommandCenter.errorAlert("Load Digital Twin list failed!", error);
                 });
         })();
     }
 
     // call with undefind values to create new config
     public static onJsonConfigSelect = (
-        configId: number,
+        configId: number | null,
         digitalTwinConfigMap: Map<number, unknown> | null,
         setSelectedTwinId: (configId: number | null) => void,
         setJsonConfig: (jsonConfig: JsonConfig | null) => void
@@ -84,6 +83,7 @@ export class JsonConfigCommandCenter {
         const errorcode = `${error}`.split(" | ")[1].split(": ")[1];
 
         alert(`${message}\n${errorMsg}`);
+        console.error(`${errorcode}: ${message}\n${errorMsg}`);
     }
 
     public static onModeChange(mode: Modes): void {
@@ -92,12 +92,60 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onUpdate = (): void => {
-        console.warn("Update As function not implemented");
+    public static onUpdate = (selectedTwinId: number | null, reloadSavedTwin: (configId: number | null) => void): void => {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+
+        const options: HttpRequestOptions = {
+            data: {
+                "items": [
+                    {
+                        "id": selectedTwinId,
+                        "data": currentJson
+                    }
+                ]
+            }
+        };
+
+        if (confirm("Do you want to cretate new twin?")) {
+            (async () => {
+                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options,)
+                    .then(response => {
+                        const createdId = response.data.data.items[0].id;
+                        reloadSavedTwin(createdId);
+                        alert("Data updated successfully!");
+                    })
+                    .catch(error => {
+                        JsonConfigCommandCenter.errorAlert("Update failed!", error);
+                    });
+            })();
+        }
     }
 
-    public static onDelete = (): void => {
-        console.warn("Delete As function not implemented");
+    public static onDelete = (selectedTwinId: number | null, reloadSavedTwin: (configId: number | null) => void): void => {
+        const items: number[] = []
+        if (selectedTwinId) {
+            items.push(selectedTwinId);
+        }
+        const options: HttpRequestOptions = {
+            data: {
+                "items": [
+                    ...items
+                ]
+            }
+        };
+
+        if (confirm("Do You Want to Remove This Twin Config?")) {
+            (async () => {
+                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options,)
+                    .then(() => {
+                        reloadSavedTwin(null);
+                        alert("Twin Config Deleted successfully!");
+                    })
+                    .catch(error => {
+                        JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
+                    });
+            })();
+        }
     }
 
     public static onSaveAs = (reloadSavedTwin: (configId: number) => void): void => {
