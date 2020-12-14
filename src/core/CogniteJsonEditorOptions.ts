@@ -17,10 +17,6 @@ import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson } from "../validator/util/Helper";
 
-const extractField = (key: string) => {
-    return key.split(":")[1]
-}
-
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JSONEditorOptions {
@@ -46,43 +42,43 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public get templates(): any {
         const allTemplates: any = [];
         getAllNodes().forEach(ele => {
-            const key = extractField(ele.key);
-            const pureObj = {
-                text: key,
-                title: ele.node.description,
-                className: 'jsoneditor-type-object',
-                field: key,
-                value: ele.data
-            }
-            allTemplates.push(pureObj);
+            const key = ele.key.split(":")[1];
 
             if (ele.node.discriminator && ele.node.data) {
                 // If discriminator exists, add all sub types as templates
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
                     const temp = {
                         text: `${key}-${subKey}`,
-                        title: `Add sample item to ${key}`,
+                        title: ele.node.description,
                         className: "jsoneditor-type-object",
                         field: `${key}`,
                         value: getJson(subVal as BaseNode),
                     };
                     allTemplates.push(temp);
                 });
-            }
-
-            if (ele.node.type === "array" || ele.node.type === "map") {
+            } else if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
+                // If type is an array or map then add data as sample
                 const temp = {
-                    text: `${key}-sample`,
-                    title: `Add sample item to ${key}`,
+                    text: `${key}`,
+                    title: ele.node.description,
                     className: 'jsoneditor-type-object',
-                    field: `${key}-sample`,
+                    field: `${key}`,
                     value: ele.sample
                 }
                 allTemplates.push(temp);
+            } else {
+                // Defalut case, add usual object
+                const pureObj = {
+                    text: key,
+                    title: ele.node.description,
+                    className: 'jsoneditor-type-object',
+                    field: key,
+                    value: ele.data
+                }
+                allTemplates.push(pureObj);
             }
-
         });
-
+        console.log('allTemplates', allTemplates);
         return allTemplates;
     }
 
@@ -355,23 +351,26 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return  errors;
     }
 
-    private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
+    private createValidInsertMenu(allInsertItems: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
         const resultNode = getNodeMeta([...parentPath]).resultNode;
 
         const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
         const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
 
-        if (submenu === undefined || submenu.length === 0) {
+        if (allInsertItems === undefined || allInsertItems.length === 0) {
             return undefined;
         }
 
-        submenu?.forEach(subItem => {
+        allInsertItems?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
                 Object.keys(validInsertItems).forEach((key: any) => {
-                    if ((subItem.text === key)
+                    const pureKey = subItem.text?.split('-')[0];
+                    if ((pureKey === key) // For array and map types, keys comes as xxxx-sample
                         && (subItem.title === validInsertItems[key].description)
                         && !existingKeys.includes(key.split('-')[0])) {
+
+                        // subItem.text = pureKey;
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
                     }
@@ -394,16 +393,17 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const key = parentPath[parentPath.length - 1]
         let resultNode = getNodeMeta([...parentPath]).resultNode;
 
+        // If discriminator, then get result node from subTypes
         if (node?.discriminator) {
-            const currentData = this.getPathObject(currentJson, parentPath);
-            const typeKey = node.discriminator.propertyName;
-            const dataType = currentData[typeKey];
-            resultNode = (node.data as BaseNodes)[dataType];
+            const nodeObject = this.getPathObject(currentJson, parentPath);
+            const dataObjForType = nodeObject[node.discriminator.propertyName];
+            resultNode = (node.data as BaseNodes)[dataObjForType];
         }
 
+
         /**
-         * When adding items to an Array or a Map,
-         * returning a IData object with matching key and description
+         * Handling insert options.
+         * If array or map then add a sample. Else add keys of object.
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
             if (resultNode.sampleData?.discriminator) {
@@ -411,9 +411,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return resultNode.sampleData.data;
             }
             const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.unspecified, {
+                [`${key}`]: new BaseNode(DataType.unspecified, {
                     type: DataType.object,
-                    description: `Add sample item to ${key}`
+                    description: resultNode.description
                 }, undefined, true)
             }
             return ret;
@@ -425,17 +425,17 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
               ([subKey, subVal]) => {
                 if ((subVal as BaseNode).discriminator) {
                     delete res[subKey];
-                  Object.keys(
+
+                  Object.entries(
                     (subVal as BaseNode).data as Record<string, unknown>
-                  ).forEach((desKey) => {
+                  ).forEach(([desKey,desVal]) => {
                     res[`${subKey}-${desKey}`] = {
-                      description: `Add sample item to ${subKey}`,
+                      description: (desVal as BaseNode).description,
                     };
                   });
                 }
               }
-            );
-      
+            )
             return res;
         }
     }
