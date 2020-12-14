@@ -5,6 +5,7 @@ import { loadSchema } from "../validator/Validator";
 import { Client } from "../cdf/client";
 import { HttpRequestOptions } from "@cognite/sdk/dist/src";
 import { JsonConfig } from "../userInterface/util/types";
+import { saveAs } from 'file-saver';
 
 const cogniteClient = Client.sdk;
 
@@ -175,6 +176,15 @@ export class JsonConfigCommandCenter {
     }
 
     public static onDownload = (): void => {
-        console.warn("Download function not implemented");
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        let fileName = currentJson.header?.name
+        if (!fileName || fileName === "") {
+            fileName = "Untitled Json Config";
+            alert("Download Cancelled!\nPlease add a file name");
+        }
+        else{
+            const blob = new Blob([currentJson], {type: 'application/json;charset=utf-8'});
+            saveAs(blob, fileName);
+        }
     }
 }
