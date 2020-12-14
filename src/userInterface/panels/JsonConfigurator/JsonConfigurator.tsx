@@ -16,10 +16,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const loadJsonConfigs = () => {
         JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
-                setJsonConfigMap(response.data.data?.items);
-            })
-            .catch(error => {
-                console.error("Load Json Configs Error:", error);
+                setJsonConfigMap(response);
             });
     }
 

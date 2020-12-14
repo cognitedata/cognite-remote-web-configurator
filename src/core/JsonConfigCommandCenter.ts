@@ -35,15 +35,17 @@ export class JsonConfigCommandCenter {
     }
 
     public static loadJsonConfigs = async (): Promise<any> => {
-        return await CDFOperations.loadJsonConfigs()
+        return await CDFOperations.loadJsonConfigs();
     }
 
     public static errorAlert = (message: string, error: string): void => {
-        const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
-        const errorcode = `${error}`.split(" | ")[1].split(": ")[1];
+        if (!error === null) {
+            const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
+            const errorcode = `${error}`.split(" | ")[1].split(": ")[1];
 
-        alert(`${message}\n${errorMsg}`);
-        console.error(`${errorcode}: ${message}\n${errorMsg}`);
+            alert(`${message}\n${errorMsg}`);
+            console.error(`${errorcode}: ${message}\n${errorMsg}`);
+        }
     }
 
     public static onModeChange(mode: Modes): void {
