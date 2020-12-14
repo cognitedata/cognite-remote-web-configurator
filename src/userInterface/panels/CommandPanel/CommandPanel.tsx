@@ -14,6 +14,13 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
         }
     }
 
+    const onSaveHandler = () => {
+        console.log("save");
+        if (confirm("Do you want to cretate new Json Config?")) {
+            props.commandEvent(CommandEvent.saveAs)
+        }
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
@@ -27,7 +34,7 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
                         <CommandItem className={classes.btn} icon={"delete"} onClick={() => props.commandEvent(CommandEvent.delete)}>DELETE</CommandItem>
                     </> :
                     <>
-                        <CommandItem className={classes.btn} icon={"save"} onClick={() => props.commandEvent(CommandEvent.saveAs)}>SAVE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>SAVE</CommandItem>
                     </>
                 }
                 <CommandItem className={classes.btn} icon={"download"} onClick={() => props.commandEvent(CommandEvent.download)}>DOWNLOAD</CommandItem>

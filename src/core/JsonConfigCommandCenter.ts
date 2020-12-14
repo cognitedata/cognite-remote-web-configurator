@@ -4,7 +4,6 @@ import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { loadSchema } from "../validator/Validator";
 import { Client } from "../cdf/client";
 import { HttpRequestOptions } from "@cognite/sdk/dist/src";
-import { JsonConfig } from "../userInterface/util/types";
 import { saveAs } from 'file-saver';
 
 const cogniteClient = Client.sdk;
@@ -31,51 +30,6 @@ export class JsonConfigCommandCenter {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
         if (currentJsonText) {
             return JSON.parse(currentJsonText);
-        }
-    }
-
-    public static loadJsonConfigs = (setJsonConfigMap: (jsonConfigId: Map<number, unknown> | null) => void): void => {
-        (async () => {
-            await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
-                .then(response => {
-                    console.log("Retrieved Json Config List successfully");
-                    const jsonConfigs = response.data.data?.items;
-                    const jsonConfigMap = new Map();
-
-                    for (const jsonConfig of jsonConfigs) {
-                        const jsonConfigId = jsonConfig.id;
-                        jsonConfigMap.set(jsonConfigId, jsonConfig);
-                    }
-                    setJsonConfigMap(jsonConfigMap);
-                })
-                .catch(error => {
-                    JsonConfigCommandCenter.errorAlert("Load Json Config list failed!", error);
-                });
-        })();
-    }
-
-    // call with undefind values to create new json Config
-    public static onJsonConfigSelect = (
-        jsonConfigId: number | null,
-        jsonConfigMap: Map<number, unknown> | null,
-        setSelectedJsonConfigId: (jsonConfigId: number | null) => void,
-        setJsonConfig: (jsonConfig: JsonConfig | null) => void
-    ): void => {
-        if (jsonConfigId) {
-            const configMap = jsonConfigMap;
-            if (configMap && configMap.size > 0) {
-                const jsonConfig = configMap.get(jsonConfigId);
-                if (jsonConfig) {
-                    setJsonConfig(jsonConfig as JsonConfig);
-                }
-            }
-            setSelectedJsonConfigId(jsonConfigId);
-        }
-        else {
-            setJsonConfig({
-                data: {}
-            } as JsonConfig);
-            setSelectedJsonConfigId(null);
         }
     }
 
@@ -149,32 +103,6 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onSaveAs = (reloadJsonConfigs: (jsonConfigId: number) => void): void => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
-
-        const options: HttpRequestOptions = {
-            data: {
-                "items": [
-                    { "data": currentJson }
-                ]
-            }
-        };
-
-        if (confirm("Do you want to cretate new Json Config?")) {
-            (async () => {
-                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options,)
-                    .then(response => {
-                        const createdId = response.data.data.items[0].id;
-                        reloadJsonConfigs(createdId);
-                        alert("Data saved successfully!");
-                    })
-                    .catch(error => {
-                        JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
-                    });
-            })();
-        }
-    }
-
     public static onDownload = (): void => {
         const currentJson = JsonConfigCommandCenter.currentJson;
         let fileName = currentJson.header?.name
@@ -182,8 +110,8 @@ export class JsonConfigCommandCenter {
             fileName = "Untitled Json Config";
             alert("Download Cancelled!\nPlease add a file name");
         }
-        else{
-            const blob = new Blob([currentJson], {type: 'application/json;charset=utf-8'});
+        else {
+            const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
             saveAs(blob, fileName);
         }
     }
