@@ -14,20 +14,12 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
 
     const loadJsonConfigs = () => {
-        CDFOperations.loadJsonConfigs()
+        JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
-                console.log("Retrieved Json Config List successfully");
-                const jsonConfigs = response.data.data?.items;
-                const newJsonConfigMap = new Map();
-
-                for (const jsonConfig of jsonConfigs) {
-                    const jsonConfigId = jsonConfig.id;
-                    newJsonConfigMap.set(jsonConfigId, jsonConfig);
-                }
-                setJsonConfigMap(newJsonConfigMap);
+                setJsonConfigMap(response.data.data?.items);
             })
             .catch(error => {
-                JsonConfigCommandCenter.errorAlert("Load Json Config list failed!", error);
+                console.error("Load Json Configs Error:", error);
             });
     }
 

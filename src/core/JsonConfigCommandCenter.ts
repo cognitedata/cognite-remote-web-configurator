@@ -5,6 +5,7 @@ import { loadSchema } from "../validator/Validator";
 import { Client } from "../cdf/client";
 import { HttpRequestOptions } from "@cognite/sdk/dist/src";
 import { saveAs } from 'file-saver';
+import { CDFOperations } from "./CDFOperations";
 
 const cogniteClient = Client.sdk;
 
@@ -31,6 +32,10 @@ export class JsonConfigCommandCenter {
         if (currentJsonText) {
             return JSON.parse(currentJsonText);
         }
+    }
+
+    public static loadJsonConfigs = async (): Promise<any> => {
+        return await CDFOperations.loadJsonConfigs()
     }
 
     public static errorAlert = (message: string, error: string): void => {

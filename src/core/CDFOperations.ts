@@ -6,7 +6,7 @@ const cogniteClient = Client.sdk;
 
 export class CDFOperations {
     public static loadJsonConfigs = async (): Promise<HttpResponse<any>> => {
-        return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
+        return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`);
     }
 
     public static onSaveAs = async (): Promise<HttpResponse<any>> => {
@@ -20,6 +20,6 @@ export class CDFOperations {
             }
         };
 
-        return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options)
+        return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options);
     }
 }
