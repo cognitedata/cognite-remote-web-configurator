@@ -28,15 +28,26 @@ export const getNode = (
   paths: (string | number)[]
 ): IValidationResult => {
   let resultNode = rootDataNode[group];
+  let json = rootJsonNode;
 
-  for (const path of paths) {
+  for (const path of paths) {  
     let next;
+
     if (resultNode) {
-      if (typeof path === "number") {
-        next = (resultNode.data as BaseNode[])[path];
-      } else {
-        next = (resultNode.data as BaseNodes)[path];
+      // If discriminator, then get the relevant type from there
+      if(resultNode.discriminator && resultNode.data){
+        let nextResultNodeTypeFromData;
+        if(json){
+          const subTypeInData = json[resultNode.discriminator.propertyName];
+          nextResultNodeTypeFromData = (resultNode.data as BaseNodes)[subTypeInData];
+        }
+        resultNode = nextResultNodeTypeFromData ?? Object.values(resultNode.data)[0];
       }
+      next = (resultNode.data as BaseNodes)[path];
+    }
+
+    if(json){
+      json = json[path];
     }
 
     if (!next) {

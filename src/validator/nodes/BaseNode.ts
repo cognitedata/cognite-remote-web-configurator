@@ -41,6 +41,7 @@ export class BaseNode {
   public get data(): IData {
     if (this.discriminator) {
       const result: BaseNodes = {};
+      const possibleTypeValues = Object.keys(this.discriminator.mapping);      
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
@@ -52,7 +53,8 @@ export class BaseNode {
           // TODO: avoid any type
           (node._data as any)[this.discriminator.propertyName] = {
             type: 'string',
-            data: key
+            data: key,
+            possibleValues: possibleTypeValues
           };
         }
         result[key] = node;
