@@ -51,4 +51,20 @@ export class CDFOperations {
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options);
     }
 
+    public static onDelete = async (selectedJsonConfigId: number | null, ): Promise<HttpResponse<any>> => {
+        const items: number[] = []
+        if (selectedJsonConfigId) {
+            items.push(selectedJsonConfigId);
+        }
+        const options: HttpRequestOptions = {
+            data: {
+                "items": [
+                    ...items
+                ]
+            }
+        };
+
+        return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options)
+    }
+
 }

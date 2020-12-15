@@ -2,12 +2,8 @@ import { Modes } from "../userInterface/util/enums/Modes";
 import { CogniteJsonEditor } from "./CogniteJsonEditor";
 import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { loadSchema } from "../validator/Validator";
-import { Client } from "../cdf/client";
-import { HttpRequestOptions } from "@cognite/sdk/dist/src";
 import { saveAs } from 'file-saver';
 import { CDFOperations } from "./CDFOperations";
-
-const cogniteClient = Client.sdk;
 
 export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
@@ -74,30 +70,12 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onDelete = (selectedJsonConfigId: number | null, reloadJsonConfigs: (jsonConfigId: number | null) => void): void => {
-        const items: number[] = []
-        if (selectedJsonConfigId) {
-            items.push(selectedJsonConfigId);
+    public static onDelete = async (selectedJsonConfigId: number | null): Promise<any> => {
+        if (!selectedJsonConfigId) {
+            alert("Please select a file");
         }
-        const options: HttpRequestOptions = {
-            data: {
-                "items": [
-                    ...items
-                ]
-            }
-        };
-
-        if (confirm("Do You Want to Remove This Json Config?")) {
-            (async () => {
-                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options,)
-                    .then(() => {
-                        reloadJsonConfigs(null);
-                        alert("Json Config Deleted successfully!");
-                    })
-                    .catch(error => {
-                        JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
-                    });
-            })();
+        else {
+            return await CDFOperations.onDelete(selectedJsonConfigId);
         }
     }
 

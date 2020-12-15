@@ -33,7 +33,7 @@ export const CommandPanel: React.FC<{
         }
     }
 
-    const onUpdateHander = () => {
+    const onUpdateHandler = () => {
         if (confirm("Do you want to update file with new changes?")) {
             props.commandEvent(CommandEvent.update)
                 .then((response: any) => {
@@ -47,6 +47,23 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const onDeleteHandler = () => {
+        if (confirm("Are you sure you want to permanently delete this config?")) {
+            props.commandEvent(CommandEvent.delete)
+                .then(() => {
+                    props.reloadJsonConfigs(null);
+                    alert("Json Config Deleted successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
+                });
+        }
+    }
+
+    const onDownloadHandler = () => {
+        props.commandEvent(CommandEvent.download);
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
@@ -54,16 +71,14 @@ export const CommandPanel: React.FC<{
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
             </div>
             <div className={classes.rightPanel}>
-                {props.selectedJsonConfigId ?
+                <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>DOWNLOAD</CommandItem>
+                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>SAVE</CommandItem>
+                {props.selectedJsonConfigId &&
                     <>
-                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHander}>UPDATE</CommandItem>
-                        <CommandItem className={classes.btn} icon={"delete"} onClick={() => props.commandEvent(CommandEvent.delete)}>DELETE</CommandItem>
-                    </> :
-                    <>
-                        <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>SAVE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>UPDATE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>DELETE</CommandItem>
                     </>
                 }
-                <CommandItem className={classes.btn} icon={"download"} onClick={() => props.commandEvent(CommandEvent.download)}>DOWNLOAD</CommandItem>
             </div>
 
 

@@ -60,8 +60,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId);
             }
             case CommandEvent.delete: {
-                JsonConfigCommandCenter.onDelete(selectedJsonConfigId, reloadJsonConfigs);
-                break;
+                return await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
             }
             case CommandEvent.download: {
                 JsonConfigCommandCenter.onDownload();
