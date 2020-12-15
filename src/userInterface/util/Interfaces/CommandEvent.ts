@@ -1,3 +1,7 @@
 export enum CommandEvent {
-    Mode = 0
+    mode = "mode",
+    saveAs = "saveAs",
+    update = "update",
+    delete = "delete",
+    download = "download"
 }

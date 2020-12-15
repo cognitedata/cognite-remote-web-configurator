@@ -99,20 +99,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public escapeUnicode = true;
 
     public onCreateMenu(menuItems: MenuItem[], node: MenuItemNode): any[] {
-
-        const editor = JsonConfigCommandCenter.editor;
-
-        if (!editor) {
-            console.error("Editor returned as null!");
-            return menuItems;
-        }
-        // get current state
-        const currentJsonText = editor.getText();
-        let currentJson: any;
-        if (currentJsonText) {
-            currentJson = JSON.parse(currentJsonText);
-        }
-
+        const currentJson = JsonConfigCommandCenter.currentJson;
         const path = node.path;
         // get parent Path for add function
         const parentPath: string[] = [...path];
