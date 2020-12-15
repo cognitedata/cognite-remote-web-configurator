@@ -1,4 +1,5 @@
-import {
+import JSONEditor, {
+    AutoCompleteElementType,
     EditableNode,
     FieldEditable,
     JSONEditorOptions,
@@ -186,9 +187,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return {
             filter: 'start',
             trigger: 'focus',
-            getOptions: (text: string, path: JSONPath) => {
+            getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
                 return new Promise((resolve, reject) => {
-                    const options = getNodeMeta([...path]).resultNode;
+                    const rootJson = JSON.parse(editor.getText());
+                    const options = getNodeMeta([...path], rootJson).resultNode;
                     if (options && options.type=== DataType.string) {
                         const stringNode = options as StringNode;
                         if (stringNode.possibleValues && stringNode.possibleValues.length > 0) {
@@ -208,7 +210,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (path && path?.length !== 0) {
             const parentPath = [...path];
             const leafNode = parentPath.pop();
-            const resultNode = getNodeMeta(parentPath).resultNode;
+            // TODO: Send the currentJSON instead of empty object
+            const resultNode = getNodeMeta(parentPath, {}).resultNode;
             let readOnlyFields: string[] = [];
 
             if (resultNode?.discriminator) { // get readonly fields from all discriminated types
@@ -239,7 +242,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
-        const schemaMeta = getNodeMeta([])?.resultNode?.data; // meta of root node from schema
+        const schemaMeta = getNodeMeta([], json)?.resultNode?.data; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
 
         return errors;
@@ -358,7 +361,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
-        const resultNode = getNodeMeta([...parentPath]).resultNode;
+        const resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
 
         const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
         const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
@@ -393,7 +396,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
-        let resultNode = getNodeMeta([...parentPath]).resultNode;
+        let resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
 
         if (node?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);

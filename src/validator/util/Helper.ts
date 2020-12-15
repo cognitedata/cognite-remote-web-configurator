@@ -24,6 +24,7 @@ export const removeDataNode = (
 export const getNode = (
   group: string,
   rootDataNode: BaseNodes,
+  rootJsonNode: any,
   paths: (string | number)[]
 ): IValidationResult => {
   let resultNode = rootDataNode[group];
