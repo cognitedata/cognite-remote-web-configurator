@@ -65,32 +65,12 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onUpdate = (selectedJsonConfigId: number | null, reloadJsonConfigs: (jsonConfigId: number | null) => void): void => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
-
-        const options: HttpRequestOptions = {
-            data: {
-                "items": [
-                    {
-                        "id": selectedJsonConfigId,
-                        "data": currentJson
-                    }
-                ]
-            }
-        };
-
-        if (confirm("Do you want to cretate new Json Config?")) {
-            (async () => {
-                await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options,)
-                    .then(response => {
-                        const createdId = response.data.data.items[0].id;
-                        reloadJsonConfigs(createdId);
-                        alert("Data updated successfully!");
-                    })
-                    .catch(error => {
-                        JsonConfigCommandCenter.errorAlert("Update failed!", error);
-                    });
-            })();
+    public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
+        if (!selectedJsonConfigId) {
+            alert("Please select a file");
+        }
+        else {
+            return await CDFOperations.onUpdate(selectedJsonConfigId);
         }
     }
 

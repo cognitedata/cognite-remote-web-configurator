@@ -20,7 +20,6 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        console.log("save");
         if (confirm("Do you want to cretate new Json Config?")) {
             props.commandEvent(CommandEvent.saveAs)
                 .then((response: any) => {
@@ -34,6 +33,20 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const onUpdateHander = () => {
+        if (confirm("Do you want to update file with new changes?")) {
+            props.commandEvent(CommandEvent.update)
+                .then((response: any) => {
+                    const createdId = response.data.data.items[0].id;
+                    props.reloadJsonConfigs(createdId);
+                    alert("Data updated successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Update failed!", error);
+                });
+        }
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
@@ -43,7 +56,7 @@ export const CommandPanel: React.FC<{
             <div className={classes.rightPanel}>
                 {props.selectedJsonConfigId ?
                     <>
-                        <CommandItem className={classes.btn} icon={"upload"} onClick={() => props.commandEvent(CommandEvent.update)}>UPDATE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHander}>UPDATE</CommandItem>
                         <CommandItem className={classes.btn} icon={"delete"} onClick={() => props.commandEvent(CommandEvent.delete)}>DELETE</CommandItem>
                     </> :
                     <>

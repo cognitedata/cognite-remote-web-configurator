@@ -16,6 +16,10 @@ export const JsonConfigurator: React.FC<any> = () => {
         JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 setJsonConfigMap(response);
+            })
+            .catch(error => {
+                console.error("Retrieved Digital Twin List failed!");
+                JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
             });
     }
 
@@ -49,24 +53,14 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
+            case CommandEvent.saveAs: {
+                return await JsonConfigCommandCenter.onSaveAs();
+            }
             case CommandEvent.update: {
-                JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, reloadJsonConfigs);
-                break;
+                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId);
             }
             case CommandEvent.delete: {
                 JsonConfigCommandCenter.onDelete(selectedJsonConfigId, reloadJsonConfigs);
-                break;
-            }
-            case CommandEvent.saveAs: {
-                return await JsonConfigCommandCenter.onSaveAs()
-                // .then(response => {
-                //     const createdId = response.data.data.items[0].id;
-                //     reloadJsonConfigs(createdId);
-                //     alert("Data saved successfully!");
-                // })
-                // .catch(error => {
-                //     JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
-                // });
                 break;
             }
             case CommandEvent.download: {

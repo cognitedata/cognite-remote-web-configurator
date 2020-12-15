@@ -18,11 +18,6 @@ export class CDFOperations {
                 }
                 return jsonConfigIdMap;
             })
-            .catch(error => {
-                console.error("Retrieved Digital Twin List failed");
-                JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
-            });
-
     }
 
     public static onSaveAs = async (): Promise<HttpResponse<any>> => {
@@ -38,4 +33,22 @@ export class CDFOperations {
 
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options);
     }
+
+    public static onUpdate = async (selectedJsonConfigId: number | null): Promise<HttpResponse<any>> => {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+
+        const options: HttpRequestOptions = {
+            data: {
+                "items": [
+                    {
+                        "id": selectedJsonConfigId,
+                        "data": currentJson
+                    }
+                ]
+            }
+        };
+
+        return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options);
+    }
+
 }
