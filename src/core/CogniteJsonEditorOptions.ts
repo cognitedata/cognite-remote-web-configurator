@@ -197,8 +197,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (path && path?.length !== 0) {
             const parentPath = [...path];
             const leafNode = parentPath.pop();
-            // TODO: Send the currentJSON instead of empty object
-            const resultNode = getNodeMeta(parentPath, {}).resultNode;
+
+            const resultNode = getNodeMeta(parentPath, JsonConfigCommandCenter.currentJson).resultNode;
             let readOnlyFields: string[] = [];
 
             if (resultNode?.discriminator) { // get readonly fields from all discriminated types
