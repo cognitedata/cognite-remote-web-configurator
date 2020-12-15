@@ -3,13 +3,16 @@ import { CogniteJsonEditor } from "./CogniteJsonEditor";
 import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { loadSchema } from "../validator/Validator";
 import { saveAs } from 'file-saver';
-import { CDFOperations } from "./CDFOperations";
+import { DigitalTwinApi } from "./DigitalTwinApi";
+import { Api } from "./Api";
 
 export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
+    private static apiInstance: Api;
 
     public static async createEditor(elm: HTMLElement): Promise<void> {
         await loadSchema();
+        JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
@@ -23,6 +26,13 @@ export class JsonConfigCommandCenter {
         }
     }
 
+    public static get api(): Api {
+        if(!JsonConfigCommandCenter.apiInstance) {
+            JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
+        }
+        return JsonConfigCommandCenter.apiInstance;
+    }
+
     public static get currentJson(): any {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
         if (currentJsonText) {
@@ -31,7 +41,7 @@ export class JsonConfigCommandCenter {
     }
 
     public static loadJsonConfigs = async (): Promise<any> => {
-        return await CDFOperations.loadJsonConfigs();
+        return await JsonConfigCommandCenter.api.jsonList();
     }
 
     public static errorAlert = (message: string, error: string): void => {
@@ -45,8 +55,8 @@ export class JsonConfigCommandCenter {
     }
 
     public static onModeChange(mode: Modes): void {
-        if (JsonConfigCommandCenter.editorInstance) {
-            JsonConfigCommandCenter.editorInstance.setMode(mode);
+        if (JsonConfigCommandCenter.editor) {
+            JsonConfigCommandCenter.editor.setMode(mode);
         }
     }
 
@@ -57,16 +67,17 @@ export class JsonConfigCommandCenter {
             alert("Save Cancelled!\nPlease add a file name");
         }
         else {
-            return await CDFOperations.onSaveAs();
+            return await JsonConfigCommandCenter.api.saveJson(currentJson);
         }
     }
 
     public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
+        const currentJson = JsonConfigCommandCenter.currentJson;
         if (!selectedJsonConfigId) {
             alert("Please select a file");
         }
         else {
-            return await CDFOperations.onUpdate(selectedJsonConfigId);
+            return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
         }
     }
 
@@ -75,7 +86,7 @@ export class JsonConfigCommandCenter {
             alert("Please select a file");
         }
         else {
-            return await CDFOperations.onDelete(selectedJsonConfigId);
+            return await  JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
         }
     }
 

@@ -1,11 +1,12 @@
 import { HttpRequestOptions, HttpResponse } from "@cognite/sdk/dist/src";
 import { Client } from "../cdf/client";
-import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
+import { Api } from "./Api";
 
 const cogniteClient = Client.sdk;
 
-export class CDFOperations {
-    public static loadJsonConfigs = async (): Promise<any> => {
+export class DigitalTwinApi implements Api {
+
+    public jsonList = async (): Promise<any> => {
         return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
             .then(response => {
                 console.log("Retrieved Digital Twin List successfully");
@@ -17,16 +18,15 @@ export class CDFOperations {
                     jsonConfigIdMap.set(jsonConfigId, jsonConfig);
                 }
                 return jsonConfigIdMap;
-            })
+            });
     }
 
-    public static onSaveAs = async (): Promise<HttpResponse<any>> => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
+    public saveJson = async (json: any): Promise<HttpResponse<any>> => {
 
         const options: HttpRequestOptions = {
             data: {
                 "items": [
-                    { "data": currentJson }
+                    { "data": json }
                 ]
             }
         };
@@ -34,15 +34,14 @@ export class CDFOperations {
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options);
     }
 
-    public static onUpdate = async (selectedJsonConfigId: number | null): Promise<HttpResponse<any>> => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
+    public updateJson = async (configId: number, json: any): Promise<HttpResponse<any>> => {
 
         const options: HttpRequestOptions = {
             data: {
                 "items": [
                     {
-                        "id": selectedJsonConfigId,
-                        "data": currentJson
+                        "id": configId,
+                        "data": json
                     }
                 ]
             }
@@ -51,10 +50,10 @@ export class CDFOperations {
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/update`, options);
     }
 
-    public static onDelete = async (selectedJsonConfigId: number | null, ): Promise<HttpResponse<any>> => {
+    public deleteJson = async (configId: number): Promise<HttpResponse<any>> => {
         const items: number[] = []
-        if (selectedJsonConfigId) {
-            items.push(selectedJsonConfigId);
+        if (configId) {
+            items.push(configId);
         }
         const options: HttpRequestOptions = {
             data: {
