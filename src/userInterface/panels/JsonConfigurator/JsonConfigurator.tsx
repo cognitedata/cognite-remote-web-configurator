@@ -6,7 +6,6 @@ import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
-import { CDFOperations } from '../../../core/CDFOperations';
 
 export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
@@ -44,7 +43,7 @@ export const JsonConfigurator: React.FC<any> = () => {
         onJsonConfigSelect(jsonConfigId);
     }
 
-    const onCommand = (command: CommandEvent, ...args: any[]) => {
+    const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
         switch (command) {
             case CommandEvent.mode: {
                 JsonConfigCommandCenter.onModeChange(args[0]);
@@ -59,15 +58,15 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.saveAs: {
-                CDFOperations.onSaveAs()
-                    .then(response => {
-                        const createdId = response.data.data.items[0].id;
-                        reloadJsonConfigs(createdId);
-                        alert("Data saved successfully!");
-                    })
-                    .catch(error => {
-                        JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
-                    });
+                return await JsonConfigCommandCenter.onSaveAs()
+                // .then(response => {
+                //     const createdId = response.data.data.items[0].id;
+                //     reloadJsonConfigs(createdId);
+                //     alert("Data saved successfully!");
+                // })
+                // .catch(error => {
+                //     JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
+                // });
                 break;
             }
             case CommandEvent.download: {
@@ -93,7 +92,11 @@ export const JsonConfigurator: React.FC<any> = () => {
                     selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.commandPanel}>
-                <CommandPanel commandEvent={onCommand} selectedJsonConfigId={selectedJsonConfigId} />
+                <CommandPanel
+                    commandEvent={onCommand}
+                    reloadJsonConfigs={reloadJsonConfigs}
+                    selectedJsonConfigId={selectedJsonConfigId}
+                />
             </div>
             <div className={classes.editorPanel}>
                 <EditorPanel jsonConfig={jsonConfig} />

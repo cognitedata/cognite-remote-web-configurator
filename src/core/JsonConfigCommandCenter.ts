@@ -54,6 +54,17 @@ export class JsonConfigCommandCenter {
         }
     }
 
+    public static onSaveAs = async (): Promise<any> => {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        const fileName = currentJson.header?.name;
+        if (!fileName || fileName === "") {
+            alert("Save Cancelled!\nPlease add a file name");
+        }
+        else {
+            return await CDFOperations.onSaveAs();
+        }
+    }
+
     public static onUpdate = (selectedJsonConfigId: number | null, reloadJsonConfigs: (jsonConfigId: number | null) => void): void => {
         const currentJson = JsonConfigCommandCenter.currentJson;
 
@@ -115,11 +126,8 @@ export class JsonConfigCommandCenter {
         let fileName = currentJson.header?.name
         if (!fileName || fileName === "") {
             fileName = "Untitled Json Config";
-            alert("Download Cancelled!\nPlease add a file name");
         }
-        else {
-            const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
-            saveAs(blob, fileName);
-        }
+        const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
+        saveAs(blob, fileName);
     }
 }

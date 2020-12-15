@@ -6,7 +6,7 @@ const cogniteClient = Client.sdk;
 
 export class CDFOperations {
     public static loadJsonConfigs = async (): Promise<any> => {
-        return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins9`)
+        return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`)
             .then(response => {
                 console.log("Retrieved Digital Twin List successfully");
                 const jsonConfigs = response.data.data?.items;

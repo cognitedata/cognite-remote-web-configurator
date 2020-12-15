@@ -4,8 +4,13 @@ import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { Switch } from "antd";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
+import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 
-export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void, selectedJsonConfigId: number | null }> = (props: any) => {
+export const CommandPanel: React.FC<{
+    commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
+    reloadJsonConfigs: (jsonConfigId: number | null) => void,
+    selectedJsonConfigId: number | null
+}> = (props: any) => {
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
             props.commandEvent(CommandEvent.mode, Modes.default, evt);
@@ -18,6 +23,14 @@ export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent,
         console.log("save");
         if (confirm("Do you want to cretate new Json Config?")) {
             props.commandEvent(CommandEvent.saveAs)
+                .then((response: any) => {
+                    const createdId = response.data.data.items[0].id;
+                    props.reloadJsonConfigs(createdId);
+                    alert("Data saved successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
+                });
         }
     }
 
