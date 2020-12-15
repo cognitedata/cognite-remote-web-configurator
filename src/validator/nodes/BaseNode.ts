@@ -45,9 +45,9 @@ export class BaseNode {
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
         const node = rootDataNode[schemaPath[schemaPath.length - 1]];
-        if(!node.readOnlyFields.includes(this.discriminator.propertyName)){
-          node.readOnlyFields.push(this.discriminator.propertyName);
-        }
+        // if(!node.readOnlyFields.includes(this.discriminator.propertyName)){
+        //   node.readOnlyFields.push(this.discriminator.propertyName);
+        // }
         if(node._data instanceof Object){
           // TODO: avoid any type
           (node._data as any)[this.discriminator.propertyName] = {

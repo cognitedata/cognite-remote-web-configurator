@@ -189,9 +189,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             getOptions: (text: string, path: JSONPath) => {
                 return new Promise((resolve, reject) => {
                     const options = getNodeMeta([...path]).resultNode;
-                    if (options && options instanceof StringNode) {
-                        if (options.possibleValues && options.possibleValues.length > 0) {
-                            resolve(options.possibleValues)
+                    if (options && options.type=== DataType.string) {
+                        const stringNode = options as StringNode;
+                        if (stringNode.possibleValues && stringNode.possibleValues.length > 0) {
+                            resolve(stringNode.possibleValues)
                         } else {
                             reject()
                         }
