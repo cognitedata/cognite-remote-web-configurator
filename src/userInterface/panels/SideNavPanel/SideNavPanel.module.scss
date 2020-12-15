@@ -1,4 +1,4 @@
-.twinContainer{
+.jsonConfigContainer{
     margin: 10px 0;
 }
 
@@ -10,7 +10,8 @@
 }
 
 .top {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto;
     padding: 5px 0;
     align-items: center;
 }
@@ -18,4 +19,8 @@
 .logo{
     height: 80px;
     width: 80px;
+}
+
+.createNewBtn{
+    display: grid;
 }

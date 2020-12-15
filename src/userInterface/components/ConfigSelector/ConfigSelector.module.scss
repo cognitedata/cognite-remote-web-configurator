@@ -1,18 +1,22 @@
-.twinItem {
+.jsonConfigItem {
     padding: 10px 15px;
     font-weight: bold;
 }
-.twinItem:hover {
+.jsonConfigItem:hover {
     background-color: white;
     color: #4891db;
     cursor: pointer;
 }
-.twinItem:active {
+.jsonConfigItem:active {
     background-color: #84b7eb;
-    color: blue;
+    color: white;
 }
 
 .selected {
+    background-color: #26a4e8;
+    color: white;
+}
+.selected:hover {
     background-color: #26a4e8;
     color: white;
 }

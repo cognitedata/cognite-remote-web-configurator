@@ -1,47 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import classes from './ConfigSelector.module.scss';
 import { List } from 'antd';
-import { CogniteClient } from "@cognite/sdk";
 
-export const ConfigSelector: React.FC<{ sdk: CogniteClient, onClick: (item: any) => void }> = (props) => {
+export const ConfigSelector: React.FC<{
+    onJsonConfigSelect: (jsonConfigId: number) => void,
+    jsonConfigMap: Map<number, unknown> | null,
+    selectedJsonConfigId: number | null
+}> = (props) => {
 
-    const [digitalTwins, setDigitalTwins]= useState<any[]>([]);
-    const digitalTwinConfigMap = useRef<Map<string, unknown> | null>(null);
-    useEffect(()=>{
-        (async ()=> {
-            const response = await props.sdk.get(`${props.sdk.getBaseUrl()}/api/playground/projects/${props.sdk.project}/twins`);
-            if(response) {
-                const twins = response.data.data?.items;
-                const twinNames = [];
-                const twinMap = new Map();
+    const jsonConfigs: { id: number, name: string }[] = [];
 
-                for(const twin of twins) {
-                    const twinName = twin?.data?.header?.name || twin.id;
-                    twinNames.push(twinName);
-                    twinMap.set(twinName, twin);
-                }
-                setDigitalTwins(twinNames);
-                digitalTwinConfigMap.current = twinMap;
-            }
-        })();
-    },[]);
+    props.jsonConfigMap?.forEach((element: any) => {
+        jsonConfigs.push({
+            id: element.id,
+            name: element.data?.header?.name
+        });
 
-    const onListItemClick = (configName: string) => {
-        const configMap = digitalTwinConfigMap.current;
-        if(configMap && configMap.size > 0) {
-            const config = configMap.get(configName);
-            props.onClick(config);
-        }
-    }
+    });
 
-    if(digitalTwins.length){
+    if (jsonConfigs.length) {
         return (
             <List
                 bordered
-                dataSource={digitalTwins}
+                dataSource={jsonConfigs}
                 renderItem={item => (
-                    <List.Item className={`${classes.twinItem}`} onClick={() => onListItemClick(item)} key={item}>
-                        {item}
+                    <List.Item className={`${classes.jsonConfigItem} ` + (item.id === props.selectedJsonConfigId ? classes.selected : "")} onClick={() => props.onJsonConfigSelect(item.id)} key={item.id}>
+                        {item.name}
                     </List.Item>
                 )}
             />

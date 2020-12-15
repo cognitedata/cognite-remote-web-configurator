@@ -3,22 +3,22 @@
     grid-template-columns: 280px auto;
     grid-template-rows: 80px calc(100% - 80px);
     grid-template-areas:
-        "leftbar file-commands"
-        "leftbar json-view";
+        "side-nav-panel command-panel"
+        "side-nav-panel editor-panel";
     height: 100%;
     box-sizing: border-box;
     background-color: white;
 }
-.leftbar {
-    grid-area: leftbar;
+.sideNavPanel {
+    grid-area: side-nav-panel;
     padding: 10px 10px;
     height: 100%;
     border-right: solid #cdcfd1;
 }
-.fileCommands {
-    grid-area: file-commands;
+.commandPanel {
+    grid-area: command-panel;
 }
-.jsonView {
-    grid-area: json-view;
+.editorPanel {
+    grid-area: editor-panel;
     padding: 20px 10px 10px 10px;
 }

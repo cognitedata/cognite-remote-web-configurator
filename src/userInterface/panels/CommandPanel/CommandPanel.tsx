@@ -4,24 +4,84 @@ import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { Switch } from "antd";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
+import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 
-export const CommandPanel: React.FC<{ commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void }> = (props: any) => {
+export const CommandPanel: React.FC<{
+    commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
+    reloadJsonConfigs: (jsonConfigId: number | null) => void,
+    selectedJsonConfigId: number | null
+}> = (props: any) => {
     const onModeSwitch = (checked: boolean, evt: any) => {
-        if(checked) {
-            props.commandEvent(CommandEvent.Mode, Modes.default, evt);
+        if (checked) {
+            props.commandEvent(CommandEvent.mode, Modes.default, evt);
         } else {
-            props.commandEvent(CommandEvent.Mode, Modes.paste, evt);
+            props.commandEvent(CommandEvent.mode, Modes.paste, evt);
         }
     }
+
+    const onSaveHandler = () => {
+        if (confirm("Do you want to cretate new Json Config?")) {
+            props.commandEvent(CommandEvent.saveAs)
+                .then((response: any) => {
+                    const createdId = response.data.data.items[0].id;
+                    props.reloadJsonConfigs(createdId);
+                    alert("Data saved successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
+                });
+        }
+    }
+
+    const onUpdateHandler = () => {
+        if (confirm("Do you want to update file with new changes?")) {
+            props.commandEvent(CommandEvent.update)
+                .then((response: any) => {
+                    const createdId = response.data.data.items[0].id;
+                    props.reloadJsonConfigs(createdId);
+                    alert("Data updated successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Update failed!", error);
+                });
+        }
+    }
+
+    const onDeleteHandler = () => {
+        if (confirm("Are you sure you want to permanently delete this config?")) {
+            props.commandEvent(CommandEvent.delete)
+                .then(() => {
+                    props.reloadJsonConfigs(null);
+                    alert("Json Config Deleted successfully!");
+                })
+                .catch((error: any) => {
+                    JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
+                });
+        }
+    }
+
+    const onDownloadHandler = () => {
+        props.commandEvent(CommandEvent.download);
+    }
+
     return (
         <div className={classes.commandsContainer}>
-            <div className={classes.modeSwitch}>
+            <div className={classes.leftPanel}>
                 <span>Select Mode:</span>
-                <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked  onChange={onModeSwitch}/>
+                <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
+            </div>
+            <div className={classes.rightPanel}>
+                <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>DOWNLOAD</CommandItem>
+                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>SAVE</CommandItem>
+                {props.selectedJsonConfigId &&
+                    <>
+                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>UPDATE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>DELETE</CommandItem>
+                    </>
+                }
             </div>
 
-            <CommandItem className={classes.update} icon={"upload"}>UPDATE</CommandItem>
-            <CommandItem className={classes.delete} icon={"delete"}>DELETE</CommandItem>
+
         </div>
     );
 }

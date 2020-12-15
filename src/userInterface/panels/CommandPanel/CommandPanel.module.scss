@@ -1,26 +1,25 @@
 .commandsContainer {
     display: grid;
-    grid-template-columns: 150px auto 150px 150px;
-    grid-template-areas: "paste . update delete";
+    grid-template-columns: auto auto;
+    grid-template-areas: "leftPanel rightPanel";
     grid-gap: 10px;
     padding: 20px;
     border-bottom: solid #cdcfd1;
 }
 
-.modeSwitch {
-    grid-area: paste;
-    display: flex;
-    margin: auto;
-
-    span{
+.leftPanel {
+    grid-area: leftPanel;
+    span {
         margin-right: 5px;
     }
 }
 
-.update {
-    grid-area: update;
-}
-
-.delete {
-    grid-area: delete;
+.rightPanel {
+    grid-area: rightPanel;
+    grid-gap: 10px;
+    justify-self: end;
+    .btn {
+        margin-right: 5px;
+        width: 200px;
+    }
 }
