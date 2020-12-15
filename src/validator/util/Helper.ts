@@ -91,10 +91,12 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
 
 export const getJson = (obj: BaseNode | undefined): any => {
   if (obj instanceof ObjectNode) {
-    if (obj.data) {
+   if (obj.data) {
       const dat: any = {};
       for (const [key, val] of Object.entries(obj.data)) {
-        dat[key] = getJson(val);
+        if(!(val as BaseNode).discriminator){
+          dat[key] = getJson(val);
+        }
       }
       return dat;
     } else {
@@ -103,10 +105,13 @@ export const getJson = (obj: BaseNode | undefined): any => {
   } else if (obj instanceof ArrayNode) {
     if (obj.minItems) {
       const dat: any = [];
-      const sampleVal = getJson(obj.sampleData);
 
-      for (let i = 0; i < obj.minItems; i++) {
-        dat.push(sampleVal);
+      if(!obj.sampleData?.discriminator){
+        const sampleVal = getJson(obj.sampleData);
+
+        for (let i = 0; i < obj.minItems; i++) {
+          dat.push(sampleVal);
+        }
       }
       return dat;
     } else {
