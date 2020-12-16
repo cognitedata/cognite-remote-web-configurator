@@ -23,9 +23,10 @@ const allNodes: TemplateNode[] = [];
 
 export const getNodeMeta = (
   paths: (string | number)[],
+  rootJson: any,
   group: string = defaultGroup
 ): IValidationResult => {
-  return getNode(group, rootDataNode, paths);
+  return getNode(group, rootDataNode, rootJson, paths);
 };
 
 export const getAllNodes = (): TemplateNode[] => {
@@ -38,10 +39,10 @@ export const removeNode = (
   group: string = defaultGroup
 ): IValidationResult => {
   const root = { ...rootDataNode };
-  const result = getNode(group, root, paths);
+  const result = getNode(group, root, data, paths);
   const resultParent =
     paths.length > 1
-      ? getNode(group, root, paths.slice(0, paths.length - 1))
+      ? getNode(group, root, data, paths.slice(0, paths.length - 1))
       : null;
 
   if (!result.error) {
