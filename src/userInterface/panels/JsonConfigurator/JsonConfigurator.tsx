@@ -84,6 +84,7 @@ export const JsonConfigurator: React.FC<any> = () => {
         <div className={classes.configurator}>
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
+                    onJsonConfigSelect={onJsonConfigSelect}
                     jsonConfigMap={jsonConfigMap}
                     selectedJsonConfigId={selectedJsonConfigId} />
             </div>
