@@ -71,10 +71,7 @@ export class JsonConfigCommandCenter {
 
     public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        if (!selectedJsonConfigId) {
-            alert("Please select a file");
-        }
-        else {
+        if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
         }
     }

@@ -63,17 +63,30 @@ export const CommandPanel: React.FC<{
     }
 
     const onUpdateHandler = () => {
-        // if (confirm("Do you want to update file with new changes?")) {
-        props.commandEvent(CommandEvent.update)
-            .then((response: any) => {
-                const createdId = response.data.data.items[0].id;
-                props.reloadJsonConfigs(createdId);
-                alert("Data updated successfully!");
-            })
-            .catch((error: any) => {
-                JsonConfigCommandCenter.errorAlert("Update failed!", error);
+        if (!isValidFileName()) {
+            message.error("Save Cancelled!\nPlease add a file name");
+        }
+        else {
+            confirm({
+                title: 'Update File',
+                // icon: <ExclamationCircleOutline/>,
+                content: 'Do you want to update file with new changes?',
+                onOk() {
+                    props.commandEvent(CommandEvent.update)
+                        .then((response: any) => {
+                            const createdId = response.data.data.items[0].id;
+                            props.reloadJsonConfigs(createdId);
+                            message.success("Data updated successfully!");
+                        })
+                        .catch((error: any) => {
+                            message.error(`Update failed! ${extractErrorMessage(error)}`);
+                        });
+                },
+                onCancel() {
+                    console.log('err');
+                },
             });
-        // }
+        }
     }
 
     const onDeleteHandler = () => {
