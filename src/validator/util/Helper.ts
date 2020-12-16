@@ -29,30 +29,32 @@ export const getNode = (
 ): IValidationResult => {
   let resultNode = rootDataNode[group];
   let json = rootJsonNode;
+  let nextResultNode;
 
   for (const path of paths) {  
-    let next;
+    // Looping through node path
 
     if (resultNode) {
       // If discriminator, then get the relevant type from there
       if(resultNode.discriminator && resultNode.data){
         let nextResultNodeTypeFromData;
         if(json){
+          //Try to get discriminator type from currentJson
           const subTypeInData = json[resultNode.discriminator.propertyName];
           nextResultNodeTypeFromData = (resultNode.data as BaseNodes)[subTypeInData];
         }
         resultNode = nextResultNodeTypeFromData ?? Object.values(resultNode.data)[0];
       }
-      next = (resultNode.data as BaseNodes)[path];
+      nextResultNode = (resultNode.data as BaseNodes)[path];
     }
 
     if(json){
       json = json[path];
     }
 
-    if (!next) {
+    if (!nextResultNode) {
       if (resultNode instanceof AdditionalNode || resultNode instanceof ArrayNode) {
-        next = resultNode.sampleData;
+        nextResultNode = resultNode.sampleData;
       } else {
         return {
           group,
@@ -63,7 +65,7 @@ export const getNode = (
         };
       }
     }
-    resultNode = next as BaseNode;
+    resultNode = nextResultNode as BaseNode;
   }
 
   const resultData = getJson(resultNode);
@@ -105,7 +107,7 @@ export const getJson = (obj: BaseNode | undefined): any => {
   } else if (obj instanceof ArrayNode) {
     if (obj.minItems) {
       const dat: any = [];
-
+      // No need to handle discriminator types since they are optional
       if(!obj.sampleData?.discriminator){
         const sampleVal = getJson(obj.sampleData);
 
@@ -117,7 +119,8 @@ export const getJson = (obj: BaseNode | undefined): any => {
     } else {
       return [];
     }
-  } else {
+  } // No need to handle MapNodes, since they are optional always 
+  else {
     return getPrimitiveValue(obj);
   }
 };
