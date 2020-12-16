@@ -27,7 +27,7 @@ export class JsonConfigCommandCenter {
     }
 
     public static get api(): Api {
-        if(!JsonConfigCommandCenter.apiInstance) {
+        if (!JsonConfigCommandCenter.apiInstance) {
             JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         }
         return JsonConfigCommandCenter.apiInstance;
@@ -38,6 +38,10 @@ export class JsonConfigCommandCenter {
         if (currentJsonText) {
             return JSON.parse(currentJsonText);
         }
+    }
+    public static get currentFileName(): string {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        return currentJson.header?.name;
     }
 
     public static loadJsonConfigs = async (): Promise<any> => {
@@ -62,13 +66,7 @@ export class JsonConfigCommandCenter {
 
     public static onSaveAs = async (): Promise<any> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        const fileName = currentJson.header?.name;
-        if (!fileName || fileName === "") {
-            alert("Save Cancelled!\nPlease add a file name");
-        }
-        else {
-            return await JsonConfigCommandCenter.api.saveJson(currentJson);
-        }
+        return await JsonConfigCommandCenter.api.saveJson(currentJson);
     }
 
     public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
@@ -86,7 +84,7 @@ export class JsonConfigCommandCenter {
             alert("Please select a file");
         }
         else {
-            return await  JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
+            return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
         }
     }
 
