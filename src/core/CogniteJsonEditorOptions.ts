@@ -1,6 +1,5 @@
-import {
-    EditableNode,
-    FieldEditable,
+import JSONEditor, {
+    AutoCompleteElementType,
     JSONEditorOptions,
     JSONPath,
     MenuItem,
@@ -15,6 +14,7 @@ import { AdditionalNode } from "../validator/nodes/AdditionalNode";
 import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
+import { getJson } from "../validator/util/Helper";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -35,7 +35,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onCreateMenu: ((menuItems: MenuItem[], node: MenuItemNode) => {
                 return this.onCreateMenu(menuItems, node);
             }),
-            onEditable: this.onEditable,
             onValidate: this.onValidate,
         }
     }
@@ -43,52 +42,44 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public mode: "tree" | "code" | "preview" | undefined = 'tree';
 
     public get templates(): any {
-        return getAllNodes()
-            .map(node => [node])// each node is put to its own array for reduce function
-            .reduce((acc: any[], singleNodeArr: any[]): any[] => {
-                const node = singleNodeArr.pop();
+        const allTemplates: any = [];
+        getAllNodes().forEach(ele => {
+            const key = extractField(ele.key);
+            const template = {
+                text: key,
+                title: ele.node.description,
+                className: 'jsoneditor-type-object',
+                field: key,
+                value: ele.data
+            }
+            allTemplates.push(template);
 
-                let templates = acc;
+            if (ele.node.discriminator && ele.node.data) {
+                // If discriminator exists, add all sub types as templates
+                Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
+                    const template = {
+                        text: `${key}-${subKey}`,
+                        title: `Add sample item to ${key}`,
+                        className: "jsoneditor-type-object",
+                        field: `${key}`,
+                        value: getJson(subVal as BaseNode),
+                    };
+                    allTemplates.push(template);
+                });
+            }
 
-                const transformToTemplate = (templateArr: any[], node: any) => {
-                    const key = extractField(node.key)
-
-                    const temp = {
-                        text: key,
-                        title: node.node.description,
-                        className: 'jsoneditor-type-object',
-                        field: key,
-                        value: node.data
-                    }
-                    templateArr.push(temp);
-
-                    /**
-                     * if node type is array or map
-                     * adding sample data as a template
-                     */
-                    if (node.node.type === "array" || node.node.type === "map") {
-                        const temp = {
-                            text: `${key}-sample`,
-                            title: `Add sample item to ${key}`,
-                            className: 'jsoneditor-type-object',
-                            field: `${key}-sample`,
-                            value: node.sample
-                        }
-                        templateArr.push(temp);
-                    }
+            if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
+                const template = {
+                    text: `${key}-sample`,
+                    title: `Add sample item to ${key}`,
+                    className: 'jsoneditor-type-object',
+                    field: `${key}-sample`,
+                    value: ele.sample
                 }
-
-                if (acc.length === 1) { // transform first acc value
-                    const firstNode = acc.pop();
-                    templates = [];
-                    transformToTemplate(templates, firstNode);
-                }
-
-                if (node) {
-                    transformToTemplate(templates, node);
-                }
-                return templates;
-            });
+                allTemplates.push(template);
+            }
+        });
+        return allTemplates;
     }
 
     // remove unwanted items from top Command Bar
@@ -178,12 +169,15 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return {
             filter: 'start',
             trigger: 'focus',
-            getOptions: (text: string, path: JSONPath) => {
+            getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
                 return new Promise((resolve, reject) => {
-                    const options = getNodeMeta([...path]).resultNode;
-                    if (options && options instanceof StringNode) {
-                        if (options.possibleValues && options.possibleValues.length > 0) {
-                            resolve(options.possibleValues)
+                    const rootJson = JSON.parse(editor.getText());
+                    const { resultNode } = getNodeMeta([...path], rootJson);
+
+                    if (resultNode && resultNode.type === DataType.string) {
+                        const stringNode = resultNode as StringNode;
+                        if (stringNode.possibleValues && stringNode.possibleValues.length > 0) {
+                            resolve(stringNode.possibleValues)
                         } else {
                             reject()
                         }
@@ -193,44 +187,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         };
     }
 
-    public onEditable(node: EditableNode | any): boolean | FieldEditable {
-        const path: (string | number)[] = (node as EditableNode).path;
-
-        if (path && path?.length !== 0) {
-            const parentPath = [...path];
-            const leafNode = parentPath.pop();
-            const resultNode = getNodeMeta(parentPath).resultNode;
-            let readOnlyFields: string[] = [];
-
-            if (resultNode?.discriminator) { // get readonly fields from all discriminated types
-                const discriminatorTypes = resultNode.data as BaseNodes;
-                const readonlyFieldsInDiscriminatorTypes = new Set<string>();
-                for (const key of Object.keys(discriminatorTypes)) {
-                    const value = discriminatorTypes[key];
-                    value.readOnlyFields.forEach(val => readonlyFieldsInDiscriminatorTypes.add(val));
-                }
-                readOnlyFields = Array.from(readonlyFieldsInDiscriminatorTypes);
-            } else {
-                readOnlyFields = resultNode?.readOnlyFields ?? [];
-            }
-
-            /**
-             * if read only fields exists and
-             * current considering node (leafNode) is a read only field
-             */
-            if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
-                return {
-                    field: true,
-                    value: false
-                }
-            }
-        }
-        return true;
-    }
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
-        const schemaMeta = getNodeMeta([])?.resultNode?.data; // meta of root node from schema
+        const schemaMeta = getNodeMeta([], json)?.resultNode?.data; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
 
         return errors;
@@ -349,7 +309,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
-        const resultNode = getNodeMeta([...parentPath]).resultNode;
+        const resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
 
         const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
         const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
@@ -360,31 +320,14 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         submenu?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
-                // let matchingItemCountWithSameDesc = 0;
-
                 Object.keys(validInsertItems).forEach((key: any) => {
                     if ((subItem.text === key)
                         && (subItem.title === validInsertItems[key].description)
                         && !existingKeys.includes(key)) {
-                        /**
-                         * filter already added items from insert menu
-                         * unless it's map
-                         */
-                        // if (!(resultNode instanceof AdditionalNode)) {
-                        //     validMenuItems.push(subItem);
-                        //     existingKeys.push(key);
-                        // }
-                        // if(resultNode instanceof AdditionalNode) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
-                        // }
-                        // matchingItemCountWithSameDesc++;
                     }
                 });
-
-                // if (matchingItemCountWithSameDesc > 1) {
-                //     alert("Invalid schema. Different keys should not exists with same description.");
-                // }
             }
         });
 
@@ -399,14 +342,18 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return subTree;
     }
 
+    // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
-        let resultNode = getNodeMeta([...parentPath]).resultNode;
+        let resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
 
+        /**
+         * If dicriminator, resultNode should get from data[`type`]
+         */
         if (node?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);
-            const typeKey = node.discriminator.propertyName;
-            const dataType = currentData[typeKey];
+            const typeIndicatorKey = node.discriminator.propertyName;
+            const dataType = currentData[typeIndicatorKey];
             resultNode = (node.data as BaseNodes)[dataType];
         }
 
@@ -415,7 +362,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * returning a IData object with matching key and description
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
-            if (resultNode.sampleData.discriminator) {
+            // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
+            if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
                 return resultNode.sampleData.data;
             }
@@ -426,8 +374,25 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 }, undefined, true)
             }
             return ret;
+
         } else {
-            return resultNode?.data;
+            const res: any = resultNode?.data ? {...(resultNode.data as BaseNodes)} : {};
+
+            Object.entries(resultNode?.data as Record<string, unknown>).forEach(
+              ([key, node]) => {
+                if ((node as BaseNode).discriminator) {
+                    delete res[key];
+                  Object.keys(
+                    (node as BaseNode).data as Record<string, unknown>
+                  ).forEach((desKey) => {
+                    res[`${key}-${desKey}`] = {
+                      description: `Add sample item to ${key}`,
+                    };
+                  });
+                }
+              }
+            );  
+            return res;
         }
     }
 }

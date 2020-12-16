@@ -19,8 +19,8 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
     );
   }
   switch (ParseType(schema.type)) {
-    // case DataType.array:
-    //   return new ArrayNode(schema, [], isRequired);
+    case DataType.array:
+      return new ArrayNode(schema, [], isRequired);
     case DataType.string:
       return new StringNode(schema, "", isRequired);
     case DataType.number:
@@ -40,23 +40,24 @@ export const populateChildren = (
   parentSchema: ISchemaNode
 ): BaseNode => {
   if (schema.allOf) {
-    const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
+    const obj = new ObjectNode(schema, {}, isRequired);
     let dat: any = {};
     for (const schema1 of schema.allOf) {
       const children = populateChildren(schema1, isRequired, schema);
-      dat = { ...dat, ...(children._data as Record<string, unknown>) };
-      // TODO: Avoid this invalid casting
+      if(children.rowData instanceof Object){
+        dat = { ...dat, ...children.rowData};
+      }
     }
-    obj._data = dat;
+    obj.data = dat;
     return obj;
   } else if (schema.properties) {
-    const obj = new ObjectNode(schema, {}, isRequired); //{ data: {}}
+    const obj = new ObjectNode(schema, {}, isRequired);
     for (const [key, schem] of Object.entries(schema.properties)) {
       const required = schema.required
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
-      // Only keys are added as data of ObjectNode
-      (obj._data as BaseNodes)[key] = populateChildren(schem, required, schema);
+      // Since `{}` is passed as data for obj, type can be BaseNodes
+      (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema);
     }
     return obj;
   } else if (schema.additionalProperties) {

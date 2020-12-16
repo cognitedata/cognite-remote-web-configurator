@@ -18,10 +18,10 @@ export type Discriminator = {
 export class BaseNode {
   public type?: DataType;
   public description?: string;
-  public _data: IData;
   public isRequired?: boolean;
-  public readOnlyFields: string[] = [];
   public discriminator?: Discriminator;
+
+  protected _data: IData;
 
   constructor(
     type: DataType,
@@ -32,7 +32,10 @@ export class BaseNode {
     this.type = type;
     this.description = schema.description;
     this.discriminator = schema.discriminator;
-    // This rule overrides the data comes from constructor. But this is ok for now since we are using these logics for creating taplate nodes.
+    /**
+     * This rule overrides the data comes from constructor.
+     * But this is ok for now since we are using these logics for creating template nodes.
+     */
     this._data = schema.example ?? data;
     this.isRequired = isRequired;
   }
@@ -40,18 +43,19 @@ export class BaseNode {
   public get data(): IData {
     if (this.discriminator) {
       const result: BaseNodes = {};
+      const possibleTypeValues = Object.keys(this.discriminator.mapping);      
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
         const node = rootDataNode[schemaPath[schemaPath.length - 1]];
-        if(!node.readOnlyFields.includes(this.discriminator.propertyName)){
-          node.readOnlyFields.push(this.discriminator.propertyName);
-        }
+
         if(node._data instanceof Object){
-          // TODO: avoid any type
+          // TODO: avoid any type.
+          // TODO: create StringNode here.
           (node._data as any)[this.discriminator.propertyName] = {
             type: 'string',
-            data: key
+            data: key,
+            possibleValues: possibleTypeValues
           };
         }
         result[key] = node;
@@ -60,5 +64,13 @@ export class BaseNode {
     } else {
       return this._data;
     }
+  }
+
+  public set data(data: IData) {
+    this._data = data;
+  }
+
+  public get rowData(): IData {
+    return this._data;
   }
 }

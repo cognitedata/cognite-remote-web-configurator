@@ -24,24 +24,37 @@ export const removeDataNode = (
 export const getNode = (
   group: string,
   rootDataNode: BaseNodes,
+  rootJsonNode: any,
   paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = rootDataNode[group];
+  let resultNode: BaseNode|undefined = rootDataNode[group];
+  let json = rootJsonNode;
+  // let nextResultNode;
 
-  for (const path of paths) {
-    let next;
+  for (const path of paths) {  
+    // Looping through node path
+
     if (resultNode) {
-      if (typeof path === "number") {
-        next = (resultNode.data as BaseNode[])[path];
-      } else {
-        next = (resultNode.data as BaseNodes)[path];
+      // If discriminator, then get the relevant type
+      if(resultNode.discriminator && resultNode.data){
+        let nextResultNodeTypeFromData;
+        if(json){
+          //Try to obtain discriminator type from currentJson
+          const subTypeInData: any = json[resultNode.discriminator.propertyName];
+          nextResultNodeTypeFromData = (resultNode.data as BaseNodes)[subTypeInData];
+        }
+        resultNode = nextResultNodeTypeFromData ?? Object.values(resultNode.data)[0];
       }
-    }
-
-    if (!next) {
+    
+      // If AdditionalNode/ArrayNode, then get the relevant type
       if (resultNode instanceof AdditionalNode || resultNode instanceof ArrayNode) {
-        next = resultNode.sampleData;
-      } else {
+        resultNode = resultNode.sampleData;
+      } 
+
+      // Set the next node from path
+      resultNode = (resultNode?.data as BaseNodes)[path]; 
+      
+      if (!resultNode) {
         return {
           group,
           resultNode: null,
@@ -51,7 +64,10 @@ export const getNode = (
         };
       }
     }
-    resultNode = next as BaseNode;
+
+    if(json){
+      json = json[path];
+    }
   }
 
   const resultData = getJson(resultNode);
@@ -79,10 +95,12 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
 
 export const getJson = (obj: BaseNode | undefined): any => {
   if (obj instanceof ObjectNode) {
-    if (obj.data) {
+   if (obj.data) {
       const dat: any = {};
       for (const [key, val] of Object.entries(obj.data)) {
-        dat[key] = getJson(val);
+        if(!(val as BaseNode).discriminator){
+          dat[key] = getJson(val);
+        }
       }
       return dat;
     } else {
@@ -91,16 +109,20 @@ export const getJson = (obj: BaseNode | undefined): any => {
   } else if (obj instanceof ArrayNode) {
     if (obj.minItems) {
       const dat: any = [];
-      const sampleVal = getJson(obj.sampleData);
+      // No need to handle discriminator types since they are optional
+      if(!obj.sampleData?.discriminator){
+        const sampleVal = getJson(obj.sampleData);
 
-      for (let i = 0; i < obj.minItems; i++) {
-        dat.push(sampleVal);
+        for (let i = 0; i < obj.minItems; i++) {
+          dat.push(sampleVal);
+        }
       }
       return dat;
     } else {
       return [];
     }
-  } else {
+  } // No need to handle MapNodes, since they are optional always 
+  else {
     return getPrimitiveValue(obj);
   }
 };
