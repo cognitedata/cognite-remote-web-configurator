@@ -48,42 +48,40 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const allTemplates: any = [];
         getAllNodes().forEach(ele => {
             const key = extractField(ele.key);
-            const pureObj = {
+            const template = {
                 text: key,
                 title: ele.node.description,
                 className: 'jsoneditor-type-object',
                 field: key,
                 value: ele.data
             }
-            allTemplates.push(pureObj);
+            allTemplates.push(template);
 
             if (ele.node.discriminator && ele.node.data) {
                 // If discriminator exists, add all sub types as templates
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
-                    const temp = {
+                    const template = {
                         text: `${key}-${subKey}`,
                         title: `Add sample item to ${key}`,
                         className: "jsoneditor-type-object",
                         field: `${key}`,
                         value: getJson(subVal as BaseNode),
                     };
-                    allTemplates.push(temp);
+                    allTemplates.push(template);
                 });
             }
 
             if (ele.node.type === "array" || ele.node.type === "map") {
-                const temp = {
+                const template = {
                     text: `${key}-sample`,
                     title: `Add sample item to ${key}`,
                     className: 'jsoneditor-type-object',
                     field: `${key}-sample`,
                     value: ele.sample
                 }
-                allTemplates.push(temp);
+                allTemplates.push(template);
             }
-
         });
-
         return allTemplates;
     }
 
@@ -177,9 +175,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
                 return new Promise((resolve, reject) => {
                     const rootJson = JSON.parse(editor.getText());
-                    const options = getNodeMeta([...path], rootJson).resultNode;
-                    if (options && options.type=== DataType.string) {
-                        const stringNode = options as StringNode;
+                    const { resultNode } = getNodeMeta([...path], rootJson);
+
+                    if (resultNode && resultNode.type === DataType.string) {
+                        const stringNode = resultNode as StringNode;
                         if (stringNode.possibleValues && stringNode.possibleValues.length > 0) {
                             resolve(stringNode.possibleValues)
                         } else {
@@ -201,6 +200,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const resultNode = getNodeMeta(parentPath, JsonConfigCommandCenter.currentJson).resultNode;
             let readOnlyFields: string[] = [];
 
+            // TODO: Reafactor this logic, to get isEditable from the node itself.
             if (resultNode?.discriminator) { // get readonly fields from all discriminated types
                 const discriminatorTypes = resultNode.data as BaseNodes;
                 const readonlyFieldsInDiscriminatorTypes = new Set<string>();
@@ -362,7 +362,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 Object.keys(validInsertItems).forEach((key: any) => {
                     if ((subItem.text === key)
                         && (subItem.title === validInsertItems[key].description)
-                        && !existingKeys.includes(key.split('-')[0])) {
+                        && !existingKeys.includes(key)) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
                     }
@@ -381,14 +381,18 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return subTree;
     }
 
+    // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
         let resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
 
+        /**
+         * If dicriminator, resultNode should get from data[`type`]
+         */
         if (node?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);
-            const typeKey = node.discriminator.propertyName;
-            const dataType = currentData[typeKey];
+            const typeIndicatorKey = node.discriminator.propertyName;
+            const dataType = currentData[typeIndicatorKey];
             resultNode = (node.data as BaseNodes)[dataType];
         }
 
@@ -397,6 +401,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * returning a IData object with matching key and description
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
+            // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
                 return resultNode.sampleData.data;
@@ -408,25 +413,24 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 }, undefined, true)
             }
             return ret;
-        }
-        else {
+
+        } else {
             const res: any = resultNode?.data ? {...(resultNode.data as BaseNodes)} : {};
 
             Object.entries(resultNode?.data as Record<string, unknown>).forEach(
-              ([subKey, subVal]) => {
-                if ((subVal as BaseNode).discriminator) {
-                    delete res[subKey];
+              ([key, node]) => {
+                if ((node as BaseNode).discriminator) {
+                    delete res[key];
                   Object.keys(
-                    (subVal as BaseNode).data as Record<string, unknown>
+                    (node as BaseNode).data as Record<string, unknown>
                   ).forEach((desKey) => {
-                    res[`${subKey}-${desKey}`] = {
-                      description: `Add sample item to ${subKey}`,
+                    res[`${key}-${desKey}`] = {
+                      description: `Add sample item to ${key}`,
                     };
                   });
                 }
               }
-            );
-      
+            );  
             return res;
         }
     }
