@@ -6,6 +6,7 @@ import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { Modal, message } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { confirm } = Modal;
 
@@ -42,7 +43,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: 'Cretate New Json Config',
-                // icon: <ExclamationCircleOutline/>,
+                icon: <ExclamationCircleOutlined/>,
                 content: 'Do you want to cretate new Json Config?',
                 onOk() {
                     props.commandEvent(CommandEvent.saveAs)
@@ -54,10 +55,7 @@ export const CommandPanel: React.FC<{
                         .catch((error: any) => {
                             message.error(`Save Cancelled! ${extractErrorMessage(error)}`);
                         });
-                },
-                onCancel() {
-                    console.log('Canceled');
-                },
+                }
             });
         }
     }
@@ -69,7 +67,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: 'Update File',
-                // icon: <ExclamationCircleOutline/>,
+                icon: <ExclamationCircleOutlined/>,
                 content: 'Do you want to update file with new changes?',
                 onOk() {
                     props.commandEvent(CommandEvent.update)
@@ -81,10 +79,7 @@ export const CommandPanel: React.FC<{
                         .catch((error: any) => {
                             message.error(`Update failed! ${extractErrorMessage(error)}`);
                         });
-                },
-                onCancel() {
-                    console.log('Canceled');
-                },
+                }
             });
         }
     }
@@ -96,7 +91,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: 'Delete Config',
-                // icon: <ExclamationCircleOutline/>,
+                icon: <ExclamationCircleOutlined/>,
                 content: 'Are you sure you want to permanently delete this config?',
                 onOk() {
                     props.commandEvent(CommandEvent.delete)
@@ -107,10 +102,7 @@ export const CommandPanel: React.FC<{
                         .catch((error: any) => {
                             message.error(`Delete Cancelled! ${extractErrorMessage(error)}`);
                         });
-                },
-                onCancel() {
-                    console.log('Canceled');
-                },
+                }
             });
         }
     }
