@@ -1,24 +1,29 @@
 .configurator {
     display: grid;
     grid-template-columns: 280px auto;
-    grid-template-rows: 80px calc(100% - 80px);
-    grid-template-areas:
-        "side-nav-panel command-panel"
-        "side-nav-panel editor-panel";
+    grid-template-rows: 100%;
+    grid-template-areas:"side-nav-panel full-editor";
     height: 100%;
     box-sizing: border-box;
     background-color: white;
 }
 .sideNavPanel {
     grid-area: side-nav-panel;
-    padding: 10px 10px;
     height: 100%;
     border-right: solid #cdcfd1;
+    padding: 0 10px 10px;
 }
-.commandPanel {
-    grid-area: command-panel;
+
+.fullEditor {
+    grid-area: full-editor;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
 }
-.editorPanel {
-    grid-area: editor-panel;
-    padding: 20px 10px 10px 10px;
+
+.editorCommandContainer {
+    border: thin #cdcfd1 solid;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
 }
