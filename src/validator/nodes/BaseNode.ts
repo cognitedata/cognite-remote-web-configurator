@@ -22,7 +22,7 @@ export class BaseNode {
   public readOnlyFields: string[] = [];
   public discriminator?: Discriminator;
 
-  private _data: IData;
+  protected _data: IData;
 
   constructor(
     type: DataType,
