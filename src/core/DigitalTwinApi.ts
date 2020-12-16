@@ -51,14 +51,10 @@ export class DigitalTwinApi implements Api {
     }
 
     public deleteJson = async (configId: number): Promise<HttpResponse<any>> => {
-        const items: number[] = []
-        if (configId) {
-            items.push(configId);
-        }
         const options: HttpRequestOptions = {
             data: {
                 "items": [
-                    ...items
+                    configId
                 ]
             }
         };

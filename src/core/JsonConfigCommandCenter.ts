@@ -77,10 +77,7 @@ export class JsonConfigCommandCenter {
     }
 
     public static onDelete = async (selectedJsonConfigId: number | null): Promise<any> => {
-        if (!selectedJsonConfigId) {
-            alert("Please select a file");
-        }
-        else {
+        if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
         }
     }

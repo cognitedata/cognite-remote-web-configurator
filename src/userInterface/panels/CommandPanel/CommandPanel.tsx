@@ -56,7 +56,7 @@ export const CommandPanel: React.FC<{
                         });
                 },
                 onCancel() {
-                    console.log('err');
+                    console.log('Canceled');
                 },
             });
         }
@@ -64,7 +64,7 @@ export const CommandPanel: React.FC<{
 
     const onUpdateHandler = () => {
         if (!isValidFileName()) {
-            message.error("Save Cancelled!\nPlease add a file name");
+            message.error("Update Cancelled!\nPlease select a file");
         }
         else {
             confirm({
@@ -83,23 +83,36 @@ export const CommandPanel: React.FC<{
                         });
                 },
                 onCancel() {
-                    console.log('err');
+                    console.log('Canceled');
                 },
             });
         }
     }
 
     const onDeleteHandler = () => {
-        // if (confirm("Are you sure you want to permanently delete this config?")) {
-        props.commandEvent(CommandEvent.delete)
-            .then(() => {
-                props.reloadJsonConfigs(null);
-                alert("Json Config Deleted successfully!");
-            })
-            .catch((error: any) => {
-                JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
+        if (!isValidFileName()) {
+            message.error("Delete Cancelled!\nPlease select a file");
+        }
+        else {
+            confirm({
+                title: 'Delete Config',
+                // icon: <ExclamationCircleOutline/>,
+                content: 'Are you sure you want to permanently delete this config?',
+                onOk() {
+                    props.commandEvent(CommandEvent.delete)
+                        .then(() => {
+                            props.reloadJsonConfigs(null);
+                            message.success("Json Config Deleted successfully!");
+                        })
+                        .catch((error: any) => {
+                            message.error(`Delete Cancelled! ${extractErrorMessage(error)}`);
+                        });
+                },
+                onCancel() {
+                    console.log('Canceled');
+                },
             });
-        // }
+        }
     }
 
     const onDownloadHandler = () => {
