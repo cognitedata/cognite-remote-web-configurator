@@ -1,7 +1,5 @@
 import JSONEditor, {
     AutoCompleteElementType,
-    EditableNode,
-    FieldEditable,
     JSONEditorOptions,
     JSONPath,
     MenuItem,
@@ -37,7 +35,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onCreateMenu: ((menuItems: MenuItem[], node: MenuItemNode) => {
                 return this.onCreateMenu(menuItems, node);
             }),
-            onEditable: this.onEditable,
             onValidate: this.onValidate,
         }
     }
@@ -71,7 +68,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 });
             }
 
-            if (ele.node.type === "array" || ele.node.type === "map") {
+            if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
                 const template = {
                     text: `${key}-sample`,
                     title: `Add sample item to ${key}`,
@@ -190,42 +187,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         };
     }
 
-    public onEditable(node: EditableNode | any): boolean | FieldEditable {
-        const path: (string | number)[] = (node as EditableNode).path;
-
-        if (path && path?.length !== 0) {
-            const parentPath = [...path];
-            const leafNode = parentPath.pop();
-
-            const resultNode = getNodeMeta(parentPath, JsonConfigCommandCenter.currentJson).resultNode;
-            let readOnlyFields: string[] = [];
-
-            // TODO: Reafactor this logic, to get isEditable from the node itself.
-            if (resultNode?.discriminator) { // get readonly fields from all discriminated types
-                const discriminatorTypes = resultNode.data as BaseNodes;
-                const readonlyFieldsInDiscriminatorTypes = new Set<string>();
-                for (const key of Object.keys(discriminatorTypes)) {
-                    const value = discriminatorTypes[key];
-                    value.readOnlyFields.forEach(val => readonlyFieldsInDiscriminatorTypes.add(val));
-                }
-                readOnlyFields = Array.from(readonlyFieldsInDiscriminatorTypes);
-            } else {
-                readOnlyFields = resultNode?.readOnlyFields ?? [];
-            }
-
-            /**
-             * if read only fields exists and
-             * current considering node (leafNode) is a read only field
-             */
-            if (readOnlyFields?.length !== 0 && readOnlyFields?.includes(`${leafNode}`)) {
-                return {
-                    field: true,
-                    value: false
-                }
-            }
-        }
-        return true;
-    }
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
