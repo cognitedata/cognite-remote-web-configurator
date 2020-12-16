@@ -27,35 +27,34 @@ export const getNode = (
   rootJsonNode: any,
   paths: (string | number)[]
 ): IValidationResult => {
-  let resultNode = rootDataNode[group];
+  let resultNode: BaseNode|undefined = rootDataNode[group];
   let json = rootJsonNode;
-  let nextResultNode;
+  // let nextResultNode;
 
   for (const path of paths) {  
     // Looping through node path
 
     if (resultNode) {
-      // If discriminator, then get the relevant type from there
+      // If discriminator, then get the relevant type
       if(resultNode.discriminator && resultNode.data){
         let nextResultNodeTypeFromData;
         if(json){
-          //Try to get discriminator type from currentJson
-          const subTypeInData = json[resultNode.discriminator.propertyName];
+          //Try to obtain discriminator type from currentJson
+          const subTypeInData: any = json[resultNode.discriminator.propertyName];
           nextResultNodeTypeFromData = (resultNode.data as BaseNodes)[subTypeInData];
         }
         resultNode = nextResultNodeTypeFromData ?? Object.values(resultNode.data)[0];
       }
-      nextResultNode = (resultNode.data as BaseNodes)[path];
-    }
-
-    if(json){
-      json = json[path];
-    }
-
-    if (!nextResultNode) {
+    
+      // If AdditionalNode/ArrayNode, then get the relevant type
       if (resultNode instanceof AdditionalNode || resultNode instanceof ArrayNode) {
-        nextResultNode = resultNode.sampleData;
-      } else {
+        resultNode = resultNode.sampleData;
+      } 
+
+      // Set the next node from path
+      resultNode = (resultNode?.data as BaseNodes)[path]; 
+      
+      if (!resultNode) {
         return {
           group,
           resultNode: null,
@@ -65,7 +64,10 @@ export const getNode = (
         };
       }
     }
-    resultNode = nextResultNode as BaseNode;
+
+    if(json){
+      json = json[path];
+    }
   }
 
   const resultData = getJson(resultNode);
