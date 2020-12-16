@@ -20,7 +20,7 @@ export const SideNavPanel: React.FC<{
             </div>
             <Divider />
             <div>
-                <Text>Configurations</Text>
+                <Text strong>Configurations</Text>
                 <div className={classes.jsonConfigContainer}>
                     <ConfigSelector onJsonConfigSelect={props.onJsonConfigSelect} jsonConfigMap={props.jsonConfigMap} selectedJsonConfigId={props.selectedJsonConfigId} />
                 </div>
