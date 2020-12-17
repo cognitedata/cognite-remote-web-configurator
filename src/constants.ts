@@ -30,9 +30,9 @@ export const LOCALIZATION = {
 
     // Remove item menu option
     REMOVE_ENABLED: 'Remove this field',
-    REMOVE_DISSABLED:'Cannot Remove.',
-    REMOVE_INVALID_PATH:'Remove this field. This field contains an invalid path',
-    REMOVE_MANDATORY:'Cannot Remove. This field is mandatory',
-    REMOVE_MINIMUM_LENGTH:'Cannot Remove. Array has a minimum length',
+    REMOVE_DISSABLED: 'Cannot Remove.',
+    REMOVE_INVALID_PATH: 'Remove this field. This field contains an invalid path',
+    REMOVE_MANDATORY: 'Cannot Remove. This field is mandatory',
+    REMOVE_MINIMUM_LENGTH: 'Cannot Remove. Array has a minimum length',
 
 }
