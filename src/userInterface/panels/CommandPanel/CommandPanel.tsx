@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import Switch from 'antd/es/switch';
@@ -26,6 +26,13 @@ export const CommandPanel: React.FC<{
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
     selectedJsonConfigId: number | null
 }> = (props: any) => {
+    const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
+
+    const titleUpdateCallBack = (text: string) => {
+        setTitle(text);
+    };
+    JsonConfigCommandCenter.titleUpdateCallback = titleUpdateCallBack;
+
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
             props.commandEvent(CommandEvent.mode, Modes.default, evt);
@@ -118,6 +125,9 @@ export const CommandPanel: React.FC<{
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
+            </div>
+            <div className={classes.titlePanel}>
+                <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>

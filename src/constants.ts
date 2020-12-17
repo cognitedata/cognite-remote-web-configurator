@@ -6,6 +6,7 @@ export const DEV_MODE = false;
 // String Constatns
 export const LOCALIZATION = {
     RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve json configs! {{error}}',
+    UNTITLED: "Untitled",
 
     // Save command
     SAVE_TITLE: 'Cretate New Json Config',
