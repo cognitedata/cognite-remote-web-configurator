@@ -385,7 +385,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             return ret;
 
         } else if(resultNode?.data){
-            const res: any = resultNode.data;
+             // Since some nodes might be deleted by the logic below, this object must be cloned.
+            const res: any = {...(resultNode.data as BaseNodes)};
  
             Object.entries(res as Record<string, unknown>).forEach(
               ([key, node]) => {
