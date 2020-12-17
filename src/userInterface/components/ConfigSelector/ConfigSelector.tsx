@@ -1,6 +1,6 @@
 import React from 'react';
 import classes from './ConfigSelector.module.scss';
-import { List } from 'antd';
+import List from 'antd/es/list';
 
 export const ConfigSelector: React.FC<{
     onJsonConfigSelect: (jsonConfigId: number) => void,

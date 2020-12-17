@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "./CustomLogin.module.scss";
-import { Card } from "antd";
+import Card from 'antd/es/card';
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
 
-export function CustomLogin(props: { sdk: CogniteClient, onLogin: (status: boolean) => void}) {
+export function CustomLogin(props: { sdk: CogniteClient, onLogin: (status: boolean) => void }) {
 
     if (isLoginPopupWindow()) {
         loginPopupHandler();
@@ -11,21 +11,21 @@ export function CustomLogin(props: { sdk: CogniteClient, onLogin: (status: boole
     }
 
     const onFinish = async (values: any) => {
-        if(values){
+        if (values) {
             const project = values['tenantName'];
             const token = localStorage.getItem("token") || "";
             props.sdk.loginWithOAuth({
                 project: project,
                 accessToken: token,
                 onAuthenticate: POPUP,
-                onTokens: ({accessToken}) => {
+                onTokens: ({ accessToken }) => {
                     localStorage.setItem("token", accessToken);
                 },
             });
             await props.sdk.authenticate();
 
             const status = await props.sdk.login.status();
-            if(status?.user){
+            if (status?.user) {
                 props.onLogin(true);
             }
         }

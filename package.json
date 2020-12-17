@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.3.0",
     "@cognite/gearbox": "^2.2.2",
     "@cognite/griff-react": "~0.4.2",
     "@cognite/sdk": "^3.3.1",
