@@ -43,7 +43,7 @@ export class JsonConfigCommandCenter {
     }
     public static get currentFileName(): string {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        return currentJson.header?.name;
+        return currentJson?.header?.name;
     }
 
     public static updateTitle = (): void => {

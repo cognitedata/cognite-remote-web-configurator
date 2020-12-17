@@ -246,13 +246,13 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     const discriminator = childMeta.sampleData.discriminator;
 
                     const callNextIteration = (childKey: any, childValue: any) => {
+                        const nextIterationPath = newPath.concat([childKey]);
                         if (discriminator) {
-                            const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, newPath);
+                            const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, nextIterationPath);
                             errors = childErrors.concat(errors);
                         } else {
-                            const childPath = newPath.concat([childKey]);
                             if (nextMeta) {
-                                const childErrors = this.validateFields(childValue, nextMeta, childPath);
+                                const childErrors = this.validateFields(childValue, nextMeta, nextIterationPath);
                                 errors = childErrors.concat(errors);
                             }
                         }
@@ -269,7 +269,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             callNextIteration(i, mapChild);
                         }
                     }
-                } else {
+                } else if(childMeta.type === DataType.object){
                     nextMeta = childMeta.data;
                     const discriminator = childMeta.discriminator;
                     if (discriminator) {
@@ -282,6 +282,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             errors = childErrors.concat(errors);
                         }
                     }
+                } else {
+                    this.validateValues(value, childMeta, newPath);
                 }
             }
 
@@ -315,6 +317,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         } else {
             errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!` });
         }
+        return errors;
+    }
+
+    private validateValues(json: any, schema: any, paths: any[], errors: ValidationError[] = []) : ValidationError[] {
         return errors;
     }
 
