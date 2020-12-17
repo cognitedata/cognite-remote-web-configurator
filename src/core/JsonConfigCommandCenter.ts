@@ -29,7 +29,7 @@ export class JsonConfigCommandCenter {
     }
 
     public static get api(): Api {
-        if(!JsonConfigCommandCenter.apiInstance) {
+        if (!JsonConfigCommandCenter.apiInstance) {
             JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         }
         return JsonConfigCommandCenter.apiInstance;
@@ -40,6 +40,10 @@ export class JsonConfigCommandCenter {
         if (currentJsonText) {
             return JSON.parse(currentJsonText);
         }
+    }
+    public static get currentFileName(): string {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        return currentJson.header?.name;
     }
 
     public static updateTitle = (): void => {
@@ -53,16 +57,6 @@ export class JsonConfigCommandCenter {
         return await JsonConfigCommandCenter.api.jsonList();
     }
 
-    public static errorAlert = (message: string, error: string): void => {
-        if (!error === null) {
-            const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
-            const errorcode = `${error}`.split(" | ")[1].split(": ")[1];
-
-            alert(`${message}\n${errorMsg}`);
-            console.error(`${errorcode}: ${message}\n${errorMsg}`);
-        }
-    }
-
     public static onModeChange(mode: Modes): void {
         if (JsonConfigCommandCenter.editor) {
             JsonConfigCommandCenter.editor.setMode(mode);
@@ -71,31 +65,19 @@ export class JsonConfigCommandCenter {
 
     public static onSaveAs = async (): Promise<any> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        const fileName = currentJson.header?.name;
-        if (!fileName || fileName === "") {
-            alert("Save Cancelled!\nPlease add a file name");
-        }
-        else {
-            return await JsonConfigCommandCenter.api.saveJson(currentJson);
-        }
+        return await JsonConfigCommandCenter.api.saveJson(currentJson);
     }
 
     public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        if (!selectedJsonConfigId) {
-            alert("Please select a file");
-        }
-        else {
+        if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
         }
     }
 
     public static onDelete = async (selectedJsonConfigId: number | null): Promise<any> => {
-        if (!selectedJsonConfigId) {
-            alert("Please select a file");
-        }
-        else {
-            return await  JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
+        if (selectedJsonConfigId) {
+            return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
         }
     }
 

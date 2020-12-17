@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
-import Switch from "antd/es/switch";
+import Switch from 'antd/es/switch';
+import message from 'antd/es/message';
+import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { LOCALIZATION } from "../../../constants";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
+import { LOCALIZATION } from '../../../constants';
+
+const { confirm } = Modal;
+
+const isValidFileName = (): boolean => {
+    const fileName = JsonConfigCommandCenter.currentFileName;
+    if (fileName) {
+        return true;
+    }
+    return false;
+}
 
 export const CommandPanel: React.FC<{
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
@@ -32,43 +46,73 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (confirm("Do you want to create new Json Config?")) {
-            props.commandEvent(CommandEvent.saveAs)
-                .then((response: any) => {
-                    const createdId = response.data.data.items[0].id;
-                    props.reloadJsonConfigs(createdId);
-                    alert("Data saved successfully!");
-                })
-                .catch((error: any) => {
-                    JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
-                });
+        if (!isValidFileName()) {
+            message.error(LOCALIZATION.SAVE_INVALID_FILE);
+        }
+        else {
+            confirm({
+                title: LOCALIZATION.SAVE_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.SAVE_CONTENT,
+                onOk() {
+                    props.commandEvent(CommandEvent.saveAs)
+                        .then((response: any) => {
+                            const createdId = response.data.data.items[0].id;
+                            props.reloadJsonConfigs(createdId);
+                            message.success(LOCALIZATION.SAVE_SUCCESS);
+                        })
+                        .catch((error: any) => {
+                            message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                        });
+                }
+            });
         }
     }
 
     const onUpdateHandler = () => {
-        if (confirm("Do you want to update file with new changes?")) {
-            props.commandEvent(CommandEvent.update)
-                .then((response: any) => {
-                    const createdId = response.data.data.items[0].id;
-                    props.reloadJsonConfigs(createdId);
-                    alert("Data updated successfully!");
-                })
-                .catch((error: any) => {
-                    JsonConfigCommandCenter.errorAlert("Update failed!", error);
-                });
+        if (!isValidFileName()) {
+            message.error(LOCALIZATION.UPLOAD_INVALID_FILE);
+        }
+        else {
+            confirm({
+                title: LOCALIZATION.UPLOAD_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.UPLOAD_CONTENT,
+                onOk() {
+                    props.commandEvent(CommandEvent.update)
+                        .then((response: any) => {
+                            const createdId = response.data.data.items[0].id;
+                            props.reloadJsonConfigs(createdId);
+                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                        })
+                        .catch((error: any) => {
+                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                        });
+                }
+            });
         }
     }
 
     const onDeleteHandler = () => {
-        if (confirm("Are you sure you want to permanently delete this config?")) {
-            props.commandEvent(CommandEvent.delete)
-                .then(() => {
-                    props.reloadJsonConfigs(null);
-                    alert("Json Config Deleted successfully!");
-                })
-                .catch((error: any) => {
-                    JsonConfigCommandCenter.errorAlert("Delete Cancelled!", error);
-                });
+        if (!isValidFileName()) {
+            message.error(LOCALIZATION.DELETE_INVALID_FILE);
+        }
+        else {
+            confirm({
+                title: LOCALIZATION.DELETE_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.DELETE_CONTENT,
+                onOk() {
+                    props.commandEvent(CommandEvent.delete)
+                        .then(() => {
+                            props.reloadJsonConfigs(null);
+                            message.success(LOCALIZATION.DELETE_SUCCESS);
+                        })
+                        .catch((error: any) => {
+                            message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                        });
+                }
+            });
         }
     }
 
