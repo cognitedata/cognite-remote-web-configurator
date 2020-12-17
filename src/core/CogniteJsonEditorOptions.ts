@@ -15,6 +15,7 @@ import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson } from "../validator/util/Helper";
+import { message } from "antd";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -130,19 +131,19 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             case ErrorType.RequiredNode:
                                 item.title = "Cannot Remove. This field is mandatory";
                                 item.click = () => {
-                                    alert("Error: Cannot Remove. This field is mandatory");
+                                    message.error("Cannot Remove. This field is mandatory");
                                 }
                                 break;
                             case ErrorType.MinLength:
                                 item.title = "Cannot Remove. Array has a minimum length";
                                 item.click = () => {
-                                    alert("Error: Cannot Remove. Array has a minimum length");
+                                    message.error("Cannot Remove. Array has a minimum length");
                                 }
                                 break;
                             default:
                                 item.title = "Cannot Remove.";
                                 item.click = () => {
-                                    alert("Error: Cannot Remove.");
+                                    message.error("Cannot Remove.");
                                 }
                                 break;
                         }
