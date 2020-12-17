@@ -16,7 +16,7 @@ import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson } from "../validator/util/Helper";
-import { message } from 'antd/es';
+import message from 'antd/es/message';
 import { LOCALIZATION } from '../constants'
 
 const extractField = (key: string) => {

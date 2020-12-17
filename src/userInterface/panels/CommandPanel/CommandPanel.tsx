@@ -1,11 +1,12 @@
 import React from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
-import { Switch } from 'antd/es';
+import Switch from 'antd/es/switch';
+import message from 'antd/es/message';
+import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { Modal, message } from 'antd/es';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';

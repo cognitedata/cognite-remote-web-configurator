@@ -9,7 +9,7 @@ export const LOCALIZATION = {
 
     // Save command
     SAVE_TITLE: 'Cretate New Json Config',
-    SAVE_CONTENT: 'Do you want to cretate new Json Config?',
+    SAVE_CONTENT: 'Do you want to create new Json Config?',
     SAVE_SUCCESS: 'Data saved successfully!',
     SAVE_ERROR: 'Save Cancelled! {{error}}',
     SAVE_INVALID_FILE: 'Save Cancelled! Please add a file name',
