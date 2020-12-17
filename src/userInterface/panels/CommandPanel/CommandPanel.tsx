@@ -41,10 +41,6 @@ export const CommandPanel: React.FC<{
         }
     }
 
-    const onCreateNew = () => {
-        props.commandEvent(CommandEvent.createNew);
-    }
-
     const onSaveHandler = () => {
         if (!isValidFileName()) {
             message.error(LOCALIZATION.SAVE_INVALID_FILE);
@@ -130,15 +126,10 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
-                <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>
+                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>Save As New</CommandItem>
+                {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>Update</CommandItem>}
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
-                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>Save</CommandItem>
-                {props.selectedJsonConfigId &&
-                    <>
-                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>Update</CommandItem>
-                        <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>
-                    </>
-                }
+                {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
 
 
