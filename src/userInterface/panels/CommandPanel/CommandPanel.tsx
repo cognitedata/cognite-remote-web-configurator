@@ -34,10 +34,6 @@ export const CommandPanel: React.FC<{
         }
     }
 
-    const onCreateNew = () => {
-        props.commandEvent(CommandEvent.createNew);
-    }
-
     const onSaveHandler = () => {
         if (!isValidFileName()) {
             message.error(LOCALIZATION.SAVE_INVALID_FILE);
@@ -120,7 +116,6 @@ export const CommandPanel: React.FC<{
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
             </div>
             <div className={classes.rightPanel}>
-                <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>Save</CommandItem>
                 {props.selectedJsonConfigId &&
