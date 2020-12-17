@@ -7,7 +7,6 @@ import JSONEditor, {
     MenuItemNode,
     ValidationError
 } from "jsoneditor";
-import isNumber from "lodash-es/isNumber";
 import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
 import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
@@ -358,7 +357,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.number: {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
-                        if(!isNumber(value)) {
+                        if(isNaN(Number(value))) {
                             errors.push({ path: paths, message: `value is not of the correct number type!` });
                         } else {
                             if(minimum) {
