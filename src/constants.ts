@@ -6,8 +6,6 @@ export const DEV_MODE = false;
 
 // Hardcoded Strings
 
-export const UNTITLED = "Untitled";
-
 export const LOCALIZATION = {
     UNTITLED: "Untitled",
 }

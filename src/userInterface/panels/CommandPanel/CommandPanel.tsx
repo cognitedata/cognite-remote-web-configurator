@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { Switch } from "antd";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { UNTITLED } from "../../../constants";
+import { LOCALIZATION } from "../../../constants";
 
 export const CommandPanel: React.FC<{
-    jsonConfig: any,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
     selectedJsonConfigId: number | null
 }> = (props: any) => {
+    const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
+
+    const titleUpdateCallBack = (text: string) => {
+        setTitle(text);
+    };
+    JsonConfigCommandCenter.titleUpdateCallback = titleUpdateCallBack;
+
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
             props.commandEvent(CommandEvent.mode, Modes.default, evt);
@@ -77,7 +83,7 @@ export const CommandPanel: React.FC<{
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
             </div>
             <div className={classes.titlePanel}>
-                <span className={classes.titleText}>{props.jsonConfig?.data?.header?.name || UNTITLED}</span>
+                <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>

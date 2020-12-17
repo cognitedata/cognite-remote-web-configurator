@@ -38,6 +38,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return this.onCreateMenu(menuItems, node);
             }),
             onValidate: this.onValidate,
+            onChange: this.onChange,
         }
     }
 
@@ -189,6 +190,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 });
             }
         };
+    }
+
+    public onChange = (): void => {
+        JsonConfigCommandCenter.updateTitle();
     }
 
 

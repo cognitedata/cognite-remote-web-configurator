@@ -5,8 +5,10 @@ import { loadSchema } from "../validator/Validator";
 import { saveAs } from 'file-saver';
 import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
+import { LOCALIZATION } from "../constants";
 
 export class JsonConfigCommandCenter {
+    public static titleUpdateCallback: (text: string) => void;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
@@ -37,6 +39,13 @@ export class JsonConfigCommandCenter {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
         if (currentJsonText) {
             return JSON.parse(currentJsonText);
+        }
+    }
+
+    public static updateTitle = (): void => {
+        if(JsonConfigCommandCenter.titleUpdateCallback) {
+            const currentTitle = JsonConfigCommandCenter.currentJson?.header?.name || LOCALIZATION.UNTITLED;
+            JsonConfigCommandCenter.titleUpdateCallback(currentTitle);
         }
     }
 

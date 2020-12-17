@@ -16,6 +16,7 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
         const editor = JsonConfigCommandCenter.editor;
         if (editor) {
             editor.set(props.json);
+            JsonConfigCommandCenter.updateTitle();
         }
     }, [props.json]);
 
