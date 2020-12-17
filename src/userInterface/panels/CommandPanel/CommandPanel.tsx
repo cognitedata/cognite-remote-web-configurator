@@ -8,7 +8,7 @@ import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { Modal, message } from 'antd/es';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
-import { saveConfig, updateConfig, deleteConfig } from '../../util/uiMessages/commandPanel'
+import { LOCALIZATION } from '../../../constants';
 
 const { confirm } = Modal;
 
@@ -39,22 +39,22 @@ export const CommandPanel: React.FC<{
 
     const onSaveHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${saveConfig.invalidFile}`);
+            message.error(`${LOCALIZATION.SAVE_INVALID_FILE}`);
         }
         else {
             confirm({
-                title: `${saveConfig.title}`,
+                title: `${LOCALIZATION.SAVE_TITLE}`,
                 icon: <ExclamationCircleOutlined />,
-                content: `${saveConfig.content}`,
+                content: `${LOCALIZATION.SAVE_CONTENT}`,
                 onOk() {
                     props.commandEvent(CommandEvent.saveAs)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success(`${saveConfig.success}`);
+                            message.success(`${LOCALIZATION.SAVE_SUCCESS}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${saveConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
+                            message.error(`${LOCALIZATION.SAVE_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -63,22 +63,22 @@ export const CommandPanel: React.FC<{
 
     const onUpdateHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${updateConfig?.invalidFile}`);
+            message.error(`${LOCALIZATION.UPLOAD_INVALID_FILE}`);
         }
         else {
             confirm({
-                title: `${updateConfig.title}`,
+                title: `${LOCALIZATION.UPLOAD_TITLE}`,
                 icon: <ExclamationCircleOutlined />,
-                content: `${updateConfig.content}`,
+                content: `${LOCALIZATION.UPLOAD_CONTENT}`,
                 onOk() {
                     props.commandEvent(CommandEvent.update)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success(`${updateConfig.success}`);
+                            message.success(`${LOCALIZATION.UPLOAD_SUCCESS}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${updateConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
+                            message.error(`${LOCALIZATION.UPLOAD_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -87,21 +87,21 @@ export const CommandPanel: React.FC<{
 
     const onDeleteHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${deleteConfig.invalidFile}`);
+            message.error(`${LOCALIZATION.DELETE_INVALID_FILE}`);
         }
         else {
             confirm({
-                title: `${deleteConfig.title}`,
+                title: `${LOCALIZATION.DELETE_TITLE}`,
                 icon: <ExclamationCircleOutlined />,
-                content: `${deleteConfig.content}`,
+                content: `${LOCALIZATION.DELETE_CONTENT}`,
                 onOk() {
                     props.commandEvent(CommandEvent.delete)
                         .then(() => {
                             props.reloadJsonConfigs(null);
-                            message.success(`${deleteConfig.success}`);
+                            message.success(`${LOCALIZATION.DELETE_SUCCESS}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${deleteConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
+                            message.error(`${LOCALIZATION.DELETE_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });
