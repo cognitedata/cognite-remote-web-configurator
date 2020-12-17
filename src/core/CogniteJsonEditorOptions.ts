@@ -16,8 +16,8 @@ import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson } from "../validator/util/Helper";
-import { message } from "antd";
-import { messageString } from './util/uiMessages/CogniteJsonEditorOptions';
+import { message } from 'antd/es';
+import { LOCALIZATION } from '../constants'
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -125,30 +125,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Remove default Remove(Delete) function and alert the error
             // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
-                item.title = `${messageString.removeEnabled}`;
+                item.title = `${LOCALIZATION.REMOVE_ENABLED}`;
                 if (removePossibility.error) {
                     // allows Remove even it has InvalidPath error
                     if (removePossibility.error.type === ErrorType.InvalidPath) {
-                        item.title = `${messageString.invalidPath}`;
+                        item.title = `${LOCALIZATION.REMOVE_INVALID_PATH}`;
                     } else {
                         item.className = "warning-triangle";
                         switch (removePossibility.error.type) {
                             case ErrorType.RequiredNode:
-                                item.title = `${messageString.mandatory}`;
+                                item.title = `${LOCALIZATION.REMOVE_MANDATORY}`;
                                 item.click = () => {
-                                    message.error(`${messageString.mandatory}`);
+                                    message.error(`${LOCALIZATION.REMOVE_MANDATORY}`);
                                 }
                                 break;
                             case ErrorType.MinLength:
-                                item.title = `${messageString.minimumLength}`;
+                                item.title = `${LOCALIZATION.REMOVE_MINIMUM_LENGTH}`;
                                 item.click = () => {
-                                    message.error(`${messageString.minimumLength}`);
+                                    message.error(`${LOCALIZATION.REMOVE_MINIMUM_LENGTH}`);
                                 }
                                 break;
                             default:
-                                item.title = `${messageString.removeDissabled}`;
+                                item.title = `${LOCALIZATION.REMOVE_DISSABLED}`;
                                 item.click = () => {
-                                    message.error(`${messageString.removeDissabled}`);
+                                    message.error(`${LOCALIZATION.REMOVE_DISSABLED}`);
                                 }
                                 break;
                         }
@@ -236,30 +236,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
                 let nextMeta: any;
 
-                if(childMeta.type === DataType.map || childMeta.type === DataType.array) {
+                if (childMeta.type === DataType.map || childMeta.type === DataType.array) {
                     nextMeta = childMeta.sampleData.data;
                     const discriminator = childMeta.sampleData.discriminator;
 
                     const callNextIteration = (childKey: any, childValue: any) => {
-                        if(discriminator) {
+                        if (discriminator) {
                             const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, newPath);
                             errors = childErrors.concat(errors);
                         } else {
                             const childPath = newPath.concat([childKey]);
-                            if(nextMeta) {
+                            if (nextMeta) {
                                 const childErrors = this.validateFields(childValue, nextMeta, childPath);
                                 errors = childErrors.concat(errors);
                             }
                         }
                     }
 
-                    if(childMeta.type === DataType.map) {
-                        for(const mapChildKey of Object.keys(value)) {
+                    if (childMeta.type === DataType.map) {
+                        for (const mapChildKey of Object.keys(value)) {
                             const mapChild = value[mapChildKey];
                             callNextIteration(mapChildKey, mapChild);
                         }
                     } else {
-                        for(let i = 0; i < value.length; i++) {
+                        for (let i = 0; i < value.length; i++) {
                             const mapChild = value[i];
                             callNextIteration(i, mapChild);
                         }
@@ -267,12 +267,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 } else {
                     nextMeta = childMeta.data;
                     const discriminator = childMeta.discriminator;
-                    if(discriminator) {
+                    if (discriminator) {
                         const childErrors = this.validateDiscriminator(value, nextMeta, discriminator, newPath);
                         errors = childErrors.concat(errors);
                     } else {
 
-                        if(nextMeta) {
+                        if (nextMeta) {
                             const childErrors = this.validateFields(value, nextMeta, newPath);
                             errors = childErrors.concat(errors);
                         }
@@ -283,14 +283,14 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         }
 
-        if(missingRequiredFields.length) {
-            errors.push({path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object`})
+        if (missingRequiredFields.length) {
+            errors.push({ path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object` })
         }
 
-        for(const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
-            if(!validatedKeys.has(jsonChildKey)) {
+        for (const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
+            if (!validatedKeys.has(jsonChildKey)) {
                 const newPath = paths.concat([jsonChildKey]);
-                errors.push({path: newPath, message: `key: ${jsonChildKey}, is not a valid key!`});
+                errors.push({ path: newPath, message: `key: ${jsonChildKey}, is not a valid key!` });
             }
         }
         return errors;
@@ -299,25 +299,25 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     private validateDiscriminator(json: any, schema: any, discriminator: { propertyName: string }, paths: any[], errors: ValidationError[] = []): ValidationError[] {
         const discriminatorType = json[discriminator.propertyName];
 
-        if(discriminatorType) { // whether discriminator property is available
+        if (discriminatorType) { // whether discriminator property is available
             const discriminatorMeta = schema[discriminatorType];
-            if(discriminatorMeta) {
+            if (discriminatorMeta) {
                 const childErrors = this.validateFields(json, discriminatorMeta.data, paths);
                 errors = childErrors.concat(errors);
             } else {
-                errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!`});
+                errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!` });
             }
         } else {
-            errors.push({path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!`});
+            errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!` });
         }
-        return  errors;
+        return errors;
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
-        if(error){
+        if (error) {
             alert(error.text);
             return undefined;
         }
@@ -386,23 +386,23 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             return ret;
 
-        } else if(resultNode?.data){
-             // Since some nodes might be deleted by the logic below, this object must be cloned.
-            const res: any = {...(resultNode.data as BaseNodes)};
- 
+        } else if (resultNode?.data) {
+            // Since some nodes might be deleted by the logic below, this object must be cloned.
+            const res: any = { ...(resultNode.data as BaseNodes) };
+
             Object.entries(res as Record<string, unknown>).forEach(
-              ([key, node]) => {
-                if ((node as BaseNode).discriminator) {
-                    delete res[key];
-                  Object.keys(
-                    (node as BaseNode).data as Record<string, unknown>
-                  ).forEach((desKey) => {
-                    res[`${key}-${desKey}`] = {
-                      description: `Add sample item to ${key}`,
-                    };
-                  });
+                ([key, node]) => {
+                    if ((node as BaseNode).discriminator) {
+                        delete res[key];
+                        Object.keys(
+                            (node as BaseNode).data as Record<string, unknown>
+                        ).forEach((desKey) => {
+                            res[`${key}-${desKey}`] = {
+                                description: `Add sample item to ${key}`,
+                            };
+                        });
+                    }
                 }
-              }
             );
             return res;
         } else {
