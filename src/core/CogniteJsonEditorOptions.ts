@@ -116,8 +116,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 item.submenu = this.createValidInsertMenu(item.submenu, currentJson, parentPath);
             }
 
-                // if removeNode validation returns error
-                // Remove default Remove(Delete) function and alert the error
+            // if removeNode validation returns error
+            // Remove default Remove(Delete) function and alert the error
             // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
                 item.title = "Remove this field";

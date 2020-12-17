@@ -8,6 +8,7 @@ import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { Modal, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
+import { saveConfig, updateConfig, deleteConfig } from '../../util/uiMessages/commandPanel'
 
 const { confirm } = Modal;
 
@@ -34,22 +35,22 @@ export const CommandPanel: React.FC<{
 
     const onSaveHandler = () => {
         if (!isValidFileName()) {
-            message.error("Save Cancelled!\nPlease add a file name");
+            message.error(`${saveConfig.invalidFile}`);
         }
         else {
             confirm({
-                title: 'Cretate New Json Config',
-                icon: <ExclamationCircleOutlined/>,
-                content: 'Do you want to cretate new Json Config?',
+                title: `${saveConfig.title}`,
+                icon: <ExclamationCircleOutlined />,
+                content: `${saveConfig.content}`,
                 onOk() {
                     props.commandEvent(CommandEvent.saveAs)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success("Data saved successfully!");
+                            message.success(`${saveConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`Save Cancelled! ${extractErrorMessage(error)}`);
+                            message.error(`${saveConfig.error} ${extractErrorMessage(error)}`);
                         });
                 }
             });
@@ -58,22 +59,22 @@ export const CommandPanel: React.FC<{
 
     const onUpdateHandler = () => {
         if (!isValidFileName()) {
-            message.error("Update Cancelled!\nPlease select a file");
+            message.error(`${updateConfig?.invalidFile}`);
         }
         else {
             confirm({
-                title: 'Update File',
-                icon: <ExclamationCircleOutlined/>,
-                content: 'Do you want to update file with new changes?',
+                title: `${updateConfig.title}`,
+                icon: <ExclamationCircleOutlined />,
+                content: `${updateConfig.content}`,
                 onOk() {
                     props.commandEvent(CommandEvent.update)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success("Data updated successfully!");
+                            message.success(`${updateConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`Update failed! ${extractErrorMessage(error)}`);
+                            message.error(`${updateConfig.error} ${extractErrorMessage(error)}`);
                         });
                 }
             });
@@ -82,21 +83,21 @@ export const CommandPanel: React.FC<{
 
     const onDeleteHandler = () => {
         if (!isValidFileName()) {
-            message.error("Delete Cancelled!\nPlease select a file");
+            message.error(`${deleteConfig.invalidFile}`);
         }
         else {
             confirm({
-                title: 'Delete Config',
-                icon: <ExclamationCircleOutlined/>,
-                content: 'Are you sure you want to permanently delete this config?',
+                title: `${deleteConfig.title}`,
+                icon: <ExclamationCircleOutlined />,
+                content: `${deleteConfig.content}`,
                 onOk() {
                     props.commandEvent(CommandEvent.delete)
                         .then(() => {
                             props.reloadJsonConfigs(null);
-                            message.success("Json Config Deleted successfully!");
+                            message.success(`${deleteConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`Delete Cancelled! ${extractErrorMessage(error)}`);
+                            message.error(`${deleteConfig.error} ${extractErrorMessage(error)}`);
                         });
                 }
             });
