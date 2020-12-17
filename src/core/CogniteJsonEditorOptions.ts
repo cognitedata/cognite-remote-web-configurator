@@ -16,6 +16,7 @@ import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson } from "../validator/util/Helper";
 import { message } from "antd";
+import { messageString } from './util/uiMessages/CogniteJsonEditorOptions';
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -120,30 +121,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Remove default Remove(Delete) function and alert the error
             // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
-                item.title = "Remove this field";
+                item.title = `${messageString.removeEnabled}`;
                 if (removePossibility.error) {
                     // allows Remove even it has InvalidPath error
                     if (removePossibility.error.type === ErrorType.InvalidPath) {
-                        item.title = "Remove this field. This field contains an invalid path";
+                        item.title = `${messageString.invalidPath}`;
                     } else {
                         item.className = "warning-triangle";
                         switch (removePossibility.error.type) {
                             case ErrorType.RequiredNode:
-                                item.title = "Cannot Remove. This field is mandatory";
+                                item.title = `${messageString.mandatory}`;
                                 item.click = () => {
-                                    message.error("Cannot Remove. This field is mandatory");
+                                    message.error(`${messageString.mandatory}`);
                                 }
                                 break;
                             case ErrorType.MinLength:
-                                item.title = "Cannot Remove. Array has a minimum length";
+                                item.title = `${messageString.minimumLength}`;
                                 item.click = () => {
-                                    message.error("Cannot Remove. Array has a minimum length");
+                                    message.error(`${messageString.minimumLength}`);
                                 }
                                 break;
                             default:
-                                item.title = "Cannot Remove.";
+                                item.title = `${messageString.removeDissabled}`;
                                 item.click = () => {
-                                    message.error("Cannot Remove.");
+                                    message.error(`${messageString.removeDissabled}`);
                                 }
                                 break;
                         }
