@@ -50,7 +50,7 @@ export const getNodeInstance = (
       if (resultNode instanceof MapNode || resultNode instanceof ArrayNode) {
         resultNode = resultNode.sampleData;
       } else {
-      // Set the nextNode from path
+      // Get the nextNode from path
         resultNode = (resultNode?.data as BaseNodes)[path]; 
       }
       
@@ -95,7 +95,7 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
 
 export const getJson = (obj: BaseNode | undefined): any => {
   /**
-   * If example json value found, then just return it.
+   * If example json value found, then just return the provided example.
    */
   if(obj?.example){
     return obj.example;
