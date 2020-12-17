@@ -4,7 +4,6 @@ import styles from "./CommandItem.module.scss";
 
 export const CommandItem: React.FC<{ className?: string, onClick?: () => void, icon?: string }> = (props) => {
     return (<Button type="primary" className={`${styles.commandBtn} ${props.className}`}
-                    shape="round"
                     icon={props.icon}
                     size="large"
                     onClick={props.onClick}>

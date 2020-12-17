@@ -1,7 +1,6 @@
 import React from 'react';
 import classes from './SideNavPanel.module.scss';
 import logo from "../../../assets/cognite.png";
-import { CommandItem } from '../../components/CommandItem/CommandItem'
 import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
@@ -15,17 +14,13 @@ export const SideNavPanel: React.FC<{
         <>
             <div className={classes.top}>
                 <div>
-                    <img src={logo} className={classes.logo} />
+                    <img alt="cognite-logo" src={logo} className={classes.logo} />
                 </div>
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <div className={classes.createNewBtn} onClick={() => props.onJsonConfigSelect()}>
-                <CommandItem icon={"plus"}>Create New</CommandItem>
-            </div>
-            <Divider />
             <div>
-                <Text>Configurations</Text>
+                <Text strong>Configurations</Text>
                 <div className={classes.jsonConfigContainer}>
                     <ConfigSelector onJsonConfigSelect={props.onJsonConfigSelect} jsonConfigMap={props.jsonConfigMap} selectedJsonConfigId={props.selectedJsonConfigId} />
                 </div>

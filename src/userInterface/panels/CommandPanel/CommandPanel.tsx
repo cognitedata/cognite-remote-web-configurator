@@ -33,6 +33,10 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const onCreateNew = () => {
+        props.commandEvent(CommandEvent.createNew);
+    }
+
     const onSaveHandler = () => {
         if (!isValidFileName()) {
             message.error(`${saveConfig.invalidFile}`);
@@ -111,16 +115,17 @@ export const CommandPanel: React.FC<{
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
-                <span>Select Mode:</span>
+                <span>Switch Mode:</span>
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
             </div>
             <div className={classes.rightPanel}>
-                <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>DOWNLOAD</CommandItem>
-                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>SAVE</CommandItem>
+                <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>
+                <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
+                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>Save</CommandItem>
                 {props.selectedJsonConfigId &&
                     <>
-                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>UPDATE</CommandItem>
-                        <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>DELETE</CommandItem>
+                        <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>Update</CommandItem>
+                        <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>
                     </>
                 }
             </div>

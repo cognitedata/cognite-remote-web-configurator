@@ -1,6 +1,6 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { AdditionalNode } from "../nodes/AdditionalNode";
+import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { BooleanNode } from "../nodes/BooleanNode";
@@ -66,7 +66,7 @@ export const populateChildren = (
       false,
       schema
     );
-    const obj = new AdditionalNode(schema, {}, false, sampleData);
+    const obj = new MapNode(schema, {}, false, sampleData);
     return obj;
   } else if (schema.items) {
     if (schema.items === parentSchema) {

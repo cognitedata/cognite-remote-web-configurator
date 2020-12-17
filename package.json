@@ -4,20 +4,20 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "@cognite/gearbox": "^2.2.1",
+    "@cognite/gearbox": "^2.2.2",
     "@cognite/griff-react": "~0.4.2",
-    "@cognite/sdk": "^3.3.0",
+    "@cognite/sdk": "^3.3.1",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.2.2",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^14.14.9",
+    "@testing-library/user-event": "^12.6.0",
+    "@types/jest": "^26.0.19",
+    "@types/node": "^14.14.14",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/yamljs": "^0.2.31",
     "antd": "^3.14.1",
-    "cross-env": "^7.0.2",
-    "jsoneditor": "^9.1.4",
+    "cross-env": "^7.0.3",
+    "jsoneditor": "^9.1.5",
     "node-sass": "^4.14.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -55,9 +55,9 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.1",
     "@types/jsoneditor": "^8.6.0",
-    "@typescript-eslint/eslint-plugin": "^4.8.2",
-    "@typescript-eslint/parser": "^4.8.2",
-    "eslint": "^7.14.0",
-    "typescript": "^4.1.2"
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "eslint": "^7.15.0",
+    "typescript": "^4.1.3"
   }
 }
