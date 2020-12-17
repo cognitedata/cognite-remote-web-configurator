@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./CustomLogin.module.scss";
-import { Card } from "antd";
+import Card from "antd/es/card";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
 
 export function CustomLogin(props: { sdk: CogniteClient, onLogin: (status: boolean) => void}) {
