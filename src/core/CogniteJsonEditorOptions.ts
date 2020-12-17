@@ -283,7 +283,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         }
                     }
                 } else {
-                    this.validateValues(value, childMeta, newPath);
+                    const valueErrors =  this.validateValues(value, childMeta, newPath);
+                    errors = valueErrors.concat(errors);
                 }
             }
 
@@ -320,7 +321,48 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return errors;
     }
 
-    private validateValues(json: any, schema: any, paths: any[], errors: ValidationError[] = []) : ValidationError[] {
+    private validateValues(value: string | boolean | number | null | undefined, schema: any, paths: any[], errors: ValidationError[] = []) : ValidationError[] {
+        if(schema) {
+            const datatype: DataType = schema.type;
+            const possibleValues = schema.possibleValues;
+            const isRequired = schema.isRequired;
+
+            if(!value && value !== 0) {
+                if(isRequired) {
+                    errors.push({ path: paths, message: `Value cannot be empty!` });
+                }
+            } else {
+                if(possibleValues && possibleValues.length) {
+                    let isOneOfPossibleValues = false;
+                    for(const possibleVal of possibleValues) {
+                        if(value === possibleVal) {
+                            isOneOfPossibleValues = true;
+                        }
+                    }
+                    if(!isOneOfPossibleValues) {
+                        errors.push({ path: paths, message: `value not one of possible values!` });
+                    }
+                }
+                switch (datatype) {
+                    case DataType.number: {
+                        const minimum = schema.minimum;
+                        const maximum = schema.maximum;
+
+                        if(minimum) {
+                            if(value < minimum) {
+                                errors.push({ path: paths, message: `value not one of possible values!` });
+                            }
+                        }
+                        if(maximum) {
+                            if(value > minimum) {
+                                errors.push({ path: paths, message: `value not one of possible values!` });
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
         return errors;
     }
 
