@@ -7,7 +7,7 @@ import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNode } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
-import { AdditionalNode } from "./nodes/AdditionalNode";
+import { MapNode } from "./nodes/MapNode";
 import { ArrayNode } from "./nodes/ArrayNode";
 
 export interface TemplateNode {
@@ -87,7 +87,7 @@ export const removeNode = (
 };
 
 const getSample = (node: BaseNode) => {
-  if (node instanceof AdditionalNode || node instanceof ArrayNode) {
+  if (node instanceof MapNode || node instanceof ArrayNode) {
     const sample = node.sampleData;
     const js = getJson(sample);
     return js;

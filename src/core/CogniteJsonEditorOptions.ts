@@ -10,7 +10,7 @@ import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
-import { AdditionalNode } from "../validator/nodes/AdditionalNode";
+import { MapNode } from "../validator/nodes/MapNode";
 import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
@@ -361,7 +361,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * When adding items to an Array or a Map,
          * returning a IData object with matching key and description
          */
-        if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
+        if (resultNode instanceof ArrayNode || resultNode instanceof MapNode) {
             // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
