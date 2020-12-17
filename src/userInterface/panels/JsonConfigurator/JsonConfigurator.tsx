@@ -7,6 +7,7 @@ import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import { message } from 'antd';
+import { retrieveJsonConfigsFailed } from '../../util/uiMessages/jsonConfigurator';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -25,7 +26,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfigMap(response);
             })
             .catch(error => {
-                message.error(`Unable to retrieve json configs! ${extractErrorMessage(error)}`);
+                message.error(`${retrieveJsonConfigsFailed}`.replace('{{error}}',`${extractErrorMessage(error)}`));
             });
     }
 

@@ -50,7 +50,7 @@ export const CommandPanel: React.FC<{
                             message.success(`${saveConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${saveConfig.error} ${extractErrorMessage(error)}`);
+                            message.error(`${saveConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -74,7 +74,7 @@ export const CommandPanel: React.FC<{
                             message.success(`${updateConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${updateConfig.error} ${extractErrorMessage(error)}`);
+                            message.error(`${updateConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -97,7 +97,7 @@ export const CommandPanel: React.FC<{
                             message.success(`${deleteConfig.success}`);
                         })
                         .catch((error: any) => {
-                            message.error(`${deleteConfig.error} ${extractErrorMessage(error)}`);
+                            message.error(`${deleteConfig.error}`.replace('{{error}}',`${extractErrorMessage(error)}`));
                         });
                 }
             });

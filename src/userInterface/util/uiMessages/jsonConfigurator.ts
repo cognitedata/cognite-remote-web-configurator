@@ -1,0 +1,1 @@
+export const retrieveJsonConfigsFailed = 'Unable to retrieve json configs! {{error}}'
