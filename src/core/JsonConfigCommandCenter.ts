@@ -48,16 +48,6 @@ export class JsonConfigCommandCenter {
         return await JsonConfigCommandCenter.api.jsonList();
     }
 
-    public static errorAlert = (message: string, error: string): void => {
-        if (!error === null) {
-            const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
-            const errorcode = `${error}`.split(" | ")[1].split(": ")[1];
-
-            alert(`${message}\n${errorMsg}`);
-            console.error(`${errorcode}: ${message}\n${errorMsg}`);
-        }
-    }
-
     public static onModeChange(mode: Modes): void {
         if (JsonConfigCommandCenter.editor) {
             JsonConfigCommandCenter.editor.setMode(mode);

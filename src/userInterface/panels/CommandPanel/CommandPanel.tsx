@@ -7,13 +7,9 @@ import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { Modal, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 
 const { confirm } = Modal;
-
-const extractErrorMessage = (error: string): string => {
-    const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
-    return errorMsg;
-}
 
 const isValidFileName = (): boolean => {
     const fileName = JsonConfigCommandCenter.currentFileName;

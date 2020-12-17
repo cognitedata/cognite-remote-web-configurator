@@ -6,6 +6,13 @@ import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
+import { message } from 'antd';
+
+export const extractErrorMessage = (error: string): string => {
+    const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
+    console.error(error);
+    return errorMsg;
+}
 
 export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
@@ -18,8 +25,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfigMap(response);
             })
             .catch(error => {
-                console.error("Retrieved Digital Twin List failed!");
-                JsonConfigCommandCenter.errorAlert("Save Cancelled!", error);
+                message.error(`Unable to retrieve json configs! ${extractErrorMessage(error)}`);
             });
     }
 
