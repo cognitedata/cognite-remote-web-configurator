@@ -91,6 +91,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
                     <CommandPanel
+                        jsonConfig={jsonConfig}
                         commandEvent={onCommand}
                         reloadJsonConfigs={reloadJsonConfigs}
                         selectedJsonConfigId={selectedJsonConfigId}

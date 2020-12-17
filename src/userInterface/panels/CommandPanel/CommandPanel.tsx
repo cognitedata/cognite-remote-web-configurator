@@ -5,8 +5,10 @@ import { Switch } from "antd";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
+import { UNTITLED } from "../../../constants";
 
 export const CommandPanel: React.FC<{
+    jsonConfig: any,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
     selectedJsonConfigId: number | null
@@ -24,7 +26,7 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (confirm("Do you want to cretate new Json Config?")) {
+        if (confirm("Do you want to create new Json Config?")) {
             props.commandEvent(CommandEvent.saveAs)
                 .then((response: any) => {
                     const createdId = response.data.data.items[0].id;
@@ -73,6 +75,9 @@ export const CommandPanel: React.FC<{
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
                 <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
+            </div>
+            <div className={classes.titlePanel}>
+                <span className={classes.titleText}>{props.jsonConfig?.data?.header?.name || UNTITLED}</span>
             </div>
             <div className={classes.rightPanel}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={onCreateNew}>Create</CommandItem>
