@@ -5,6 +5,8 @@ export const DEV_MODE = false;
 
 // String Constatns
 export const LOCALIZATION = {
+    RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve json configs! {{error}}',
+
     SAVE_TITLE: 'Cretate New Json Config',
     SAVE_CONTENT: 'Do you want to cretate new Json Config?',
     SAVE_SUCCESS: 'Data saved successfully!',
@@ -21,5 +23,5 @@ export const LOCALIZATION = {
     DELETE_CONTENT: 'Are you sure you want to permanently delete this config?',
     DELETE_SUCCESS: 'Json Config deleted successfully!',
     DELETE_ERROR: 'Delete Cancelled! {{error}}',
-    DELETE_INVALID_FILE: 'Delete Cancelled! Please select a file'
+    DELETE_INVALID_FILE: 'Delete Cancelled! Please select a file',
 }

@@ -7,7 +7,7 @@ import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import { message } from 'antd/es';
-import { retrieveJsonConfigsFailed } from '../../util/uiMessages/jsonConfigurator';
+import { LOCALIZATION } from '../../../constants';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -26,7 +26,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfigMap(response);
             })
             .catch(error => {
-                message.error(`${retrieveJsonConfigsFailed}`.replace('{{error}}',`${extractErrorMessage(error)}`));
+                message.error(`${LOCALIZATION.RETRIEVE_CONFIGS_FAIL}`.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
     }
 
