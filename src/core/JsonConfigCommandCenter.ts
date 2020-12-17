@@ -48,7 +48,7 @@ export class JsonConfigCommandCenter {
 
     public static updateTitle = (): void => {
         if(JsonConfigCommandCenter.titleUpdateCallback) {
-            const currentTitle = JsonConfigCommandCenter.currentJson?.header?.name || LOCALIZATION.UNTITLED;
+            const currentTitle = JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED;
             JsonConfigCommandCenter.titleUpdateCallback(currentTitle);
         }
     }
