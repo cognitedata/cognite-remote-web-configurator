@@ -11,7 +11,7 @@ import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
-import { AdditionalNode } from "../validator/nodes/AdditionalNode";
+import { MapNode } from "../validator/nodes/MapNode";
 import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
@@ -313,7 +313,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
-        const resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
+        const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
+
+        if(error){
+            alert(error.text);
+            return undefined;
+        }
 
         const validInsertItems: any = this.getValidInsertItems(parentPath, currentJson, resultNode);
         const existingKeys: (number | string)[] = Object.keys(this.getPathObject(currentJson, [...parentPath]));
@@ -349,23 +354,23 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
         const key = parentPath[parentPath.length - 1]
-        let resultNode = getNodeMeta([...parentPath], currentJson).resultNode;
+        let resultNode = node;
 
         /**
          * If dicriminator, resultNode should get from data[`type`]
          */
-        if (node?.discriminator) {
+        if (resultNode?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);
-            const typeIndicatorKey = node.discriminator.propertyName;
+            const typeIndicatorKey = resultNode.discriminator.propertyName;
             const dataType = currentData[typeIndicatorKey];
-            resultNode = (node.data as BaseNodes)[dataType];
+            resultNode = (resultNode.data as BaseNodes)[dataType];
         }
 
         /**
          * When adding items to an Array or a Map,
          * returning a IData object with matching key and description
          */
-        if (resultNode instanceof ArrayNode || resultNode instanceof AdditionalNode) {
+        if (resultNode instanceof ArrayNode || resultNode instanceof MapNode) {
             // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
@@ -379,10 +384,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             return ret;
 
-        } else {
-            const res: any = resultNode?.data ? {...(resultNode.data as BaseNodes)} : {};
-
-            Object.entries(resultNode?.data as Record<string, unknown>).forEach(
+        } else if(resultNode?.data){
+            const res: any = resultNode.data;
+ 
+            Object.entries(res as Record<string, unknown>).forEach(
               ([key, node]) => {
                 if ((node as BaseNode).discriminator) {
                     delete res[key];
@@ -397,6 +402,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
               }
             );
             return res;
+        } else {
+            alert('Invalid Node');
+            return undefined;
         }
     }
 }
