@@ -73,8 +73,8 @@ export class JsonConfigCommandCenter {
     }
 
     public static onDownload = (): void => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
-        let fileName = currentJson.header?.name
+        const currentJson = JSON.stringify(JsonConfigCommandCenter.currentJson);
+        let fileName = JsonConfigCommandCenter.currentFileName;
         if (!fileName || fileName === "") {
             fileName = "Untitled Json Config";
         }
