@@ -1,6 +1,6 @@
 import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
-import { AdditionalNode } from "../nodes/AdditionalNode";
+import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
@@ -46,13 +46,13 @@ export const getNode = (
         resultNode = nextResultNodeTypeFromData ?? Object.values(resultNode.data)[0];
       }
     
-      // If AdditionalNode/ArrayNode, then get the relevant type
-      if (resultNode instanceof AdditionalNode || resultNode instanceof ArrayNode) {
+      // If AdditionalNode/ArrayNode, then get the nextNode from sample data
+      if (resultNode instanceof MapNode || resultNode instanceof ArrayNode) {
         resultNode = resultNode.sampleData;
-      } 
-
-      // Set the next node from path
-      resultNode = (resultNode?.data as BaseNodes)[path]; 
+      } else {
+      // Set the nextNode from path
+        resultNode = (resultNode?.data as BaseNodes)[path]; 
+      }
       
       if (!resultNode) {
         return {
@@ -94,6 +94,13 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
 };
 
 export const getJson = (obj: BaseNode | undefined): any => {
+  /**
+   * If example json value found, then just return it.
+   */
+  if(obj?.example){
+    return obj.example;
+  }
+
   if (obj instanceof ObjectNode) {
    if (obj.data) {
       const dat: any = {};

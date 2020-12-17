@@ -20,6 +20,7 @@ export class BaseNode {
   public description?: string;
   public isRequired?: boolean;
   public discriminator?: Discriminator;
+  public example: any;
 
   protected _data: IData;
 
@@ -32,12 +33,10 @@ export class BaseNode {
     this.type = type;
     this.description = schema.description;
     this.discriminator = schema.discriminator;
-    /**
-     * This rule overrides the data comes from constructor.
-     * But this is ok for now since we are using these logics for creating template nodes.
-     */
-    this._data = schema.example ?? data;
+
+    this._data = data;
     this.isRequired = isRequired;
+    this.example = schema.example;
   }
 
   public get data(): IData {
