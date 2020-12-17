@@ -39,22 +39,22 @@ export const CommandPanel: React.FC<{
 
     const onSaveHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${LOCALIZATION.SAVE_INVALID_FILE}`);
+            message.error(LOCALIZATION.SAVE_INVALID_FILE);
         }
         else {
             confirm({
-                title: `${LOCALIZATION.SAVE_TITLE}`,
+                title: LOCALIZATION.SAVE_TITLE,
                 icon: <ExclamationCircleOutlined />,
-                content: `${LOCALIZATION.SAVE_CONTENT}`,
+                content: LOCALIZATION.SAVE_CONTENT,
                 onOk() {
                     props.commandEvent(CommandEvent.saveAs)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success(`${LOCALIZATION.SAVE_SUCCESS}`);
+                            message.success(LOCALIZATION.SAVE_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(`${LOCALIZATION.SAVE_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -63,22 +63,22 @@ export const CommandPanel: React.FC<{
 
     const onUpdateHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${LOCALIZATION.UPLOAD_INVALID_FILE}`);
+            message.error(LOCALIZATION.UPLOAD_INVALID_FILE);
         }
         else {
             confirm({
-                title: `${LOCALIZATION.UPLOAD_TITLE}`,
+                title: LOCALIZATION.UPLOAD_TITLE,
                 icon: <ExclamationCircleOutlined />,
-                content: `${LOCALIZATION.UPLOAD_CONTENT}`,
+                content: LOCALIZATION.UPLOAD_CONTENT,
                 onOk() {
                     props.commandEvent(CommandEvent.update)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success(`${LOCALIZATION.UPLOAD_SUCCESS}`);
+                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(`${LOCALIZATION.UPLOAD_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });
@@ -87,21 +87,21 @@ export const CommandPanel: React.FC<{
 
     const onDeleteHandler = () => {
         if (!isValidFileName()) {
-            message.error(`${LOCALIZATION.DELETE_INVALID_FILE}`);
+            message.error(LOCALIZATION.DELETE_INVALID_FILE);
         }
         else {
             confirm({
-                title: `${LOCALIZATION.DELETE_TITLE}`,
+                title: LOCALIZATION.DELETE_TITLE,
                 icon: <ExclamationCircleOutlined />,
-                content: `${LOCALIZATION.DELETE_CONTENT}`,
+                content: LOCALIZATION.DELETE_CONTENT,
                 onOk() {
                     props.commandEvent(CommandEvent.delete)
                         .then(() => {
                             props.reloadJsonConfigs(null);
-                            message.success(`${LOCALIZATION.DELETE_SUCCESS}`);
+                            message.success(LOCALIZATION.DELETE_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(`${LOCALIZATION.DELETE_ERROR}`.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 }
             });

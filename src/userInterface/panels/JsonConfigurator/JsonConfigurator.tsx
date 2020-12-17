@@ -26,7 +26,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfigMap(response);
             })
             .catch(error => {
-                message.error(`${LOCALIZATION.RETRIEVE_CONFIGS_FAIL}`.replace('{{error}}', `${extractErrorMessage(error)}`));
+                message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
     }
 

@@ -125,30 +125,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Remove default Remove(Delete) function and alert the error
             // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
-                item.title = `${LOCALIZATION.REMOVE_ENABLED}`;
+                item.title = LOCALIZATION.REMOVE_ENABLED;
                 if (removePossibility.error) {
                     // allows Remove even it has InvalidPath error
                     if (removePossibility.error.type === ErrorType.InvalidPath) {
-                        item.title = `${LOCALIZATION.REMOVE_INVALID_PATH}`;
+                        item.title = LOCALIZATION.REMOVE_INVALID_PATH;
                     } else {
                         item.className = "warning-triangle";
                         switch (removePossibility.error.type) {
                             case ErrorType.RequiredNode:
-                                item.title = `${LOCALIZATION.REMOVE_MANDATORY}`;
+                                item.title = LOCALIZATION.REMOVE_MANDATORY;
                                 item.click = () => {
-                                    message.error(`${LOCALIZATION.REMOVE_MANDATORY}`);
+                                    message.error(LOCALIZATION.REMOVE_MANDATORY);
                                 }
                                 break;
                             case ErrorType.MinLength:
-                                item.title = `${LOCALIZATION.REMOVE_MINIMUM_LENGTH}`;
+                                item.title = LOCALIZATION.REMOVE_MINIMUM_LENGTH;
                                 item.click = () => {
-                                    message.error(`${LOCALIZATION.REMOVE_MINIMUM_LENGTH}`);
+                                    message.error(LOCALIZATION.REMOVE_MINIMUM_LENGTH);
                                 }
                                 break;
                             default:
-                                item.title = `${LOCALIZATION.REMOVE_DISSABLED}`;
+                                item.title = LOCALIZATION.REMOVE_DISSABLED;
                                 item.click = () => {
-                                    message.error(`${LOCALIZATION.REMOVE_DISSABLED}`);
+                                    message.error(LOCALIZATION.REMOVE_DISSABLED);
                                 }
                                 break;
                         }
