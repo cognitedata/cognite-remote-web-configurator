@@ -92,6 +92,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
                     onJsonConfigSelect={onJsonConfigSelect}
+                    commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
                     selectedJsonConfigId={selectedJsonConfigId} />
             </div>
