@@ -6,7 +6,7 @@ import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
-import { message } from 'antd';
+import { message } from 'antd/es';
 import { retrieveJsonConfigsFailed } from '../../util/uiMessages/jsonConfigurator';
 
 export const extractErrorMessage = (error: string): string => {

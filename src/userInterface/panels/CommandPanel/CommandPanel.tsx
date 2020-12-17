@@ -5,7 +5,7 @@ import { Switch } from "antd";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { Modal, message } from 'antd';
+import { Modal, message } from 'antd/es';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { saveConfig, updateConfig, deleteConfig } from '../../util/uiMessages/commandPanel'
