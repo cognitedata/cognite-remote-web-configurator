@@ -53,6 +53,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
+            case CommandEvent.createNew: {
+                onJsonConfigSelect(args[0]);
+                break;
+            }
             case CommandEvent.saveAs: {
                 return await JsonConfigCommandCenter.onSaveAs();
             }
@@ -84,15 +88,15 @@ export const JsonConfigurator: React.FC<any> = () => {
                     jsonConfigMap={jsonConfigMap}
                     selectedJsonConfigId={selectedJsonConfigId} />
             </div>
-            <div className={classes.commandPanel}>
-                <CommandPanel
-                    commandEvent={onCommand}
-                    reloadJsonConfigs={reloadJsonConfigs}
-                    selectedJsonConfigId={selectedJsonConfigId}
-                />
-            </div>
-            <div className={classes.editorPanel}>
-                <EditorPanel jsonConfig={jsonConfig} />
+            <div className={classes.fullEditor}>
+                <div className={classes.editorCommandContainer}>
+                    <CommandPanel
+                        commandEvent={onCommand}
+                        reloadJsonConfigs={reloadJsonConfigs}
+                        selectedJsonConfigId={selectedJsonConfigId}
+                    />
+                    <EditorPanel jsonConfig={jsonConfig} />
+                </div>
             </div>
         </div>
     );

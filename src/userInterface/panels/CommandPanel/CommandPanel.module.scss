@@ -3,8 +3,9 @@
     grid-template-columns: auto auto;
     grid-template-areas: "leftPanel rightPanel";
     grid-gap: 10px;
-    padding: 20px;
-    border-bottom: solid #cdcfd1;
+    padding: 8px;
+    background-color: #3883fa;
+    color: white;
 }
 
 .leftPanel {
@@ -12,14 +13,11 @@
     span {
         margin-right: 5px;
     }
+    padding: 8px;
 }
 
 .rightPanel {
     grid-area: rightPanel;
     grid-gap: 10px;
     justify-self: end;
-    .btn {
-        margin-right: 5px;
-        width: 200px;
-    }
 }

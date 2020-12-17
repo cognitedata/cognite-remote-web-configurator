@@ -1,5 +1,6 @@
 import JSONEditor, {
     AutoCompleteElementType,
+    JSONEditorMode,
     JSONEditorOptions,
     JSONPath,
     MenuItem,
@@ -26,6 +27,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         return {
             mode: this.mode,
+            modes: this.modes,
             templates: this.templates,
             autocomplete: this.autocomplete,
             enableSort: this.enableSort,
@@ -40,6 +42,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public mode: "tree" | "code" | "preview" | undefined = 'tree';
+
+    public modes: JSONEditorMode[] = ["tree", "code"];
 
     public get templates(): any {
         const allTemplates: any = [];
@@ -391,7 +395,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                   });
                 }
               }
-            );  
+            );
             return res;
         }
     }
