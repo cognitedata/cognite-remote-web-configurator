@@ -54,7 +54,8 @@ export class BaseNode {
           (node._data as any)[this.discriminator.propertyName] = {
             type: 'string',
             data: key,
-            possibleValues: possibleTypeValues
+            possibleValues: possibleTypeValues,
+            isRequired: true
           };
         }
         result[key] = node;

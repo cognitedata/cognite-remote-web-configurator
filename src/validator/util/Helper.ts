@@ -21,7 +21,7 @@ export const removeDataNode = (
   return obj;
 };
 
-export const getNode = (
+export const getNodeInstance = (
   group: string,
   rootDataNode: BaseNodes,
   rootJsonNode: any,

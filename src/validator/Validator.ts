@@ -5,7 +5,7 @@ import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
 import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
-import { getJson, getNode } from "./util/Helper";
+import { getJson, getNodeInstance } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
 import { MapNode } from "./nodes/MapNode";
 import { ArrayNode } from "./nodes/ArrayNode";
@@ -26,7 +26,7 @@ export const getNodeMeta = (
   rootJson: any,
   group: string = defaultGroup
 ): IValidationResult => {
-  return getNode(group, rootDataNode, rootJson, paths);
+  return getNodeInstance(group, rootDataNode, rootJson, paths);
 };
 
 export const getAllNodes = (): TemplateNode[] => {
@@ -39,10 +39,11 @@ export const removeNode = (
   group: string = defaultGroup
 ): IValidationResult => {
   const root = { ...rootDataNode };
-  const result = getNode(group, root, data, paths);
+  // TODO: Can we avoid 2 calls to getNodeInstance
+  const result = getNodeInstance(group, root, data, paths);
   const resultParent =
     paths.length > 1
-      ? getNode(group, root, data, paths.slice(0, paths.length - 1))
+      ? getNodeInstance(group, root, data, paths.slice(0, paths.length - 1))
       : null;
 
   if (!result.error) {
