@@ -3,6 +3,10 @@
 // json editor customization
 .jsoneditor {
   border: unset;
+
+  .jsoneditor-poweredBy{
+    display: none;
+  }
 }
 
 .json-editor-container{
