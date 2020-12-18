@@ -43,6 +43,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }),
             onValidate: this.onValidate,
             onChange: this.onChange,
+            onError: this.onError
         }
     }
 
@@ -200,6 +201,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         JsonConfigCommandCenter.updateTitle();
     }
 
+    public onError = (err: any): void => {
+        if(err) {
+            message.error(err.message);
+        }
+    }
+
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
@@ -323,10 +330,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 const childErrors = this.validateFields(json, discriminatorMeta, paths);
                 errors = childErrors.concat(errors);
             } else {
-                errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!` });
+                errors.push({ path: paths, message: `Required field ${discriminator.propertyName} does not have a valid type!` });
             }
         } else {
-            errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} not available!` });
+            errors.push({ path: paths, message: `Required field ${discriminator.propertyName} not available!` });
         }
         return errors;
     }
@@ -350,7 +357,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         }
                     }
                     if(!isOneOfPossibleValues) {
-                        errors.push({ path: paths, message: `value not one of possible values!` });
+                        errors.push({ path: paths, message: `value not one of the possible values!` });
                     }
                 }
                 switch (datatype) {
@@ -362,12 +369,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         } else {
                             if(minimum) {
                                 if(value < minimum) {
-                                    errors.push({ path: paths, message: `value not one of possible values!` });
+                                    errors.push({ path: paths, message: `value cannot be less than ${minimum}!` });
                                 }
                             }
                             if(maximum) {
                                 if(value > maximum) {
-                                    errors.push({ path: paths, message: `value not one of possible values!` });
+                                    errors.push({ path: paths, message: `value cannot be greater than ${maximum}!` });
                                 }
                             }
                         }

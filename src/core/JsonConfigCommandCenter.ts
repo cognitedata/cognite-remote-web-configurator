@@ -6,9 +6,10 @@ import { saveAs } from 'file-saver';
 import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
 import { LOCALIZATION } from "../constants";
+import { JSONEditorMode } from "jsoneditor";
 
 export class JsonConfigCommandCenter {
-    public static titleUpdateCallback: (text: string) => void;
+    public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
@@ -37,9 +38,15 @@ export class JsonConfigCommandCenter {
 
     public static get currentJson(): any {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
+        let currentJson;
         if (currentJsonText) {
-            return JSON.parse(currentJsonText);
+            try{
+                currentJson = JSON.parse(currentJsonText);
+            } catch (e: any) {
+                console.error("Error occurred while parsing json!", e);
+            }
         }
+        return currentJson;
     }
     public static get currentFileName(): string {
         const currentJson = JsonConfigCommandCenter.currentJson;
@@ -47,9 +54,10 @@ export class JsonConfigCommandCenter {
     }
 
     public static updateTitle = (): void => {
-        if(JsonConfigCommandCenter.titleUpdateCallback) {
+        if(JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback) {
             const currentTitle = JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED;
-            JsonConfigCommandCenter.titleUpdateCallback(currentTitle);
+            const currentMode = JsonConfigCommandCenter.editor?.getMode();
+            JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);
         }
     }
 

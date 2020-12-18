@@ -10,6 +10,7 @@ import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
+import { JSONEditorMode } from "jsoneditor";
 
 const { confirm } = Modal;
 
@@ -27,16 +28,20 @@ export const CommandPanel: React.FC<{
     selectedJsonConfigId: number | null
 }> = (props: any) => {
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
+    const [mode, setMode] = useState('tree');
 
-    const titleUpdateCallBack = (text: string) => {
+    const titleUpdateCallBack = (text: string, mode: JSONEditorMode) => {
         setTitle(text);
+        setMode(mode)
     };
     JsonConfigCommandCenter.titleUpdateCallback = titleUpdateCallBack;
 
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
+            setMode(Modes.paste);
             props.commandEvent(CommandEvent.mode, Modes.paste, evt);
         } else {
+            setMode(Modes.default);
             props.commandEvent(CommandEvent.mode, Modes.default, evt);
         }
     }
@@ -120,7 +125,7 @@ export const CommandPanel: React.FC<{
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
-                <Switch checkedChildren="code" unCheckedChildren="tree" onChange={onModeSwitch} />
+                <Switch checkedChildren="code" unCheckedChildren="tree" checked={mode === 'code'} onChange={onModeSwitch} />
             </div>
             <div className={classes.titlePanel}>
                 <span className={classes.titleText}>{title}</span>
