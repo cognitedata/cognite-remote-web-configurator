@@ -126,8 +126,8 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
-                {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"upload"} onClick={onUpdateHandler}>Save</CommandItem>}
-                <CommandItem className={classes.btn} icon={"save"} onClick={onSaveHandler}>Save As New</CommandItem>
+                {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
+                <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
