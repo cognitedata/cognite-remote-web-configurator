@@ -2,6 +2,7 @@
   "name": "json-validator",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://cognitedata.github.io/cognite-remote-web-configurator/",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@cognite/gearbox": "^2.2.2",
