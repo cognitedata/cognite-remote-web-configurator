@@ -15,7 +15,7 @@
     "static/css/main.af798d84.chunk.css.map": "/static/css/main.af798d84.chunk.css.map",
     "static/js/2.68643011.chunk.js.LICENSE.txt": "/static/js/2.68643011.chunk.js.LICENSE.txt",
     "static/media/JsonEditorContainer.scss": "/static/media/jsoneditor-icons.15f2789d.svg",
-    "static/media/twinconfig.69952d13.yaml": "/static/media/twinconfig.69952d13.yaml"
+    "static/media/twinconfig.69952d13.yaml": "static/media/twinconfig.69952d13.yaml"
   },
   "entrypoints": [
     "static/js/runtime-main.1a0696aa.js",
