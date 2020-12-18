@@ -7,6 +7,7 @@ export const DEV_MODE = false;
 export const LOCALIZATION = {
     RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve json configs! {{error}}',
     UNTITLED: "Untitled",
+    INCONSISTANT_VALUE: 'Inconsistant value. Remove and insert it again to fill missing fields',
 
     // Save command
     SAVE_TITLE: 'Create New Json Config',

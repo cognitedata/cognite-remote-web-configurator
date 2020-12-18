@@ -396,7 +396,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
         if (error) {
-            alert(error.text);
+            message.error(LOCALIZATION.INCONSISTANT_VALUE);
             return undefined;
         }
 
@@ -485,7 +485,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             );
             return res;
         } else {
-            alert('Invalid Node');
+            message.error(LOCALIZATION.INCONSISTANT_VALUE);
             return undefined;
         }
     }
