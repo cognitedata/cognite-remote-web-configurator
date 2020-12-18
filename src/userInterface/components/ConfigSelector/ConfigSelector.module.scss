@@ -2,9 +2,9 @@
     padding: 10px 15px;
 }
 .jsonConfigItem:hover {
-    background-color: white;
-    color: #4891db;
     cursor: pointer;
+    background-color: #3883faa6;
+    color: white;
 }
 .jsonConfigItem:active {
     background-color: #84b7eb;
@@ -12,10 +12,10 @@
 }
 
 .selected {
-    background-color: #26a4e8;
+    background-color: #3883fa;
     color: white;
 }
 .selected:hover {
-    background-color: #26a4e8;
+    background-color: #3883faa6;
     color: white;
 }

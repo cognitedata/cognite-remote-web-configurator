@@ -366,7 +366,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                                 }
                             }
                             if(maximum) {
-                                if(value > minimum) {
+                                if(value > maximum) {
                                     errors.push({ path: paths, message: `value not one of possible values!` });
                                 }
                             }

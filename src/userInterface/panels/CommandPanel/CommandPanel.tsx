@@ -35,9 +35,9 @@ export const CommandPanel: React.FC<{
 
     const onModeSwitch = (checked: boolean, evt: any) => {
         if (checked) {
-            props.commandEvent(CommandEvent.mode, Modes.default, evt);
-        } else {
             props.commandEvent(CommandEvent.mode, Modes.paste, evt);
+        } else {
+            props.commandEvent(CommandEvent.mode, Modes.default, evt);
         }
     }
 
@@ -120,7 +120,7 @@ export const CommandPanel: React.FC<{
         <div className={classes.commandsContainer}>
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
-                <Switch checkedChildren="tree" unCheckedChildren="code" defaultChecked onChange={onModeSwitch} />
+                <Switch checkedChildren="code" unCheckedChildren="tree" onChange={onModeSwitch} />
             </div>
             <div className={classes.titlePanel}>
                 <span className={classes.titleText}>{title}</span>
