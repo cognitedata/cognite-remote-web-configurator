@@ -7,6 +7,8 @@ import JSONEditor, {
     MenuItemNode,
     ValidationError
 } from "jsoneditor";
+import isBoolean from "lodash-es/isBoolean";
+import isString from "lodash-es/isString";
 import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
@@ -147,9 +149,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                                 }
                                 break;
                             default:
-                                item.title = LOCALIZATION.REMOVE_DISSABLED;
+                                item.title = LOCALIZATION.REMOVE_DISABLED;
                                 item.click = () => {
-                                    message.error(LOCALIZATION.REMOVE_DISSABLED);
+                                    message.error(LOCALIZATION.REMOVE_DISABLED);
                                 }
                                 break;
                         }
@@ -201,7 +203,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
-        const schemaMeta = getNodeMeta([], json)?.resultNode?.data; // meta of root node from schema
+        const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
 
         return errors;
@@ -214,6 +216,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
      * 3. Discriminate properties are available and follows the schema
      * @param json
      * @param schemaMeta
+     * @param discriminator
      * @param paths
      * @param errors
      * @private
@@ -222,82 +225,92 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         const missingRequiredFields = [];
         const validatedKeys = new Set<string>();
+        const schemaType = schemaMeta.type;
+        let schemaMetaData: any;
+        const discriminator = schemaMeta.discriminator;
 
-        for (const childKey of Object.keys(schemaMeta)) {
-            const childNode = (schemaMeta)[childKey] as BaseNode;
-            const isRequired = childNode.isRequired;
+        if(discriminator) {
+            if(schemaType === DataType.object) {
+                schemaMetaData = schemaMeta.data;
+            } else if (schemaType === DataType.array || schemaType === DataType.map) {
+                schemaMetaData = schemaMeta.sampleData;
+            }
+            const discriminatorErrors = this.validateDiscriminator(json, schemaMetaData, discriminator, paths);
+            errors = discriminatorErrors.concat(errors);
+        } else {
+            switch (schemaType) {
+                case DataType.object: {
+                    schemaMetaData = schemaMeta.data;
 
-            const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
+                    for (const childKey of Object.keys(schemaMetaData)) {
+                        const childValue = json[childKey];
+                        const childPath = paths.concat([childKey]);
+                        const childMeta = schemaMetaData[childKey];
 
-            if (!hasKey) {
-                if (isRequired) {
-                    missingRequiredFields.push(childKey);
-                }
-            } else {
-                validatedKeys.add(childKey);
-                const value = json[childKey];
-                const newPath = paths.concat([childKey]);
-                const childMeta = schemaMeta[childKey];
+                        const isChildKeyRequired = childMeta.isRequired;
 
-                let nextMeta: any;
+                        const hasKey = Object.prototype.hasOwnProperty.call(json, childKey);
 
-                if (childMeta.type === DataType.map || childMeta.type === DataType.array) {
-                    nextMeta = childMeta.sampleData.data;
-                    const discriminator = childMeta.sampleData.discriminator;
-
-                    const callNextIteration = (childKey: any, childValue: any) => {
-                        if (discriminator) {
-                            const childErrors = this.validateDiscriminator(childValue, nextMeta, discriminator, newPath);
-                            errors = childErrors.concat(errors);
-                        } else {
-                            const childPath = newPath.concat([childKey]);
-                            if (nextMeta) {
-                                const childErrors = this.validateFields(childValue, nextMeta, childPath);
-                                errors = childErrors.concat(errors);
+                        if (!hasKey) {
+                            if (isChildKeyRequired) {
+                                missingRequiredFields.push(childKey);
                             }
+                        } else {
+                            validatedKeys.add(childKey);
+
+                            const childErrors = this.validateFields(childValue, childMeta, childPath);
+                            errors = childErrors.concat(errors);
+
                         }
                     }
 
-                    if (childMeta.type === DataType.map) {
-                        for (const mapChildKey of Object.keys(value)) {
-                            const mapChild = value[mapChildKey];
+                    for (const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
+                        if (!validatedKeys.has(jsonChildKey)) {
+                            const newPath = paths.concat([jsonChildKey]);
+                            errors.push({ path: newPath, message: `key: ${jsonChildKey}, is not a valid key!` });
+                        }
+                    }
+                    break;
+                }
+                case DataType.map:
+                case DataType.array: {
+
+                    schemaMetaData = schemaMeta.sampleData;
+
+                    const callNextIteration = (childKey: any, childValue: any) => {
+                        const childPath = paths.concat([childKey]);
+
+                        const childErrors = this.validateFields(childValue, schemaMetaData, childPath);
+                        errors = childErrors.concat(errors);
+                    }
+
+                    if (schemaType === DataType.map) {
+                        for (const mapChildKey of Object.keys(json)) {
+                            const mapChild = json[mapChildKey];
                             callNextIteration(mapChildKey, mapChild);
                         }
                     } else {
-                        for (let i = 0; i < value.length; i++) {
-                            const mapChild = value[i];
+                        for (let i = 0; i < json.length; i++) {
+                            const mapChild = json[i];
                             callNextIteration(i, mapChild);
                         }
                     }
-                } else {
-                    nextMeta = childMeta.data;
-                    const discriminator = childMeta.discriminator;
-                    if (discriminator) {
-                        const childErrors = this.validateDiscriminator(value, nextMeta, discriminator, newPath);
-                        errors = childErrors.concat(errors);
-                    } else {
 
-                        if (nextMeta) {
-                            const childErrors = this.validateFields(value, nextMeta, newPath);
-                            errors = childErrors.concat(errors);
-                        }
-                    }
+                    break;
+                }
+                default: {
+                    schemaMetaData = schemaMeta;
+                    const valueErrors =  this.validateValues(json, schemaMetaData, paths);
+                    errors = valueErrors.concat(errors);
                 }
             }
-
-
         }
+
 
         if (missingRequiredFields.length) {
             errors.push({ path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object` })
         }
 
-        for (const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
-            if (!validatedKeys.has(jsonChildKey)) {
-                const newPath = paths.concat([jsonChildKey]);
-                errors.push({ path: newPath, message: `key: ${jsonChildKey}, is not a valid key!` });
-            }
-        }
         return errors;
     }
 
@@ -307,7 +320,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (discriminatorType) { // whether discriminator property is available
             const discriminatorMeta = schema[discriminatorType];
             if (discriminatorMeta) {
-                const childErrors = this.validateFields(json, discriminatorMeta.data, paths);
+                const childErrors = this.validateFields(json, discriminatorMeta, paths);
                 errors = childErrors.concat(errors);
             } else {
                 errors.push({ path: paths, message: `Discriminator type field ${discriminator.propertyName} does not have a valid type!` });
@@ -318,12 +331,72 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return errors;
     }
 
+    private validateValues(value: string | boolean | number | null | undefined, schema: any, paths: any[], errors: ValidationError[] = []) : ValidationError[] {
+        if(schema) {
+            const datatype: DataType = schema.type;
+            const possibleValues = schema.possibleValues;
+            const isRequired = schema.isRequired;
+
+            if(!value && value !== 0) {
+                if(isRequired) {
+                    errors.push({ path: paths, message: `Value cannot be empty!` });
+                }
+            } else {
+                if(possibleValues && possibleValues.length) {
+                    let isOneOfPossibleValues = false;
+                    for(const possibleVal of possibleValues) {
+                        if(value === possibleVal) {
+                            isOneOfPossibleValues = true;
+                        }
+                    }
+                    if(!isOneOfPossibleValues) {
+                        errors.push({ path: paths, message: `value not one of possible values!` });
+                    }
+                }
+                switch (datatype) {
+                    case DataType.number: {
+                        const minimum = schema.minimum;
+                        const maximum = schema.maximum;
+                        if(isNaN(Number(value))) {
+                            errors.push({ path: paths, message: `value is not of the correct number type!` });
+                        } else {
+                            if(minimum) {
+                                if(value < minimum) {
+                                    errors.push({ path: paths, message: `value not one of possible values!` });
+                                }
+                            }
+                            if(maximum) {
+                                if(value > minimum) {
+                                    errors.push({ path: paths, message: `value not one of possible values!` });
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case DataType.boolean:{
+                        if(!isBoolean(value)) {
+                            errors.push({ path: paths, message: `value is not of the correct boolean type!` });
+                        }
+                        break;
+                    }
+                    case DataType.string:{
+                        if(!isString(value)) {
+                            errors.push({ path: paths, message: `value is not of the correct string type!` });
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return errors;
+    }
+
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
         const validMenuItems: MenuItem[] = [];
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
         if (error) {
-            alert(error.text);
+            message.error(LOCALIZATION.INCONSISTANT_VALUE);
             return undefined;
         }
 
@@ -412,7 +485,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             );
             return res;
         } else {
-            alert('Invalid Node');
+            message.error(LOCALIZATION.INCONSISTANT_VALUE);
             return undefined;
         }
     }
