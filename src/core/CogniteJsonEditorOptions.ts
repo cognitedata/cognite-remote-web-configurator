@@ -31,7 +31,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         return {
             mode: this.mode,
-            modes: this.modes,
+            // modes: this.modes,
             templates: this.templates,
             autocomplete: this.autocomplete,
             enableSort: this.enableSort,
