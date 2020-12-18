@@ -1,0 +1,2352 @@
+openapi: 3.0.1
+info:
+  title: Cognite API
+  version: playground
+servers: []
+paths: {}
+
+components:
+  schemas:
+    TwinConfiguration:
+     description: "Data structure that fully defines a digital twin in the Cognite Digital Twin Application."
+     required:
+       - header
+       - assets
+       - scenes
+     type: object
+     properties:
+       header:
+         $ref: '#/components/schemas/Header'
+       assets:
+         $ref: '#/components/schemas/Assets'
+       scenes:
+         description: "Array of 3D scenes in this available in this twin. Only one scene can be active and visible at any moment"
+         type: array
+         items:
+           $ref: '#/components/schemas/Scene'
+         minItems: 1
+       hierarchy:
+         $ref: '#/components/schemas/BaseMenuHierarchy'
+       simulations:
+         description: "Array of timeseries simulations for this twin"
+         type: array
+         items:
+           $ref: '#/components/schemas/Simulation'
+       timeseriesFilters:
+         type: object
+         additionalProperties:
+           $ref: '#/components/schemas/TimeseriesFilter'
+       workOrders:
+         description: Array of work orders. There can be more than one type, each with different filtering.
+         type: array
+         items:
+            $ref: '#/components/schemas/WorkOrders'
+       fileFiltering:
+         description: Array of file filtering configuration. There can be more than one type, each with different filtering.
+         type: array
+         items:
+            $ref: '#/components/schemas/Files'
+         
+    Simulation:
+      type: object
+      description: "Data structure that defines a simulation."
+      required:
+        - displayName
+        - timeseriesMappings
+      properties:
+        displayName:
+          description: "Name of the simulation, to be shown in the user interface."
+          type: string
+        timeseriesFilterId:
+          description: "The identifier of the timeseries filter to apply when this simulation is active."
+          type: string
+        timeseriesMappings:
+          description: "Array of timeseries mappings for this simulataion."
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesMapping'
+
+    TimeSeriesMapping:
+     description: "Mapping between time series in a simulation."
+     type: object
+     required:
+       - mappingFrom
+       - mappingTo
+     properties:
+       mappingFrom:
+         $ref: '#/components/schemas/ExtendedTimeSeriesId'
+       mappingTo:
+         $ref: '#/components/schemas/TimeSeriesIdOrConstant'
+
+    TimeSeriesId:
+      description: An ID that uniquely identifies a time series.
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: A server-generated ID for the object.
+        externalId:
+          type: string
+          description: The external ID provided by the client. Must be unique for the resource type.
+          maxLength: 255
+
+    TimeSeriesIdOrConstant:
+      description: Represents either a time series ID or a constant value that will be used in place of a time series.
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: A server-generated ID for the object.
+        externalId:
+          type: string
+          description: The external ID provided by the client. Must be unique for the resource type.
+          maxLength: 255
+        constantValue:
+          description: Constant value to use instead of a time series.
+          type: number
+          format: double         
+
+    ExtendedTimeSeriesId:
+      description: Represents either a time series ID or an identifier that can be mapped to a time series ID in a simulation.
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: A server-generated ID for the object.
+        externalId:
+          type: string
+          description: The external ID provided by the client. Must be unique for the resource type.
+          maxLength: 255       
+        simulationIdentifier:
+          type: string      
+          description: "An identifier that can be used instead of a time series ID when mapping time series for a simulation."
+          maxLength: 255
+
+    ExtendedTimeSeriesIdOrConstant:
+      description: Represents either a time series ID, an identifier that can be mapped to a time series ID in a simulation, or a constant value that will be used in place of a time series.
+      properties:       
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: A server-generated ID for the object.
+        externalId:
+          type: string
+          description: The external ID provided by the client. Must be unique for the resource type.
+          maxLength: 255       
+        simulationIdentifier:
+          type: string      
+          description: "An identifier that can be used instead of a time series ID when mapping time series for a simulation."
+          maxLength: 255
+        constantValue:
+          description: Constant value to use instead of a time series.
+          type: number
+          format: double                  
+
+    ExtendedTimeSeriesIdOrFileId:
+      description: Represents either a time series ID or a file ID.
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991
+          description: A server-generated ID for the object.
+        externalId:
+          type: string
+          description: The external ID provided by the client. Must be unique for the resource type.
+          maxLength: 255       
+        simulationIdentifier:
+          type: string      
+          description: "An identifier that can be used instead of a time series ID when mapping time series for a simulation."
+          maxLength: 255
+        fileId:
+          description: A unique id of a file in the file API.
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 9007199254740991         
+
+    ApplicationType:
+      type: string
+      enum:
+        - digitalTwinApplication
+        - inspectionApplication
+      description: >
+        Describes the type of application:
+          * `digitalTwinApplication` - For the digital twin application.
+          * `inspectionApplication ` - For inspections.
+     
+    Header:
+     description: "Header containing basic information and metadata about the twin."
+     required:
+       - name
+     type: object
+     properties:
+       name:
+         description: "Name of the twin, as it will be shown in the Digital Twin Application."
+         type: string
+       thumbnailImageId:
+         description: "File API ID of image that will be used as thumbnail for the twin in the Digital Twin Application."
+         type: integer
+         format: int64
+       type:
+         $ref: '#/components/schemas/ApplicationType'
+
+    Assets:
+     description: "Declaration of the data assets used by this twin. Actors in the twin refer to these assets as data sources."
+     type: object
+     properties:
+       geometries:
+         description: "Map of all geometry data used by this digital twin. Keys in this map represent IDs that can be used as references to the data in twin actors."
+         type: object
+         additionalProperties:
+           $ref: '#/components/schemas/GeometryData'
+       splines:
+         description: "Map of all spline data used by this digital twin. Keys in this map represent IDs that can be used as references to the data in spline actors."
+         type: object
+         additionalProperties:
+           $ref: '#/components/schemas/SplineData'
+       pointClouds:
+         description: "Map of all point cloud data used by this digital twin. Keys in this map represent IDs that can be used as references to the data in twin actors."
+         type: object
+         additionalProperties:
+           $ref: '#/components/schemas/PointCloudData'
+
+    ThreeDModelMaterialType:
+      type: string
+      enum:
+        - CADColors
+        - photogrammetryUnlit
+        - photogrammetryLit
+        - materialLibrary
+      description: >
+        Material type for a 3D model:
+          * `CADColors` - Simple coloring using the CAD colors of the model. Default setting for untextured models.
+          * `photogrammetryUnlit` - Only for models uploaded with textures. The model will not be affected by the lighting in the scene. Default setting for textured models.
+          * `photogrammetryLit` - Only for models uploaded with textures. The model will be affected by lights and shadows in the scene.
+          * `materialLibrary` - The model will use a specified material library.
+     
+    ThreeDModelMaterialBase:
+      description: > 
+        Material to be applied to a 3D model.
+      discriminator:
+        propertyName: type
+        mapping:
+          CADColors: '#/components/schemas/ThreeDModelMaterialNoParameters'
+          photogrammetryUnlit: '#/components/schemas/ThreeDModelMaterialNoParameters'
+          photogrammetryLit: '#/components/schemas/ThreeDModelMaterialNoParameters'
+          materialLibrary: '#/components/schemas/ThreeDModelMaterialLibraryMaterial'
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/ThreeDModelMaterialType'
+      
+    ThreeDModelMaterialNoParameters:
+      allOf:
+        - $ref: '#/components/schemas/ThreeDModelMaterialBase' 
+      
+    ThreeDModelMaterialLibraryMaterial:
+      allOf:
+        - $ref: '#/components/schemas/ThreeDModelMaterialBase' 
+        - type: object
+          properties:
+            materialId:
+              description: "ID of the material to apply to the model."
+              type: string
+          
+    GeometryData:
+     description: >
+        A 3D model asset used by this twin. Contains IDs referencing a 3D model file in the 3D API, and optionally applies a transform to the model. <br>
+        Additional field usage information:
+          * `colorOverride` - Overridees the color of the model. Will not affect all material types.
+          * `material` - Specifies the material to use for the model. If not specified, this will be auto-selected based on the model itself.
+     type: object
+     required:
+       - modelId
+       - revisionId
+     properties:
+       modelId:
+         description: "3D API ID of the model."
+         type: integer
+         format: int64
+       revisionId:
+         description: "3D API ID of the revision of the model."
+         type: integer
+         format: int64
+       transform:
+         $ref: '#/components/schemas/RelativeTransform'
+       colorOverride:
+         $ref: '#/components/schemas/Color'
+       material:
+         $ref: '#/components/schemas/ThreeDModelMaterialBase'
+
+    PointCloudColorSource:
+      type: string
+      enum:
+        - pointColor
+        - pointIntensity
+      description: >
+        Describes the source of the color applied to a point cloud
+          * `pointColor` - The points are colored using the color data from the point cloud. This is the default.
+          * `pointIntensity`- The points are colored using the intensity data from the point cloud.
+          
+    PointCloudData:
+     description: >
+        A 3D point cloud asset used by this twin. Contains an ID referencing a point cloud in the 3D API, and optionally applies a transform to the model. <br>
+     type: object
+     required:
+       - modelId
+     properties:
+       modelId:
+         description: "3D API ID of the point cloud."
+         type: integer
+         format: int64
+       ignoreOffset:
+         description: "Whether or not to ignore the position offset of the point cloud."
+         type: boolean
+       blackMask:
+         description: "Whether or not to filter out points with a pure black color."
+         type: boolean
+       colorSource:
+         $ref: '#/components/schemas/PointCloudColorSource'
+       transform:
+         $ref: '#/components/schemas/RelativeTransform'
+
+    SplineDataFormat:
+      type: string
+      enum:
+        - noTangents
+        - withTangents 
+      description: >
+        Describes the format of spline data:
+          * `noTangents` - Sequence of X, Y, Z coordinates for spline points, in centimeters in the local coordinate system of the spline.
+          * `withTangents` - Sequence of spline points, where each point in the sequence is represented with 9 floating point numbers; all in the local coordinate system of the spline: <br> - X, Y, Z coordinates of the spline point in centimeters. <br> - X, Y, Z components of incoming tangent vector. <br> - X, Y, Z components of outgoing tangent vector.
+     
+    SplineData:
+     description: "Spline data used by this twin."
+     type: object
+     required:
+       - splinePoints
+       - splineDataFormat
+     properties:
+       splineDataFormat:
+         $ref: '#/components/schemas/SplineDataFormat'
+       splinePoints:
+         description: "Array of spline points, with or without tangents."
+         type: array
+         items:
+           type: number
+           format: float
+         
+    MenuHierarchyType:
+      type: string
+      enum:
+        - fullAssetHierarchy
+        - customHierarchy
+        - noHierarchy
+      description: >
+        Source of the hierarchy for the navigation menu:
+          * `fullAssetHierarchy` - "Full asset hierarchy for the current tenant. Should only be used on tenants with very small asset hierarchies."
+          * `customHierarchy` - "Custom made hierarchy, defined in this file."
+          * `noHierarchy` - "No hiearchy. Searching only."
+        
+    GeographicLocation:
+        description: "Describes a global position using a set of coordinates and an optional Coordinate Reference System (CRS). If no CRS is given, coordinates are assumed to be local Unreal Engine 4 coordinates."
+        type: object
+        required:
+          - coordinates
+        properties:
+          crs:
+            description: "A Proj.4 formatted string describing a Coordinate Reference System (CRS). Currently, only longlat and utm (for WGS84) are supported."
+            example: "+proj=utm +zone=31 +units=m"
+            type: string
+          coordinates:
+            description: "An array of three floating-point numbers specifying a coordinate in the given CRS (or in UE4 coordinates if no CRS is given). The third value is always the altitude given in cm."
+            type: array
+            items:
+              type: number
+              format: double
+            minItems: 3
+            maxItems: 3
+    
+    GeographicCoordinateMapping:
+      description: >
+        Relates the coordinate system in the application with a geographic coordinate system. Sets up a reference point in geographic coordinates, and the corresponding reference point in the coordinate system of the 3D scene.<br>
+        Additional field usage information:
+          * `referencePointGeographicLocation` - A geographic coordinate to be related with a given position in the coordinate system of the 3D scene.
+      type: object
+      required:
+        - referencePointGeographicLocation
+        - referencePointSceneCoordinate
+        - northAngle
+      properties:
+        referencePointGeographicLocation:
+          $ref: '#/components/schemas/GeographicLocation'
+        referencePointSceneCoordinate:
+          description: "The position in the (Unreal Engine 4) scene coordinate system to be related with the given location in geographic coordinates. Expects an array of three numbers for position (in centimeters) along the XYZ-axes."
+          type: array
+          items:
+            type: number
+            format: float
+          minItems: 3
+          maxItems: 3
+        northAngle:
+          description: "The angle (in degrees) from the positive X-axis in the 3D scene that describes geographic north. Example: If X-axis in the scene points south, northAngle should be 180. If it points west, northAngle should be 90."
+          type: number
+          format: float
+           
+    BaseMenuHierarchy:
+     description: > 
+       Defines a navigation menu hierarchy.<br>
+       Variants:
+         * `fullAssetHierarchy` - Defines a navigation menu hierarchy constructed from the full asset hierarchy of the tenant. Warning: Should only be used on tenants with small asset hierarchies, as this will fetch the full asset hierarchy.
+         * `customMenuHierarchy` - Defines a custom navigation menu hierarchy. The children defined here will be considered root nodes, and each root node can have any number of child nodes and subsequent descendant nodes.
+         * `noHierarchy` - No hiearchy. Searching only.
+     type: object
+     discriminator:
+       propertyName: type
+       mapping:
+         fullAssetHierarchy: '#/components/schemas/FullAssetHierarchy'
+         customHierarchy: '#/components/schemas/CustomMenuHierarchy'
+         noHierarchy: '#/components/schemas/NoHierarchy'
+     required:
+       - type
+     properties:
+       downloadAssetMappings: 
+         description: "Whether or not to download all asset mappings on init. If not, asset mappings are downloaded on demand. Default is true."
+         type: boolean
+       type:
+         $ref: '#/components/schemas/MenuHierarchyType'
+
+    FullAssetHierarchy:
+     description: "Defines a navigation menu hierarchy constructed from the full asset hierarchy of the tenant. Warning: Should only be used on tenants with small asset hierarchies, as this will fetch the full asset hierarchy."
+     allOf:
+       - $ref: '#/components/schemas/BaseMenuHierarchy'
+       - type: object
+         properties:
+           rootAssetId:
+             description: "Asset ID of the asset hierarchy node that will be used as root node for the hierarchy."
+             type: integer
+             format: int64
+
+    CustomMenuHierarchy:
+     description: "Defines a custom navigation menu hierarchy. The children defined here will be considered root nodes, and each root node can have any number of child nodes and subsequent descendant nodes."
+     allOf:
+       - $ref: '#/components/schemas/BaseMenuHierarchy'
+       - type: object
+         required:
+           - rootNodes
+         properties:
+           rootNodes:
+             description: "Root nodes of the hierarchy."
+             type: array
+             items:
+               $ref: '#/components/schemas/CustomMenuHierarchyNode'
+
+    NoHierarchy:
+     description: "No hiearchy."
+     allOf:
+       - $ref: '#/components/schemas/BaseMenuHierarchy'
+       - type: object
+         properties:
+           rootAssetId:
+             description: "Asset ID of the asset hierarchy node that will be used as root node for the search hierarchy."
+             type: integer
+             format: int64
+
+    CustomMenuHierarchyNode:
+     description: "A node in a custom menu hierarchy. Can be linked to a CDF asset ID, and can have any number of child nodes."
+     type: object
+     properties:
+       displayName:
+         description: "The name of the node, as it will be displayed in the menu. If both this field and assetInternalId are provided, this field will be displayed instead of the name from the asset associated with the asset ID."
+         type: string
+       assetInternalId:
+         description: "CDF internal ID of asset associated with this hierarchy node. If displayName is not provided, the name of the asset in CDF will be displayed in the menu."
+         type: integer
+         format: int64
+       children:
+         description: "Child hierarchy nodes."
+         type: array
+         items:
+           $ref: '#/components/schemas/CustomMenuHierarchyNode'
+
+    Box:
+      description: "This is a bounding box."
+      allOf:
+        - type: object
+          required:
+            - min
+            - max
+          properties:
+            min:
+              $ref: '#/components/schemas/GeographicLocation'
+            max:
+              $ref: '#/components/schemas/GeographicLocation'
+              
+    Camera:
+       description: "Scene camera properties."
+       allOf:
+         - type: object
+           properties:
+             initialCoordinates:
+               $ref: '#/components/schemas/AbsoluteTransform'
+             limits:
+               $ref: '#/components/schemas/Box'
+             groundReference:
+               type: number
+               format: float
+
+    Scene:
+     type: object
+     description: "Describes a 3D scene and all the objects in it."
+     properties:
+       geographicCoordinates:
+         $ref: '#/components/schemas/GeographicCoordinateMapping'
+       camera:
+         $ref: '#/components/schemas/Camera'
+       actors:
+         description: "List of actors: objects that will be placed in the 3D scene."
+         type: array
+         items:
+           $ref: '#/components/schemas/Actor'
+       terrains:
+         description: "List of objects that describe terrains in the scene."
+         type: array
+         items:
+           $ref: '#/components/schemas/Terrain'
+       heightRenderer:
+         $ref: '#/components/schemas/HeightRenderer'
+       waterPlane:
+         $ref: '#/components/schemas/WaterPlane'
+       environmentControl:
+         $ref: '#/components/schemas/EnvironmentControl'
+       visibilityLayers:
+         type: array
+         items:
+           $ref: '#/components/schemas/VisibilityLayers'
+       uiConfiguration:
+         $ref: '#/components/schemas/UiConfiguration'
+    Terrain:
+     type: object
+     required:
+       - transform
+     properties:
+       transform:
+         $ref: '#/components/schemas/AbsoluteTransform'
+       heightMap:
+         description: "A reference to the image to use as the source of heightmap data."
+         type: string
+       normalMapMap:
+         description: "A reference to the image to use as surface normal information."
+         type: string
+       baseColor:
+         description: "A reference to the image to use to color the terrain surface."
+         type: string
+       terrainMinHeight:
+         description: "The height of the lowest point of the terrain."
+         type: number
+         format: float
+       terrainMaxHeight:
+         description: "The height of the highest point of the terrain."
+         type: number
+         format: float
+       heightMapMinValue:
+         description: "The value of the lowest point of the terrain as encoded in the heightmap."
+         type: number
+         format: float
+       heightMapMaxValue:
+         description: "The value of the highest point of the terrain as encoded in the heightmap."
+         type: number
+         format: float
+       lodScreenSizeFactor:
+         description: "The LOD screen-size factor determines the distance at which refinement of the geometry of the terrain mesh occurs. This impacts the performance and fidelity of the terrain object."
+         type: number
+         format: float
+       tileSizeScale:
+         description: "the tile size scale parameter scales the terrain tiles. It does not affect the scale of the terrain features (see metersPerpixel). This parameter impacts performance, as larger tiles cover more terrain area, so that fewer are needed to cover the same region."
+         type: number
+         format: float
+       metersPerPixel:
+         description: "The meters-per-pixel parameter determines the scale of the terrain data. It specifies how far apart in the scene to space the pixel-centers of the heightmap and the other terrain surface textures. A value of 1 corresponds to 1 meter between each heightmap sample point. The parameter must correspond to the scale and resolution of the provided heightmap."
+         type: number
+         format: float
+       numTilesX:
+         description: "The number of terrain tiles along the first axis."
+         type: integer
+         format: int32
+       numTilesY:
+         description: "The number of terrain tiles along the second axis."
+         type: integer
+         format: int32
+     description : "The terrain object uses heightmap data to produce a 3D terrain in the scene.<br>
+                    The terrain assumes that the heightmap data is linearly encoded.<br>
+                    transform: The position of the terrain."
+
+    WidgetRotationMode:
+     type: string
+     enum:
+       - noRotation
+       - faceCamera
+       - faceCamera_ZOnly
+       - faceCamera_HorizontalAlignment
+     description: >
+        Rotation type for widgets in the scene (relative to camera):
+          * `noRotation` - The rotation will be fixed to the direction given by the transform.
+          * `faceCamera` - The widget will rotate to always face towards the camera.
+          * `faceCamera_ZOnly` - The widget will rotate around its vertical axis to face towards the camera. (Typical use-case: rotated towards camera while staying perpendicular to the ground).
+          * `faceCamera_HorizontalAlignment` - The widget will always face towards the camera and be aligned to the screen. Equivalent to a 2D widget, but placed in 3D space.
+       
+    WidgetType:
+      type: string
+      enum:
+        - text
+        - bar
+        - discreteTimeSeries
+      description: >
+         Describes a type of a widget
+           * `text` - A widget displaying a single string of text.
+           * `bar` - A 3D grapical bar representing a value.
+           * `discreteTimeSeries` - A widget displaying discrete time series in the format of a heading, content based on user defined enums and a possible image.
+    
+    BarFillType:
+       type: string
+       enum:
+         - leftToRight
+         - rightToLeft
+         - fillFromCenter
+         - topToBottom
+         - bottomToTop
+       description: >
+         Gives the orientation of the progress bar fill mode.
+           * 'leftToRight' -    left to right fill mode
+           * 'rightToLeft' -    right to left fill mode
+           * 'fillFromCenter' - fill from center fill mode
+           * 'topToBottom' -    top to bottom fill mode
+           * 'bottomToTop' -    bottom to top fill mode
+
+    WidgetMaterialType:
+      description: >
+         Controls the translucency of a widget
+           * 'masked' - the widget will use a masked material, with sharp cutoff in opacity.
+           * 'translucent' - the widget uses a translucent material. Required if the widgets should fade out smoothly with distance.
+      type: string
+      enum:
+       - translucent
+       - masked
+
+    WidgetBase:
+     description: Base class for widgets (texts, images, etc) that appear in a scene.
+     discriminator:
+       propertyName: type
+       mapping:
+         text: '#/components/schemas/WidgetText'
+         bar: '#/components/schemas/WidgetBar'
+         discreteTimeSeries: '#/components/schemas/WidgetDiscreteTimeSeries'
+     required:
+       - type
+     properties:
+       type:
+         $ref: '#/components/schemas/WidgetType'
+       assetId:
+         description: DEPRECATED! Asset ID in CDF to which widget should be connected (useful for connecting widget to specific building on scene without explicitly specifying widget's location)
+         type: integer
+         format: int64
+       minScreenSize:
+         description: Minimal percentage of screen size along vertical axis for widget to occupy.
+         type: number
+         format: float
+       cutOffDistance:
+         description: Distance from camera above which the widget becomes invisible (If not specified, the widget will be visible from any distance).
+         type: number
+         format: float
+       fadeDistance:
+         description: Defines the size of the region where the visibility of the widget fades out. The widget will start fading out at a distance cutOffDistance - fadeDistance from the camera, and be completely invisible at a camera distance equal to cutOffDistance.
+         type: number
+         format: float
+       materialType:
+         $ref: '#/components/schemas/WidgetMaterialType'      
+       rotationMode:
+         $ref: '#/components/schemas/WidgetRotationMode'
+
+    FontTypeface:
+      description: "Font family"
+      type: string
+      enum:
+        - black
+        - blackItalic
+        - bold
+        - boldItalic
+        - extraBoldItalic
+        - extraLight
+        - extraLightItalic
+        - italic
+        - light
+        - lightItalic
+        - medium
+        - mediumItalic
+        - regular
+        - semiBold
+        - semiBoldItalic
+        - thin
+        - thinItalic
+
+    WidgetText:
+     allOf:
+       - $ref: '#/components/schemas/WidgetBase'
+       - type: object
+         description: Widget for creating text labels in the 3D scene.
+         required:
+           - content
+         properties:
+           content:
+             description: "String content of the text widget. Supports inline time series, see example for syntax."
+             example: "Temperature is {timeseriesId:012345} degrees."
+             type: string
+           color:
+             $ref: '#/components/schemas/Color'
+           size:
+             description: Font size for text
+             type: number
+             format: float
+           outlineSize:
+             description: Outline size for text
+             type: number
+             format: float
+           outlineColor:
+             $ref: '#/components/schemas/Color'
+           typeface:
+             $ref: '#/components/schemas/FontTypeface'
+           shadowColor:
+             $ref: '#/components/schemas/Color'
+           shadowOffsetX:
+             description: Offset of a shadow along horizontal axis
+             type: number
+             format: float
+           shadowOffsetY:
+             description: Offset of a shadow along vertical axis
+             type: number
+             format: float
+           backgroundColor:
+             $ref: '#/components/schemas/Color'
+             
+    WidgetBar:
+     allOf:
+       - $ref: '#/components/schemas/WidgetBase'
+       - type: object
+         description: Widget for creating graphical bars in the 3D scene.
+         required:
+           - minValue
+           - maxValue
+         properties:
+           heading:
+             description: "Displayed heading for the bar widget. Will use timeseries name if not specified."
+             type: string
+           color:
+             $ref: '#/components/schemas/Color'
+           width:
+             description: The width of the bar widget
+             type: number
+             format: float
+           height:
+             description: The height of the bar widget
+             type: number
+             format: float
+           defaultValue:
+             description: Default value for bar widget
+             type: number
+             format: float
+           minValue:
+             description: Minimum value for bar widget
+             type: number
+             format: float
+           maxValue:
+             description: Maximum value for bar widget
+             type: number
+             format: float
+           timeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesId'
+           currentValueMaxFractionalDigits:
+             description: "The maximum number of fractional decimal digits to display for the current value"
+             type: integer
+             format: int32
+           boundsValueMaxFractionalDigits:
+             description: "The maximum number of fractional decimal digits to display for the min and max values"
+             type: integer
+             format: int32
+           headingFontSize:
+             description: Font size for heading
+             type: number
+             format: float
+           valuesFontSize:
+             description: Font size for values
+             type: number
+             format: float
+           paddingSize:
+             description: Border padding override
+             type: number
+             format: float
+           barFill:
+             $ref: '#/components/schemas/BarFillType'
+           typeface:
+             $ref: '#/components/schemas/FontTypeface'
+    DiscreteTimeSeriesEnums:
+     description: User defined content based on discrete time series enums.
+     required:
+       - content
+     properties:
+       content:
+         description: user defined message to be displayed once the enum is triggered by discrete time series content from the CDF
+         type: string
+       image:
+         description: Image ID in CDF for load as an icon in the display of widgetDiscreteTimeSeries
+         type: integer
+         format: int64
+    WidgetDiscreteTimeSeries:
+     allOf:
+       - $ref: '#/components/schemas/WidgetBase'
+       - type: object
+         description: Widget for creating discrete time series labels in the 3D scene.
+         required:
+           - heading
+           - timeSeries
+         properties:
+           heading:
+             description: "String with the containing header for displaying the discrete time series content."
+             example: "Machine status:"
+             type: string
+           timeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesId'
+           colorHeading:
+             $ref: '#/components/schemas/Color'
+           sizeHeading:
+             description: Font size for text
+             type: number
+             format: float
+           outlineSizeHeading:
+             description: Outline size for text
+             type: number
+             format: float
+           outlineColorHeading:
+             $ref: '#/components/schemas/Color'
+           typefaceHeading:
+             $ref: '#/components/schemas/FontTypeface'
+           colorContent:
+             $ref: '#/components/schemas/Color'
+           sizeContent:
+             description: Font size for text
+             type: number
+             format: float
+           outlineSizeContent:
+             description: Outline size for text
+             type: number
+             format: float
+           outlineColorContent:
+             $ref: '#/components/schemas/Color'
+           typefaceContent:
+             $ref: '#/components/schemas/FontTypeface'
+           shadowColor:
+             $ref: '#/components/schemas/Color'
+           shadowOffsetX:
+             description: Offset of a shadow along horizontal axis
+             type: number
+             format: float
+           shadowOffsetY:
+             description: Offset of a shadow along vertical axis
+             type: number
+             format: float
+           TextPadding:
+             description: Padding added in the text area
+             type: number
+             format: float
+           ImagePadding:
+             description: Padding added in the image area
+             type: number
+             format: float
+           ImageScaleX:
+             description: Image scale along horizontal axis
+             type: number
+             format: float
+           ImageScaleY:
+             description: Image scale along along vertical axis
+             type: number
+             format: float
+           backgroundColor:
+             $ref: '#/components/schemas/Color'
+           enums:
+             description: "Map of discrete time series enums to user defined messages."
+             type: object
+             additionalProperties:
+               $ref: '#/components/schemas/DiscreteTimeSeriesEnums'
+           stateColors:
+             description: "Map of discrete time series enums to widget color."
+             type: object
+             additionalProperties:
+               $ref: '#/components/schemas/Color'
+           defaultContent:
+             description: default content in case of not having a proper enum set up
+             type: string
+           defaultImage:
+             description: default image in case of not having a proper enum set up
+             type: integer
+             format: int64
+               
+    TransformControllerType:
+      type: string
+      enum:
+        - latLongSeparateTimeSeries
+        - northingEastingSeparateTimeSeries
+        - localToWorldUserDefinedSeparateTimeSeries
+        - localToWorldWithVelocityVectorsUserDefinedSeparateTimeSeries
+      description: >
+         Specifies the type of a transform controller
+           * `latLongSeparateTimeSeries` - Controls the position and rotation of an actor based on time series containing latitude and longitude information.
+           * `northingEastingSeparateTimeSeries` - Controls the position and rotation of an actor based on time series containing northing and easting information.
+           * `localToWorldUserDefinedSeparateTimeSeries` - Controls the position and rotation of an actor based on time series containing local coordinates that will be transformed linearly to world coordinates.
+           * `localToWorldWithVelocityVectorsUserDefinedSeparateTimeSeries` - Controls the position and rotation with absolute positions and velocity vectors to be able to properly interpolate.
+    TransformControllerBase:
+     description: > 
+       Controls the transform (position, rotation, scale) of the actor it is attached to.<br> 
+       Variants:
+         * `latLongSeparateController` - Controls the position and rotation of an actor based on time series containing latitude and longitude information.
+         * `northingEastingSeparateController` - Controls the position and rotation of an actor based on time series containing northing and easting information.
+         * `localToWorldUserDefinedSeparateController` - Controls the position and rotation of an actor based on time series containing local coordinates that will be transformed linearly to world coordinates.
+     discriminator:
+       propertyName: type
+       mapping:
+         latLongSeparateTimeSeries: '#/components/schemas/LatLongSeparateController'
+         northingEastingSeparateTimeSeries: '#/components/schemas/NorthingEastingSeparateController'
+         localToWorldUserDefinedSeparateTimeSeries: '#/components/schemas/LocalToWorldUserDefinedSeparateController'
+         localToWorldWithVelocityVectorsUserDefinedSeparateTimeSeries: '#/components/schemas/LocalToWorldUserWithVelocityVectorsDefinedSeparateController'
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         $ref: '#/components/schemas/TransformControllerType'
+
+    HeightTrackingMode:
+     type: string
+     enum:
+       - none
+       - constantValue
+       - heightmapData
+     description: >
+        Determines how the vertical position of an actor will be adjusted by a transform controller:
+          * `none` - The vertical position of the actor will not be affected by the controller.
+          * `constantValue` - The actor will be placed at a fixed height.
+          * `heightmapData` - The vertical position of the actor is determined by a height map.
+
+    LatLongSeparateController:
+     description: >
+         Controls the position and rotation of an actor based on time series containing latitude and longitude information.<br>
+         Additional field usage information:
+           * `latitudeTimeSeries` - The time series from which to read geographic latitude coordinate data.     
+           * `longitudeTimeSeries` - The time series from which to read geographic longitude coordinate data.             
+     allOf:
+       - $ref: '#/components/schemas/TransformControllerBase'
+       - type: object
+         required:
+           - latitudeTimeSeries
+           - longitudeTimeSeries
+           - heightTrackingMode
+         properties:
+           latitudeTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           longitudeTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           heightTrackingMode:
+             $ref: '#/components/schemas/HeightTrackingMode'
+           defaultHeightPosition:
+             description: "If heightTrackingMode is set to constantValue, then defaultHeightPosition is used to specify the constant height value to use."
+             type: number
+             format: float
+           simulateRotationFromPosition:
+             description: "Uses consecutive positions to infer rotation. Assumes that the first axis (the X-axis in local object space) should be aligned with the tangent vector of the position."
+             type: boolean
+    vec4TimeSeries:
+     description: >
+         Four dimensional time series.<br>
+           * `xTimeSeries` - The time series from which to read the x component.
+           * `yTimeSeries` - The time series from which to read the y component.
+           * `zTimeSeries` - The time series from which to read the z component.
+           * `wTimeSeries` - The time series from which to read the w component.
+     allOf:
+       - type: object
+         required:
+           - xTimeSeries
+           - yTimeSeries
+           - zTimeSeries
+           - wTimeSeries
+         properties:
+           xTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           yTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           zTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           wTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+    vec3TimeSeries:
+     description: >
+         Three dimensional time series.<br>
+           * `xTimeSeries` - The time series from which to read the x component.
+           * `yTimeSeries` - The time series from which to read the y component.
+           * `zTimeSeries` - The time series from which to read the z component.
+     allOf:
+       - type: object
+         required:
+           - xTimeSeries
+           - yTimeSeries
+           - zTimeSeries
+         properties:
+           xTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           yTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           zTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+    vec2TimeSeries:
+     description: >
+         Three dimensional time series.<br>
+           * `xTimeSeries` - The time series from which to read the x component.
+           * `yTimeSeries` - The time series from which to read the y component.
+     allOf:
+       - type: object
+         required:
+           - xTimeSeries
+           - yTimeSeries
+         properties:
+           xTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           yTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+
+    BasicMeshType:
+     type: string
+     enum:
+       - plane
+     description: >
+       Specifies the type of the basic mesh to add to the scene
+          * `plane` - generates a plane of 1x1 m that will have applied the transform.
+
+    BasicMeshMaterialType:
+     type: string
+     enum:
+       - colored
+       - textured
+     description: >
+       Specifies the type of material to apply to the basic mesh
+          * `colored` - single color mesh
+          * `textured` - textured material
+
+    BasicMeshMaterialBase:
+     description: > 
+       Material to be applied to basic mesh. 
+     discriminator:
+       propertyName: type
+       mapping:
+         colored: '#/components/schemas/ColoredBasicMeshMaterial'
+         textured: '#/components/schemas/BasicMeshMaterial'
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         $ref: '#/components/schemas/BasicMeshMaterialType'
+
+    ColoredBasicMeshMaterial:
+     allOf:
+       - $ref: '#/components/schemas/BasicMeshMaterialBase'
+       - type: object
+         properties:
+          color:
+              $ref: '#/components/schemas/Color'    
+
+    BasicMeshMaterial:
+     allOf:
+       - $ref: '#/components/schemas/BasicMeshMaterialBase'
+       - type: object
+         properties:
+           diffuse:
+             description: "The file ID of the image in the file API."
+             type: integer
+             format: int64
+           normal:
+             description: "The file ID of the image in the file API."
+             type: integer
+             format: int64
+           tiling:
+             description: "The tiling for the textures attached to the material."
+             type: array
+             minItems: 2
+             maxItems: 2
+             items:
+               type: number
+               format: float
+           offset:
+             description: "The offset for the textures attached to the material."
+             type: array
+             minItems: 2
+             maxItems: 2
+             items:
+               type: number
+               format: float
+             
+    VisibilityController:
+     description: >
+         Controls the visibility of an actor based on a time series.<br>
+         Additional field usage information:
+           * `timeSeries` - Time series used to control the visibility of the actor. 
+     allOf:
+       - type: object
+         required:
+           - timeSeries
+           - minimumCondition
+           - maximumCondition
+         properties:
+           timeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           minimumCondition:
+             description: "The minimum value of the time series for when the actor is visible."
+             type: number
+             format: float
+           maximumCondition:
+             description: "The maximum value of the time series for when the actor is visible."
+             type: number
+             format: float
+
+    NorthingEastingSeparateController:
+     description: >
+         Controls the position and rotation of an actor based on time series containing northing and easting information.<br>
+         Additional field usage information:
+           * `northingTimeSeries` - The time series from which to read geographic northing coordinate data.       
+           * `eastingTimeSeries` - The time series from which to read geographic easting coordinate data.     
+     allOf:
+       - $ref: '#/components/schemas/TransformControllerBase'
+       - type: object
+         required:
+           - northingTimeSeries
+           - eastingTimeSeries
+           - heightTrackingMode
+           - zone
+           - isNorthernHemisphere
+         properties:
+           northingTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           eastingTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           heightTrackingMode:
+             $ref: '#/components/schemas/HeightTrackingMode'
+           zone:
+             description: "Set the northing easting zone."
+             type: integer
+             format: int32
+           isNorthernHemisphere:
+             description: "If the coordinates are in the northern hemisphere."
+             type: boolean
+           defaultHeightPosition:
+             description: "If heightTrackingMode is set to constantValue, then defaultHeightPosition is used to specify the constant height value to use."
+             type: number
+             format: float
+           simulateRotationFromPosition:
+             description: "Uses consecutive positions to infer rotation. Assumes that the first axis (the X-axis in local object space) should be aligned with the tangent vector of the position."
+             type: boolean
+
+    RotationTimeSeriesType:
+     type: string
+     enum:
+       - quaternionTimeSeries
+       - yawPitchRollTimeSeries
+       - singleAxisRotationTimeSeries
+     description: >
+       Specifies the type of a rotation time series
+          * `quaternion` - i j q and k time series defining the quaternion orientation.
+          * `yawPitchRoll` - yaw pitch and roll time series defining the orientation.
+          * `singleAxisRotation` - single dimension rotation based on an input axis.
+    
+    RotationUnitsType:
+     type: string
+     enum:
+       - degree
+       - radians
+     description: >
+       Specifies the unit of a rotation time series
+          * `degree` - yaw pitch and roll rotations will be considered as degrees, degrees/s in case of used as angular speed.
+          * `radians` - yaw pitch and roll rotations will be considered as radians, radians/s in case of used as angular speed.
+          
+    PositionTimeSeries:
+     description: > 
+       Controls the position of the actor it is attached to with 3 time series that maps X, Y and Z.
+     type: object
+     required:
+       - xyzTimeSeries
+     properties:
+       xyzTimeSeries:
+         $ref: '#/components/schemas/vec3TimeSeries'
+    VelocityTimeSeries:
+     description: > 
+       Controls the velocity of the actor it is attached to with 3 time series that maps X, Y and Z.
+     type: object
+     required:
+       - xyzTimeSeries
+     properties:
+       xyzTimeSeries:
+         $ref: '#/components/schemas/vec3TimeSeries'
+    
+    AngularVelocityTimeSeriesBase:
+     description: > 
+       Controls the rotation velocity of the actor it is attached to in rpm.
+     type: object
+     required:
+       - rpmTimeSeries
+       - axisRotation
+     properties:
+       rpmTimeSeries:
+         $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+       axisRotation:
+         description: "Vector defining the rotation axis. Doesn't need to be normalized."
+         type: array
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+
+    RotationTimeSeriesBase:
+     description: > 
+       Controls the rotation of the actor it is attached to.<br> 
+       Variants:
+         * `quaternionController` - Controls the position and rotation of an actor based on time series containing latitude and longitude information.
+         * `yawPitchRollController` - Controls the position and rotation of an actor based on time series containing northing and easting information.
+         * `singleAxisRotationController` - Controls the position and rotation of an actor based on time series containing local coordinates that will be transformed linearly to world coordinates.
+     discriminator:
+       propertyName: type
+       mapping:
+         quaternionTimeSeries: '#/components/schemas/QuaternionController'
+         yawPitchRollTimeSeries: '#/components/schemas/YawPitchRollController'
+         singleAxisRotationTimeSeries: '#/components/schemas/SingleAxisRotationController'
+     type: object
+     required:
+       - type
+       - unitsType
+     properties:
+       type:
+         $ref: '#/components/schemas/RotationTimeSeriesType'        
+       unitsType:
+         $ref: '#/components/schemas/RotationUnitsType'
+    
+    QuaternionController:
+    
+     description: >
+         Controls rotation of an actor based on time series containing quaternion data in a 4 dimensional time series defining i j k and q axis from a quaternion.
+     allOf:
+       - $ref: '#/components/schemas/RotationTimeSeriesBase'
+       - type: object
+         required:
+           - quaternionTimeSeries
+         properties:
+           quaternionTimeSeries:
+             $ref: '#/components/schemas/vec4TimeSeries'
+
+    ComponentType:
+       type: string
+       enum:
+         - geometryComponent
+         - widgetComponent
+         - splineComponent
+         - decalComponent
+         - basicMeshComponent
+         - image360Component
+         - pointCloudComponent
+         - robotComponent
+       description: >
+          Type of component
+             * geometryComponent - Uses a 3D model from CDF as its geometry.
+             * widgetComponent - 3D widget positioned in the 3D scene displaying various information.
+             * splineComponent - Class for describing pipelines in scene.
+             * decalComponent - Class describing an image overlay for geometry in the scene.
+             * basicMeshComponent - For simple geometry primitives.
+             * image360Component - For 360 images
+             * pointCloudComponent - Visualizes a 3D point cloud from CDF.
+             * robotComponent - Visualize data from robotics mission
+
+    Component:
+      description: Base class for different types of components that can be attached to actors.
+      type: object
+      required:
+        - componentType
+      discriminator:
+        propertyName: componentType
+        mapping:
+          geometryComponent: '#/components/schemas/GeometryComponent'
+          widgetComponent: '#/components/schemas/WidgetComponent'
+          splineComponent: '#/components/schemas/SplineComponent'
+          decalComponent: '#/components/schemas/DecalComponent'
+          basicMeshComponent: '#/components/schemas/BasicMeshComponent'
+          image360Component: '#/components/schemas/Image360Component'
+          pointCloudComponent: '#/components/schemas/PointCloudComponent'
+          robotComponent: '#/components/schemas/RobotComponent'
+      properties:
+        componentName:
+          description: "Optional component name used for referencing component. Should be unique in scope of owning actor"
+          type: string
+        componentType:
+          $ref: '#/components/schemas/ComponentType'
+        transform:
+          $ref: '#/components/schemas/RelativeTransform'
+        assetIdOverride:
+          description: AssetID to be associated with the component. This will override the asset hierarchy mapping for geometries.
+          type: integer
+          format: int64
+          
+    Image360Component:
+      description: Component for 360 Images
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          properties:
+            siteIds:
+              description: "Array with site-Ids containing 360 images."
+              type: array
+              items:
+                type: string
+            DefaultImageRotation:
+              description: "Default rotation applied to 360 images."
+              type: number
+              format: float
+            ReadImageRotationFromMetadata:
+              description: "If set, rotation data would be read from image metadata (if exists) instead of DefaultImageRotation value."
+              type: boolean
+
+    WaypointsConfig:
+      description: configuration for robot's waypoints'
+      type: object
+      required:
+        - waypointsId
+      properties:
+        waypointsId:
+          description: "External-Id of a robot waypoints"
+          type: string
+        transform:
+          $ref: '#/components/schemas/RelativeTransform'
+        ResetWaypointsHeight:
+          type: boolean
+          description: "if true, then height of waypoints will be ignored. Usefull to get rid of waypoints drift relative to each other"
+
+    RobotComponent:
+      description: Component for robot
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - robotId
+          properties:
+            robotId:
+              description: "External-Id of a robot"
+              type: string
+            missionColor:
+              $ref: '#/components/schemas/Color'
+            waypoints:
+              $ref: '#/components/schemas/WaypointsConfig'
+            title: 
+              $ref: '#/components/schemas/FormattedText'    
+            description: 
+              $ref: '#/components/schemas/FormattedText'    
+            timestamp: 
+              $ref: '#/components/schemas/FormattedText'    
+            icon:
+              description: Icon for the robot.
+              type: integer
+              format: int64
+            details:
+              description: Robot detail information to be shown in ui.
+              type: array
+              items:
+                $ref: '#/components/schemas/TextDataField'
+              minItems: 0
+            imageMetadataKey:
+              description: The metadata name to use when looking for images. Default is 'data_type'.
+              type: string
+            imageMetadataValue:
+              description: The metadata value to use when looking for images. Default is 'photo'.
+              type: string
+            videoMetadataKey:
+              description: The metadata name to use when looking for video. Default is 'data_type'.
+              type: string
+            videoMetadataValue:
+              description: The metadata value to use when looking for video. Default is 'video'.
+              type: string
+            imageDescription:
+              $ref: '#/components/schemas/FormattedText'
+            imageDetails:
+              description: Data fields for images.
+              type: array
+              items:
+                $ref: '#/components/schemas/TextDataField'
+              minItems: 0
+
+    BasicMeshComponent:
+      description: Simple geometry primitive.
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - meshType
+          properties:
+            meshType:
+              $ref: '#/components/schemas/BasicMeshType'
+            material:
+              $ref: '#/components/schemas/BasicMeshMaterialBase'
+      
+    GeometryComponent:
+      description: Uses a 3D model from CDF as its geometry.
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - geometryDataID
+          properties:
+            geometryDataID:
+              description: Name of geometry listed in 'assets' section that this component should use
+              type: string
+
+    PointCloudComponent:
+      description: Visualizes a 3D point cloud from CDF.
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - geometryDataID
+          properties:
+            geometryDataID:
+              description: Name of point cloud listed in 'assets' section that this component should use
+              type: string
+              
+    WidgetComponent:
+      description: 3D widget positioned in the 3D scene.
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - widget
+          properties:
+            widget:
+              $ref: '#/components/schemas/WidgetBase'
+              
+    SplineComponent:
+      description: Class for describing pipelines in scene
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - splineDataID
+            - radius
+            - color
+          properties:
+            splineDataID:
+              description: Name of spline asset listed in 'assets' section that this actor should use
+              type: string
+            radius:
+              description: Radius of the pipeline
+              type: number
+              format: float
+            color:
+              $ref: '#/components/schemas/Color'    
+
+    DecalAspectRatioFormat:
+      type: string
+      enum:
+        - length
+        - width
+        - none
+      description: >
+        Describes what should be scaled to preserve the aspect ratio:
+          * `length` - Scales length to preserve aspect ratio.
+          * `width ` - Scales width to preserve aspect ratio.
+          * `none ` - Does not preserve aspect ratio.
+    
+    DecalComponent:
+      description: >
+        Class for describing decals projected onto geometry in the scene.
+        Additional field usage information:
+          * `imageId` - File ID for the image that will be used for the decal, or ID of a time series that will specify the image file ID.
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          required:
+            - decalHeight
+            - imageId
+          properties:
+            decalHeight:
+              description: "The height of the box volume which contains and restricts the projected texture. <br> It determines the height range across which the projected image is applied."
+              type: number
+              format: float
+            decalWidth:
+              description: "The width / length of the box volume which contains and restricts the projected texture."
+              type: number
+              format: float
+            aspectRatioScaleType:
+              $ref: '#/components/schemas/DecalAspectRatioFormat'
+            imageId:
+              $ref: '#/components/schemas/ExtendedTimeSeriesIdOrFileId'
+
+    Actor:
+      description: "An object that will be placed in the 3D scene."
+      type: object
+      required:
+        - name
+        - transform
+        - components
+      properties:
+        name:
+          description: Unique name of the actor in scene.
+          type: string
+        transform:
+          $ref: '#/components/schemas/AbsoluteTransform'
+        transformController:
+          $ref: '#/components/schemas/TransformControllerBase'
+        visibilityController:
+          $ref: '#/components/schemas/VisibilityController'
+        assetIdOverride:
+          description: DEPRECATED! AssetID to be associated with the actor. This will override the asset hierarchy mapping for geometries.
+          type: integer
+          format: int64
+        components:
+          description: Array of all components attached to this actor.
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+
+
+    YawPitchRollController:
+     description: >
+         Controls rotation of an actor based on time series containing Euler angles represented as yaw, pitch and roll in a vector of 3 time series data.<br>
+     allOf:
+       - $ref: '#/components/schemas/RotationTimeSeriesBase'
+       - type: object
+         required:
+           - yawPitchRollTimeSeries
+         properties:
+           yawPitchRollTimeSeries:
+             $ref: '#/components/schemas/vec3TimeSeries'
+
+    SingleAxisRotationController:
+     description: >
+         Controls rotation of an actor around a single axis, using time series for the rotation angle.<br>
+         Additional field usage information:
+           * `rotationTimeSeries` - The time series from which to read the rotation angle.
+     allOf:
+       - $ref: '#/components/schemas/RotationTimeSeriesBase'
+       - type: object
+         required:
+           - rotationTimeSeries
+           - axisRotation
+         properties:
+           rotationTimeSeries:
+             $ref: '#/components/schemas/ExtendedTimeSeriesIdOrConstant'
+           axisRotation:
+             description: "Vector defining the rotation axis. Doesn't need to be normalized."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+
+    LocalToWorldTransform:
+     description: "A local to world space transform defined with translation, rotation and unit scale."
+     allOf:
+       - type: object
+         required:
+           - translation
+           - rotation
+           - unitScale
+         properties:
+           translation:
+             description: "The translation of the target object to be converted to world space coordinates from unreal. Expects an array of three numbers describing the X, Y and Z translation."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+           rotation:
+             description: "The rotation of the target object in model space. Expects an array of three numbers describing the Pitch, Yaw and Roll angles in degrees. This corresponds to rotation around the Y, X and Z axes of the scene respectively."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+           unitScale:
+             description: "Scales the target object uniformly. Expects a single value that will be used to scale the XYZ-axes. A value of 1.0 corresponds to the original scale. It can be used for change of units like 100 for m to cm."
+             type: number
+             format: float
+    LocalToWorldUserDefinedSeparateController:
+     description: >
+         Controls the position and rotation of an actor based on time series data. Positions and rotations are given in a local coordinate system. The transformation to world space is defined by matrixTransformToWorld.<br>
+         Additional field usage information:
+           * `positionTimeSeries` - Group of 3 time series defining x, y and z positions.
+           * `rotationTimeSeries` - Different possible representations of rotation position in different number of time series.
+           * `matrixTransformToWorld` - The matrix to transform from time series transforms to world transforms based on the twin calibration.
+     allOf:
+       - $ref: '#/components/schemas/TransformControllerBase'
+       - type: object
+         required:
+           - positionTimeSeries
+           - rotationTimeSeries
+           - matrixTransformToWorld
+         properties:
+           positionTimeSeries:
+             $ref: '#/components/schemas/PositionTimeSeries'
+           rotationTimeSeries:
+             $ref: '#/components/schemas/RotationTimeSeriesBase'
+           matrixTransformToWorld:
+             $ref: '#/components/schemas/LocalToWorldTransform'
+
+    LocalToWorldUserWithVelocityVectorsDefinedSeparateController:
+     description: >
+         Controls the position and rotation of an actor based on time series data. Positions and rotations are given in a local coordinate system. The transformation to world space is defined by matrixTransformToWorld.<br>
+         Additional field usage information:
+           * `positionTimeSeries` - Group of 3 time series defining x, y and z positions.
+           * `rotationTimeSeries` - Different possible representations of rotation position in different number of time series.
+           * `matrixTransformToWorld` - The matrix to transform from time series transforms to world transforms based on the twin calibration.
+           * `velocityTimeSeries` - Group of 3 time series defining x, y and z velocities.
+           * `angularVelocityTimeSeries` - Different possible representations of the angular velocity in different variation of time series.
+     allOf:
+       - $ref: '#/components/schemas/TransformControllerBase'
+       - type: object
+         required:
+           - matrixTransformToWorld
+         properties:
+           matrixTransformToWorld:
+             $ref: '#/components/schemas/LocalToWorldTransform'
+           positionTimeSeries:
+             $ref: '#/components/schemas/PositionTimeSeries'
+           rotationTimeSeries:
+             $ref: '#/components/schemas/RotationTimeSeriesBase'
+           velocityTimeSeries:
+             $ref: '#/components/schemas/VelocityTimeSeries'
+           angularVelocityTimeSeries:
+             $ref: '#/components/schemas/AngularVelocityTimeSeriesBase'
+        
+
+    HeightRenderer:
+     type: object
+     required:
+       - location
+       - orthoWidth
+       - textureSize
+     properties:
+       location:
+         description: "Determines where in the scene the heightmap is captured from."
+         type: array
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+       orthoWidth:
+         description: "Determines the extent of the scene area captured by the height-renderer."
+         type: number
+         format: float
+       textureSize:
+         description: "Determines the resolution of the height data."
+         type: integer
+         format: int32
+     description: "An object in the scene responsible for capturing a heightmap. <br>
+                   The heightmap is used to determine the height-position of objects in the scene which do not have any other way of determining height position."
+
+
+    WaterPlane:
+     type: object
+     properties:
+       followCamera:
+         description: "Determines whether the water plane object moves with the player, creating an illusion of an endless expanse of water."
+         type: boolean
+       heightZoomFactor:
+         description: "Adjusts the scale of the water surface as a function of camera height. This essentially moves the horizon of the water further away by scaling the water by the given factor, which helps maintain the same level of detail at all scales. The parameters should be left to a default of 1.0 in most cases."
+         type: number
+         format: float
+       minimumHeight:
+         description: "The lowest height at which to scale the water surface. This is to prevent the water from disappearing when near zero height. Should be left at default, or a number slightly larger than zero."
+         type: number
+         format: float
+       transform:
+         $ref: '#/components/schemas/AbsoluteTransform'
+     description:
+      "An object in the scene responsible for rendering a water surface. Typically used for oceans."
+
+    EnvironmentControl:
+     description: >
+        The environment controller is responsible for controlling environmental effects such as weather, underwater effects, and so on.<br>
+        Additional field usage information:
+          * `fogInscatteringColor` - A property of the Unreal engine post-process volume, which is used here for the underwater fogginess effect.
+     type: object
+     properties:
+       underWaterDensity:
+         description: >
+           The density of the particles of the underwater scene. used to simulate the absorption of light as it passes through the water.
+           Admissable range is within 0.0, to 0.05
+         type: number
+         format: float
+       underWaterVignetteIntensity:
+         description: ""
+         type: number
+         format: float
+       underWaterBlurScale:
+         description: ""
+         type: number
+         format: float
+       underWaterBlurFocalDistance:
+         description: ""
+         type: number
+         format: float
+       underWaterBlurNearTransitionRegion:
+         description: ""
+         type: number
+         format: float
+       underWaterBlurFarTransitionRegion:
+         description: ""
+         type: number
+         format: float
+       underwaterColor:
+         $ref: '#/components/schemas/Color'
+       useDynamicLighting:
+         description: "Whether or not to use dynamic lighting in the scene. Currently only affects the sunlight."
+         type: boolean
+       renderSkySphere:
+         description: "Whether or not to render the sky. Can be used to turn off sky rendering for indoor scenes."
+         type: boolean
+       hideSkySphereUnderWater:
+         description: "Whether or not to render the sky when below the water surface. Requires 'renderSkySphere' to be true to have any effect."
+         type: boolean
+       useTimeOfDayUpdate:
+          description: "Whether or not to update the sun and sky according to the time of day"
+          type: boolean
+       directionalLightSettings:
+          $ref: '#/components/schemas/DirLightSettings'
+
+    VisibilityLayer:
+      description: "A group of objects united for visibility layer"
+      type: object
+      required:
+        - actorName
+      properties:
+        actorName:
+          description: "A reference to an actor"
+          type: string
+        componentNames:
+          description: "Array of references to actor's components"
+          type: array
+          items:
+            type: string
+     
+    VisibilityLayers:
+     description: "A view mode determines the visibility of a set of objects in the scene.
+                   If a view mode is toggled, then it toggles the visibility of all its referenced objects."
+     type: object
+     required:
+       - name
+       - objects
+     properties:
+       name:
+         description: "The name of the view mode as it appears in the user interface"
+         type: string
+       objects:
+         description: "A set of different objects which is referenced by this view mode for visibility filtering.<br>
+                       Actor's components should be referenced as actorName.componentName"
+         type: array
+         items:
+           $ref: '#/components/schemas/VisibilityLayer'
+             
+       isActive:
+         description: "Whether or not the layer should be visible by default."
+         type: boolean
+
+    FavouriteLayer:
+     description: "Favourite visibility layer"
+     type: object
+     required:
+       - name
+     properties:
+       name:
+         description: "The name of the visibility layer to have as favourite"
+         type: string     
+       displayNameOverride:
+         description: "Optional display name override"
+         type: string     
+
+    SliceTool:
+     description: "Tool for slicing. The tool is enabled if this property is defined in the configuration."
+     type: object
+     properties:
+      origin:
+         description: "The origin point of the plane. Default is [0, 0, 0]."
+         type: array
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+      direction:
+         description: "The direction (normal) of the plane. Default is [0, 0, 1] (up)."
+         type: array
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+      minimum:
+         description: "Minimum distance from the origin along the direction the tool will operate."
+         type: number
+         format: float
+      maximum:
+         description: "Maximum distance from the origin along the direction the tool will operate."
+         type: number
+         format: float
+
+    MeasureToolType:
+      type: string
+      enum:
+        - box
+        - path
+      description: >
+       The type of measurement:
+          * `box` - Fit a box!
+          * `path` - Calculate the length of a path!
+
+    MeasureTool:
+     description: "Tool for measuring. The tool is enabled if this property is defined in the configuration."
+     type: object
+     required:
+       - type
+     properties:
+       type:
+         $ref: '#/components/schemas/MeasureToolType'
+       lineColor:
+         $ref: '#/components/schemas/Color'
+
+    SettingsPanel:
+     description: "Panel for developer settings. The panel is enabled if this property is defined in the configuration."
+     type: object
+     properties:
+      dummy:
+           description: "Seems like we must have at least one property? Well, then it's a placeholder for future properties."
+           type: number
+           format: float
+ 
+    UiConfiguration:
+     description: "Ui configuration"
+     type: object
+     properties:
+       favouriteLayer:
+         $ref: '#/components/schemas/FavouriteLayer'
+       maxNumberOfEvents:
+         description: "Set a max number of events to populate the event tab to avoid performance issues."
+         type: integer
+         format: int32
+       sliceTool:
+         $ref: '#/components/schemas/SliceTool'
+       measureTool:
+         $ref: '#/components/schemas/MeasureTool'
+       settingsPanel:
+         $ref: '#/components/schemas/SettingsPanel'
+
+    AbsoluteTransformType:
+      type: string
+      enum:
+        - unrealTransform
+        - universalTransform
+      description: >
+       Specification of the format or coordinate system of a (world space) transform:
+          * `unrealTransform` - Coordinates are given in the Unreal Engine 4 coordinate system.
+          * `universalTransform` - Coordinates are given in a geographic coordinate system described by a CRS.
+      
+    DirLightSettings:
+      type: object
+      description: "controls the settings of a directional light"
+      properties:
+       intensity:
+        type: number
+        format: float
+       color:
+        $ref: '#/components/schemas/Color'
+       rotation:
+          description: "Rotates the target light. Expects an array of three numbers describing the Pitch, Yaw and Roll angles in degrees. This corresponds to rotation around its local Y, X and Z axes respectively. A value of [0.0, 0.0, 0.0] corresponds to no change."
+          type: array
+          example: [-90.0, 0.0, 180.0]
+          minItems: 3
+          maxItems: 3
+          items:
+            type: number
+            format: float
+            
+    TimeseriesFilterType:
+      type: string
+      enum:
+         - nameRegex
+         - metadataExactMatch
+      description: >
+         Describes which predicate type to use in filtering the timeseries.
+           * `nameRegex` - The filter will only keep timeseries in which the name field is accepted by the specified regular expression string.
+           * `metadataExactMatch` - THe filter will only keep timeseries in which the metadata field contains a given key-value pair of strings.
+      
+
+    AbsoluteTransform:
+     description: >
+       A world space transform - a transformation of position, rotation and scale in the coordinate system of the 3D scene.<br>
+       Variants:
+         * `unrealTransform` - A world space transform represented in the Unreal Engine 4 coordinate system.
+         * `universalTransform` - A world space transform represented geographic coordinate system described by a CRS. For this to work correctly, the scene must be set up with proper geographic coordinates.
+     type: object
+     required:
+       - type
+     discriminator:
+       propertyName: type
+       mapping:
+         unrealTransform: '#/components/schemas/UnrealTransform'
+         universalTransform: '#/components/schemas/UniversalTransform'
+     properties:
+       type:
+         $ref: '#/components/schemas/AbsoluteTransformType'
+
+    UnrealTransform:
+     description: "A world space transform represented in the Unreal Engine 4 coordinate system."
+     allOf:
+       - $ref: '#/components/schemas/AbsoluteTransform'
+       - type: object
+         required:
+           - position
+           - rotation
+           - scale
+         properties:
+           position:
+             description: "The position of the target object in the scene coordinate system. Expects an array of three numbers for position (in centimeters) along the XYZ-axes."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+           rotation:
+             description: "The orientation of the target object in the space of the 3D scene. Expects an array of three numbers describing the Pitch, Yaw and Roll angles in degrees. This corresponds to rotation around the Y, X and Z axes of the scene respectively."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+           scale:
+             description: "Scales the target object along each axis in its local coordinate system. Expects an array of three numbers describing scale multipliers along the XYZ-axes. A value of [1.0, 1.0, 1.0] corresponds to the original scale. Note that not all objects support non-uniform scaling (different scale values along each axis)."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+
+    UniversalTransform:
+     description: "A world space transform represented geographic coordinate system described by a CRS. For this to work correctly, the scene must be set up with proper geographic coordinates."
+     allOf:
+       - $ref: '#/components/schemas/AbsoluteTransform'
+       - type: object
+         required:
+           - location
+           - rotation
+           - scale
+         properties:
+           location:
+             $ref: '#/components/schemas/GeographicLocation'
+           rotation:
+             description: "The orientation of the target object in the space of the 3D scene. Expects an array of three numbers describing the Pitch, Yaw and Roll angles in degrees. This corresponds to rotation around the Y, X and Z axes of the scene respectively."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+           scale:
+             description: "Scales the target object along each axis in its local coordinate system. Expects an array of three numbers describing scale multipliers along the XYZ-axes. A value of [1.0, 1.0, 1.0] corresponds to the original scale. Note that not all objects support non-uniform scaling (different scale values along each axis)."
+             type: array
+             minItems: 3
+             maxItems: 3
+             items:
+               type: number
+               format: float
+
+    RelativeTransform:
+     description: "A transformation in an object's local coordinate system. This is primarily used for changing the origin, scale or default orientation of a 3D model."
+     type: object
+     properties:
+       position:
+         description: "Offsets the position of the target object in its local coordinate system. This is equivalent to changing the origin of the object. Expects an array of three numbers, corresponding to offsets along the XYZ-axes. A value of [0.0, 0.0, 0.0] corresponds to no change."
+         type: array
+         example: [100.0, 0.0, -50.0]
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+       rotation:
+         description: "Rotates the target object in its local coordinate system. Expects an array of three numbers describing the Pitch, Yaw and Roll angles in degrees. This corresponds to rotation around its local Y, X and Z axes respectively. A value of [0.0, 0.0, 0.0] corresponds to no change."
+         type: array
+         example: [-90.0, 0.0, 180.0]
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+       scale:
+         description: "Scales the target object along each axis in its local coordinate system. Expects an array of three numbers describing scale multipliers along the XYZ-axes. A value of [1.0, 1.0, 1.0] corresponds to the original scale. Note that not all objects support non-uniform scaling (different scale values along each axis)."
+         type: array
+         example: [0.5, 0.5, 0.5]
+         minItems: 3
+         maxItems: 3
+         items:
+           type: number
+           format: float
+
+    Color:
+     type: string
+     description: "Color in hexadecimal format (HTML standard)"
+     example: "#05ff54"
+      
+    TimeseriesFilter:
+     description: >
+       The base class of all timeseries filter implementations.
+         * `type` The predicate type to use for filtering timeseries.
+     type: object
+     required:
+      - type
+     properties:
+      type:
+       $ref: '#/components/schemas/TimeseriesFilterType'
+     discriminator:
+      propertyName: type
+      mapping:
+        nameRegex: '#/components/schemas/TimeseriesFilterNameRegex'
+        metadataExactMatch: '#/components/schemas/TimeseriesFilterMetadataExactMatch'
+    
+    TimeseriesFilterNameRegex:
+      description: >
+        A timeseries filter which keeps only the timeseries in which the name field is accepted by the specifiec regular expression string.
+          *  `regexString` - The regular expression to match against. The regular expression syntax is given by ICU and can be found at http://userguide.icu-project.org/strings/regexp
+      allOf:
+       - $ref: '#/components/schemas/TimeseriesFilter'
+       - type: object
+         required:
+          - regexString
+         properties:
+          regexString:
+           type: string
+         description: >
+           The timeseries name regex to filter with
+           
+    TimeseriesFilterMetadataExactMatch:
+      description: >
+        A timeseries filter which keeps only the timeseries which contain the given key-value string pair.
+        The strings must match exactly.
+          * `key` - The metadata key entry to match
+          * `value` - The metadata value entry to match
+      allOf:
+       - $ref: '#/components/schemas/TimeseriesFilter'
+       - type: object
+         required:
+          - key
+          - value
+         properties:
+          key:
+           type: string
+          value:
+           type: string
+         description: >
+           The timeseries metadata entry to filter on
+
+    StringPair:
+      description: > 
+        A key-value pair of strings.
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          description: key string.
+          type: string
+        value:
+          description: value string.
+          type: string
+
+    TextFormatRule:
+      description: > 
+        Format description for the text in a FormattedText. In general, it works by comparing the text with the `value` field and replace it 
+        with the text in `displayName` if it matches exactly. Optionally, the color of the text can also be set using the `color` field. 
+        There is also few special options in addition to pure text matching that is enabled by setting the `value` field to one of the following options:
+          * `{@isodate}` - Tries to parse the text as an ISO-8601 formatted date/time string. The date/time is reformatted using the formatting rule given in `displayName`, f.eks `%Y-%m-%dT%H:%M:%S.%sZ`.
+          * `{@sse}` - Tries to parse the text as number of Seconds Since Epoch (sse). The date/time is reformatted using the formatting rule given in `displayName`, f.eks `%Y-%m-%dT%H:%M:%S.%sZ`.
+          * `{@msse}` - Tries to parse the text as number os MilliSeconds Since Epoch (msse). The date/time is reformatted using the formatting rule given in `displayName`, f.eks `%Y-%m-%dT%H:%M:%S.%sZ`.
+          * `{@default}` - If there are no other matches, this will be selected.
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          description: Text to be matched against the `data` field of a work order detail.
+          type: string
+        displayName:
+          description: Optional text to replace the `data` field when displayed in the UI.
+          type: string
+        color:
+          $ref: '#/components/schemas/Color'    
+
+    FormattedText:
+      description: > 
+        A text field with optional formatting applied.
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          description: This is the text to be be displayed, eg `{@metadata:WorkOrderPriorityType}`, or `{@createdTime}'. {@...} depends on the context.
+          type: string
+        format:
+          description: Optional formatting for the text as an array of format rules. The first rule who triggers a match will apply the format.
+          type: array
+          items:
+            $ref: '#/components/schemas/TextFormatRule'
+          minItems: 1
+
+    TextDataField:
+      description: > 
+        Text field in the UI to display a single data field with optional formatting.
+      type: object
+      required:
+        - title
+        - data
+      properties:
+        title:
+          description: Title for the data field to be displayed in the UI.
+          type: string
+        data:
+          $ref: '#/components/schemas/FormattedText'    
+        newLine:
+          description: Creates a new row in the text data field panel for placing this and any subsequent fields.
+          type: boolean
+
+
+    FilteringCategoryOption:
+      description: > 
+        Option within a a type of category that can be selected as the `value` field in metadata filtering.
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          description: "This text is the `value` to be filtered for in the metadata search. For time ranges, use a syntax like this: `from,to`, eg. `now-604800,now` to describe a range for the past week (604800 seconds)."
+          type: string
+        displayName:
+          description: Optional text to be displayed in the UI. Default is the text from `name`. For time ranges, you can write `[calendar]` to make the user be able to select a custom time range using calendar widgets.
+          type: string
+        enabled:
+          description: Wether or not this option is selected by default. Optional. Default is `false`. Only one option can be selected within a category.
+          type: boolean
+
+    FilteringCategory:
+      description: > 
+        A category is a group of CDF Event/File-properties to be used for filtering of events (work orders) or files, eg `createdTime`, `eventType`, `metadata:custom data`.
+      type: object
+      required:
+        - name
+        - options
+      properties:
+        name:
+          description: This is the name of the category, and the `key` field in the filtering.
+          type: string
+        displayName:
+          description: Optional text to be displayed in the UI. Default is the text from `name`.
+          type: string
+        mandatory: 
+          description: If true, hides the "All" option, ie one of the options has to be selected. Default is false.
+          type: boolean
+        options: 
+         description: This is the list of available options to be the `value` field is the filtering. Only one option can be selected at once.
+         type: array
+         items:
+           $ref: '#/components/schemas/FilteringCategoryOption'
+         minItems: 1
+         
+    WorkOrder:
+      description: > 
+        This describes the layout of a work order when displayed in the UI. In general, any text matching the following rules are replaced with the actual data in the work order event:
+          * `{@id} - A server-generated ID for the object.
+          * `{@dataSetId} - The id of the dataset this event belongs to.
+          * `{@startTime} - Start time for the event in milliseconds since epoch.
+          * `{@endTime} - End time for the event in milliseconds since epoch.
+          * `{@lastUpdatedTime} - Timestamp for when the event was last updated, in milliseconds since epoch.
+          * `{@createdTime} - Timestamp for when the event was created, in milliseconds since epoch.
+          * `{@externalId} - The external ID provided by the client.
+          * `{@type} - Type of the event, e.g 'workOrder'.
+          * `{@subtype} - Subtype of the event, e.g 'repair'.
+          * `{@description} - Textual description of the event.
+          * `{@source} - The source of this event.
+          * `{@metadata:*} - Any field from the metadata matching *.
+      type: object
+      required:
+        - id
+        - title
+        - description
+      properties:
+        id:
+          description: Text field to display some form of unique id for the work order, eg `{@metadata:WorkOrderID}`.
+          type: string
+        title:
+          description: Text field to display the title text for the the work order, eg `{@metadata:WorkOrderTitle}`.
+          type: string
+        description:
+          description: Text field to display a multiline description of the work order, eg `{@metadata:WorkOrderDescription}`.
+          type: string
+        details:
+         description: This is an array of small UI elements to display various data from the work order. For the `data` field, the same text replacing rules as described in `WorkOrder` applies.
+         type: array
+         items:
+           $ref: '#/components/schemas/TextDataField'
+         minItems: 0
+
+    WorkOrders:
+     description: > 
+       Description of work order filtering by metadata categories and UI formatting.
+     type: object
+     required:
+       - categories
+       - workOrder
+     properties:
+       title:
+         description: Title for this type of orders, eg `Work Orders` or `Notifications`. Default is `Work Orders`.
+         type: string
+       categories: 
+         description: Array of CEF-Event categories to be used for filtering.
+         type: array
+         items:
+           $ref: '#/components/schemas/FilteringCategory'
+         minItems: 1
+       workOrder:
+         $ref: '#/components/schemas/WorkOrder'
+       labelText:
+         description: Text to be displayed for work order labels in 3d-view. Skip to disable labels.
+         type: string
+       labelMarkerColor:
+          $ref: '#/components/schemas/Color'    
+       labelSelectedMarkerColor:
+          $ref: '#/components/schemas/Color'             
+       labelBackgroundColor:
+          $ref: '#/components/schemas/Color'
+       eventType:
+         description: DEPRECATED - USE "staticFilter" WITH KEY "type" INSTEAD!
+         type: string
+       eventSubtype:
+         description: DEPRECATED - USE "staticFilter" WITH KEY "subtype" INSTEAD!
+         type: string
+       metadataFilter:
+         description: DEPRECATED - USE "staticFilter" INSTEAD!
+         type: array
+         items:
+           $ref: '#/components/schemas/StringPair'
+         minItems: 0
+       staticFilter:
+         description: "Optional static filtering as an array of key-value pairs. A key should only appear once, and not be in the list of categories. Example: `eventType` -> `workOrder`."
+         type: array
+         items:
+           $ref: '#/components/schemas/StringPair'
+         minItems: 0
+       workOrdersPrPage:
+         description: The maximum number of work orders to be displayed per page in the UI. Optional, default is 20.
+         type: integer
+         format: int32
+         
+    File:
+      description: > 
+        This describes the layout of a file "card" when displayed in the UI. In general, any text matching the following rules are replaced with the actual data in the work order event:
+          * `{@id} - A server-generated ID for the object.
+          * `{@lastUpdatedTime} - Timestamp for when the event was last updated, in milliseconds since epoch.
+          * `{@createdTime} - Timestamp for when the event was created, in milliseconds since epoch.
+          * `{@uploadedTime} - Timestamp for when the file was uploaded.
+          * `{@externalId} - The external ID provided by the client.
+          * `{@name} - Name of the file.
+          * `{@mimeType} - File type. E.g. text/plain, application/pdf.
+          * `{@isUploaded} - Whether or not the actual file is uploaded.
+          * `{@source} - The source of this event.
+          * `{@metadata:*} - Any field from the metadata matching *.
+      type: object
+      required:
+        - id
+        - title
+        - description
+      properties:
+        id:
+          description: Text field to display some form of unique id for the file, eg `{@id}`.
+          type: string
+        title:
+          description: Text field to display the title text for the the file, eg `{@name}`.
+          type: string
+        description:
+          description: Text field to display a multiline description of the file, eg `{@metadata:description}`.
+          type: string
+        details:
+         description: This is an array of small UI elements to display various data from the file. For the `data` field, the same text replacing rules as described in `File` applies.
+         type: array
+         items:
+           $ref: '#/components/schemas/TextDataField'
+         minItems: 0
+         
+    Files:
+     description: > 
+       Description of file filtering by categories and UI formatting.
+     type: object
+     required:
+       - categories
+       - file
+     properties:
+       title:
+         description: Title for this type of files, eg `Photos` or `Documents`. Default is `FILES`.
+         type: string
+       categories: 
+         description: Array of CDF-File categories to be used for filtering.
+         type: array
+         items:
+           $ref: '#/components/schemas/FilteringCategory'
+         minItems: 1
+       file:
+         $ref: '#/components/schemas/File'
+       labelText:
+         description: Text to be displayed for file labels in 3d-view. Skip to disable labels.
+         type: string
+       labelMarkerColor:
+          $ref: '#/components/schemas/Color'    
+       labelSelectedMarkerColor:
+          $ref: '#/components/schemas/Color'             
+       labelBackgroundColor:
+          $ref: '#/components/schemas/Color'    
+       staticFilter:
+         description: "Optional static filtering as an array of key-value pairs. A key should only appear once, and not be in the list of categories. Example: `mimeType` -> `application/pdf`."
+         type: array
+         items:
+           $ref: '#/components/schemas/StringPair'
+         minItems: 0
+       filesPrPage:
+         description: The maximum number of files to be displayed per page in the UI. Optional, default is 20.
+         type: integer
+         format: int32
+

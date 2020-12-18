@@ -31,6 +31,7 @@
   "scripts": {
     "start": "cross-env HTTPS=true SSL_CRT_FILE=.cert/cert.pem SSL_KEY_FILE=.cert/key.pem react-scripts start",
     "build": "react-scripts build",
+    "prod": "serve -s build --ssl-cert .cert/cert.pem --ssl-key .cert/key.pem",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
