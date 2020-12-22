@@ -37,13 +37,14 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
 export const populateChildren = (
   schema: ISchemaNode,
   isRequired: boolean,
-  parentSchema: ISchemaNode
+  parentSchema: ISchemaNode,
+  parentBaseNode: BaseNode 
 ): BaseNode => {
   if (schema.allOf) {
     const obj = new ObjectNode(schema, {}, isRequired);
     let dat: any = {};
     for (const schema1 of schema.allOf) {
-      const children = populateChildren(schema1, isRequired, schema);
+      const children = populateChildren(schema1, isRequired, schema, obj);
       if(children.rowData instanceof Object){
         dat = { ...dat, ...children.rowData};
       }
@@ -57,36 +58,32 @@ export const populateChildren = (
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       // Since `{}` is passed as data for obj, type can be BaseNodes
-      (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema);
+      (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema, obj);
     }
     return obj;
-  } else if (schema.additionalProperties) {
+  } else if (schema.additionalProperties) { 
+    const obj = new MapNode(schema, {}, false, undefined);
     const sampleData = populateChildren(
       schema.additionalProperties,
       false,
-      schema
+      schema,
+      obj
     );
-    const obj = new MapNode(schema, {}, false, sampleData);
+    obj.sampleData = sampleData;
     return obj;
   } else if (schema.items) {
     if (schema.items === parentSchema) {
-      const sampleData = new BaseNode(
-        DataType.unspecified,
-        { type: DataType.unspecified },
-        {},
-        isRequired
-      );
-      // TODO: fix circular issue here
       const obj = new ArrayNode(
         { type: DataType.array },
         [],
         isRequired,
-        sampleData
+        parentBaseNode
       );
       return obj;
     } else {
-      const sampleData = populateChildren(schema.items, false, schema);
-      const obj = new ArrayNode(schema, [], isRequired, sampleData);
+      const obj = new ArrayNode(schema, [], isRequired, undefined);
+      obj.sampleData = populateChildren(schema.items, false, schema, obj);
+      
       return obj;
     }
   } else {
