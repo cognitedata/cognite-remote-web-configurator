@@ -27,7 +27,7 @@ const extractField = (key: string) => {
 
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
-    public get options(): JSONEditorOptions {
+    public get options(): JSONEditorOptions | any {
 
         return {
             mode: this.mode,
@@ -43,13 +43,16 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }),
             onValidate: this.onValidate,
             onChange: this.onChange,
-            onError: this.onError
+            onError: this.onError,
+            limitDragging: this.limitDragging,
         }
     }
 
     public mode: "tree" | "code" | "preview" | undefined = 'tree';
 
     public modes: JSONEditorMode[] = ["tree", "code"];
+
+    public limitDragging = true;
 
     public get templates(): any {
         const allTemplates: any = [];
@@ -429,6 +432,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.string:{
                         if(!isString(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                        } else {
+                            const maxLength = Number(schema.maxLength);
+                            const length = value.length;
+                            if(maxLength && length > maxLength) {
+                                errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                            }
                         }
                         break;
                     }
