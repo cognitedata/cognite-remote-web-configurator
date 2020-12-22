@@ -43,8 +43,8 @@ export const populateChildren = (
   if (schema.allOf) {
     const obj = new ObjectNode(schema, {}, isRequired);
     let dat: any = {};
-    for (const schema1 of schema.allOf) {
-      const children = populateChildren(schema1, isRequired, schema, obj);
+    for (const subSchema of schema.allOf) {
+      const children = populateChildren(subSchema, isRequired, schema, obj);
       if(children.rowData instanceof Object){
         dat = { ...dat, ...children.rowData};
       }
@@ -53,12 +53,12 @@ export const populateChildren = (
     return obj;
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired);
-    for (const [key, schem] of Object.entries(schema.properties)) {
+    for (const [key, subSchema] of Object.entries(schema.properties)) {
       const required = schema.required
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       // Since `{}` is passed as data for obj, type can be BaseNodes
-      (obj.rowData as BaseNodes)[key] = populateChildren(schem, required, schema, obj);
+      (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required, schema, obj);
     }
     return obj;
   } else if (schema.additionalProperties) { 
