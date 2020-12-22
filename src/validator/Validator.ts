@@ -107,8 +107,8 @@ export const loadSchema = (): Promise<void> => {
             const childrenNodes = populateChildren(val as ISchemaNode, true, {
               description: "root",
               type: "",
-              properties: {},
-            });
+              properties: {}
+            }, new BaseNode(DataType.unspecified, val as ISchemaNode, undefined, false));
             rootDataNode[key] = childrenNodes;
           }
 
@@ -122,8 +122,8 @@ export const loadSchema = (): Promise<void> => {
                   allNodes.push({
                     key: key1 + ":" + key2,
                     node: val2,
-                    data: getJson(group)[key2],
-                    sample: getSample((group.data as any)[key2]),
+                    data: getJson(group, true)[key2],
+                    sample: getSample((group.data as any)[key2]), // Used only for Array, Map
                   });
                 }
               }
