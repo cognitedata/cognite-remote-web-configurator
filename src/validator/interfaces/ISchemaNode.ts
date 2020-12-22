@@ -13,6 +13,7 @@ export interface ISchemaNode {
   enum?: string[];
   minimum?: number;
   maximum?: number;
+  maxLength?: number;
   discriminator?: {
     mapping: { [key: string]: string };
     propertyName: string;
