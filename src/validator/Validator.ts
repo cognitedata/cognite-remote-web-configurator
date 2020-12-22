@@ -122,8 +122,8 @@ export const loadSchema = (): Promise<void> => {
                   allNodes.push({
                     key: key1 + ":" + key2,
                     node: val2,
-                    data: getJson(group)[key2],
-                    sample: getSample((group.data as any)[key2]),
+                    data: getJson(group, true)[key2],
+                    sample: getSample((group.data as any)[key2]), // Used only for Array, Map
                   });
                 }
               }

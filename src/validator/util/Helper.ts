@@ -93,7 +93,7 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
   }
 };
 
-export const getJson = (obj: BaseNode | undefined): any => {
+export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any => {
   /**
    * If example json value found, then just return the provided example.
    */
@@ -105,7 +105,8 @@ export const getJson = (obj: BaseNode | undefined): any => {
    if (obj.data) {
       const dat: any = {};
       for (const [key, val] of Object.entries(obj.data)) {
-        if(!(val as BaseNode).discriminator){
+        const valNode = val as BaseNode;
+        if(!valNode.discriminator && (valNode.isRequired || fillAllFields)){
           dat[key] = getJson(val);
         }
       }
