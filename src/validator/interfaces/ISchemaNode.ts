@@ -3,7 +3,7 @@ export interface ISchemaNode {
   type: string;
   description?: string;
 
-  // optional props
+  // Common Props
   additionalProperties?: ISchemaNode;
   required?: string[];
   minItems?: number;
@@ -11,13 +11,18 @@ export interface ISchemaNode {
   items?: ISchemaNode;
   format?: string;
   enum?: string[];
-  minimum?: number;
-  maximum?: number;
-  maxLength?: number;
   discriminator?: {
     mapping: { [key: string]: string };
     propertyName: string;
   };
   allOf?: ISchemaNode[];
   example?: any;
+
+  // StringNode
+  pattern?: string;
+  maxLength?: number;
+
+  // NumberNode
+  minimum?: number;
+  maximum?: number;
 }
