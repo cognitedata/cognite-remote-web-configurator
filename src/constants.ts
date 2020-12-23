@@ -2,12 +2,13 @@ export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";
 export const DEV_MODE = false;
+export const STRING_PLACEHOLDER = "$$";
 
 // String Constants
 export const LOCALIZATION = {
     RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve json configs! {{error}}',
     UNTITLED: "Untitled",
-    INCONSISTANT_VALUE: 'Inconsistant value. Remove and insert it again to fill missing fields',
+    INCONSISTENT_VALUE: 'Inconsistent value. Remove and insert it again to fill missing fields',
 
     // Save command
     SAVE_TITLE: 'Create New Json Config',
@@ -37,4 +38,20 @@ export const LOCALIZATION = {
     REMOVE_MANDATORY: 'Cannot Remove. This field is mandatory',
     REMOVE_MINIMUM_LENGTH: 'Cannot Remove. Array has a minimum length',
 
+    // Validation
+    REQUIRED_FIELDS_NOT_AVAIL: "Required fields: $$ not available in object",
+    REQUIRED_FIELD_NOT_AVAIL: "Required field: $$ not available!",
+    DISCRIM_INVALID_TYPE: "Required field: $$ does not have a valid type!",
+    NOT_VALID_KEY: "key: $$, is not a valid key!",
+    MAX_ARR_ELEMENTS_EXCEEDED: "Number of array elements cannot exceed $$ !",
+    INVALID_MAX_ARR_ELEMENTS: "Invalid maxElement configuration for $$ !",
+    MIN_ARR_ELEMENTS_NOT_FOUND: "Number of array elements cannot be lower than $$ !",
+    INVALID_MIN_ARR_ELEMENTS: "Invalid minElement configuration for $$ !",
+    VAL_NOT_BE_EMPTY: "Value cannot be empty!",
+    VAL_NOT_OF_POSSIBLE_VALS: "Value not one of the possible values!",
+    VAL_NOT_NUMBER: "Value is not a number!",
+    VAL_CANNOT_BE_LESS: "Value cannot be less than $$!",
+    VAL_CANNOT_BE_GREATER: "Value cannot be greater than $$!",
+    VAL_NOT_BOOLEAN: "Value is not a boolean!",
+    VAL_NOT_STRING: "Value is not a string!"
 }
