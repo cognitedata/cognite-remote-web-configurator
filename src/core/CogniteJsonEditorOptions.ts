@@ -117,6 +117,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             if (item.text === "Insert") {
                 item.click = undefined;
                 item.submenu = this.createValidInsertMenu(item.submenu, currentJson, parentPath);
+                item.className = "json-editor-insert-btn"
             }
             // adding same logic to Append
             else if (node.type === "append" && item.text === "Append") {

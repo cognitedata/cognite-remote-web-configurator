@@ -7,6 +7,19 @@
   .jsoneditor-poweredBy{
     display: none;
   }
+
+  .jsoneditor-contextmenu .jsoneditor-menu {
+    width: 200px;
+  }
+
+  .jsoneditor-contextmenu .jsoneditor-menu button {
+    width: 200px;
+  }
+
+  .json-editor-insert-btn + .jsoneditor-menu {
+    max-height: 40vh;
+    overflow-y: scroll;
+  }
 }
 
 .json-editor-container{
