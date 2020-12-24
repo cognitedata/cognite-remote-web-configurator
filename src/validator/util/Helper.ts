@@ -4,6 +4,7 @@ import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
+import { STRING_PLACEHOLDER } from "../../constants";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -134,3 +135,13 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
     return getPrimitiveValue(obj);
   }
 };
+
+
+export const replaceString = (str: string, replacement: string) => {
+  if(str) {
+    return str.replace(STRING_PLACEHOLDER, replacement);
+  } else {
+    console.error("String replace value cannot be empty!")
+    return "";
+  }
+}

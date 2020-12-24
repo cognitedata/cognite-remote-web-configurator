@@ -17,7 +17,7 @@ import { MapNode } from "../validator/nodes/MapNode";
 import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
-import { getJson } from "../validator/util/Helper";
+import { getJson, replaceString } from "../validator/util/Helper";
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../constants'
 
@@ -275,13 +275,18 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     for (const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
                         if (!validatedKeys.has(jsonChildKey)) {
                             const newPath = paths.concat([jsonChildKey]);
-                            errors.push({ path: newPath, message: `key: ${jsonChildKey}, is not a valid key!` });
+                            errors.push({ path: newPath, message: replaceString(LOCALIZATION.NOT_VALID_KEY, jsonChildKey) });
                         }
                     }
                     break;
                 }
                 case DataType.map:
                 case DataType.array: {
+
+                    if(schemaType === DataType.array) {
+                        const arrayValidationErrors =  this.validateArray(json, schemaMeta, paths);
+                        errors = arrayValidationErrors.concat(errors);
+                    }
 
                     schemaMetaData = schemaMeta.sampleData;
 
@@ -315,10 +320,45 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         }
 
 
-        if (missingRequiredFields.length) {
-            errors.push({ path: paths, message: `Required fields: ${missingRequiredFields.join(',')} not available in object` })
+        if (missingRequiredFields.length >= 1) {
+            if(missingRequiredFields.length === 1) {
+                errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, missingRequiredFields[0]) });
+            } else {
+                errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELDS_NOT_AVAIL, missingRequiredFields.join(',')) });
+            }
         }
 
+        return errors;
+    }
+
+    private validateArray(json: any, schema: any, paths: any, errors: ValidationError[] = []) {
+
+        if(schema.type === DataType.array) {
+            const maxItems = Number(schema.maxItems);
+            const minItems = Number(schema.minItems);
+
+            const elementCount = json.length;
+            if(!isNaN(maxItems)) {
+                if(maxItems >= 0) {
+                    if(elementCount > maxItems) {
+                        errors.push({ path: paths, message: replaceString(LOCALIZATION.MAX_ARR_ELEMENTS_EXCEEDED, maxItems.toString()) });
+                    }
+                } else {
+                    console.error(`Invalid maxElement configuration for ${paths.join(".")}`);
+                }
+            }
+            if(!isNaN(minItems)) {
+                if(minItems >= 0 ) {
+                    if(elementCount < minItems) {
+                        errors.push({ path: paths, message: replaceString(LOCALIZATION.MIN_ARR_ELEMENTS_NOT_FOUND, minItems.toString()) });
+                    }
+                } else {
+                    console.error(`Invalid minElement configuration for ${paths.join(".")}`);
+                }
+            }
+        } else {
+            console.error(`Schema type: ${schema.type} cannot be validated as an array!`);
+        }
         return errors;
     }
 
@@ -331,10 +371,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 const childErrors = this.validateFields(json, discriminatorMeta, paths);
                 errors = childErrors.concat(errors);
             } else {
-                errors.push({ path: paths, message: `Required field ${discriminator.propertyName} does not have a valid type!` });
+                errors.push({ path: paths, message: replaceString(LOCALIZATION.DISCRIM_INVALID_TYPE, discriminator.propertyName) });
             }
         } else {
-            errors.push({ path: paths, message: `Required field ${discriminator.propertyName} not available!` });
+            errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, discriminator.propertyName) });
         }
         return errors;
     }
@@ -347,7 +387,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
             if(!value && value !== 0) {
                 if(isRequired) {
-                    errors.push({ path: paths, message: `Value cannot be empty!` });
+                    errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BE_EMPTY });
                 }
             } else {
                 if(possibleValues && possibleValues.length) {
@@ -358,7 +398,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         }
                     }
                     if(!isOneOfPossibleValues) {
-                        errors.push({ path: paths, message: `value not one of the possible values!` });
+                        errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
                     }
                 }
                 switch (datatype) {
@@ -366,16 +406,16 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
                         if(isNaN(Number(value))) {
-                            errors.push({ path: paths, message: `value is not of the correct number type!` });
+                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
                         } else {
                             if(minimum) {
                                 if(value < minimum) {
-                                    errors.push({ path: paths, message: `value cannot be less than ${minimum}!` });
+                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
                                 }
                             }
                             if(maximum) {
                                 if(value > maximum) {
-                                    errors.push({ path: paths, message: `value cannot be greater than ${maximum}!` });
+                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
                                 }
                             }
                         }
@@ -383,13 +423,13 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     }
                     case DataType.boolean:{
                         if(!isBoolean(value)) {
-                            errors.push({ path: paths, message: `value is not of the correct boolean type!` });
+                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
                         }
                         break;
                     }
                     case DataType.string:{
                         if(!isString(value)) {
-                            errors.push({ path: paths, message: `value is not of the correct string type!` });
+                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
                         }
                         break;
                     }
@@ -404,7 +444,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
         if (error) {
-            message.error(LOCALIZATION.INCONSISTANT_VALUE);
+            message.error(LOCALIZATION.INCONSISTENT_VALUE);
             return undefined;
         }
 
@@ -493,7 +533,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             );
             return res;
         } else {
-            message.error(LOCALIZATION.INCONSISTANT_VALUE);
+            message.error(LOCALIZATION.INCONSISTENT_VALUE);
             return undefined;
         }
     }

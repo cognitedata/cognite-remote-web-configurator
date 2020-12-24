@@ -5,8 +5,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@cognite/gearbox": "^2.2.2",
+    "@cognite/sdk": "^3.3.2",
     "@cognite/griff-react": "~0.4.2",
-    "@cognite/sdk": "^3.3.1",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
@@ -30,6 +30,7 @@
   },
   "scripts": {
     "start": "cross-env HTTPS=true SSL_CRT_FILE=.cert/cert.pem SSL_KEY_FILE=.cert/key.pem react-scripts start",
+    "prod": "serve -s build --ssl-cert .cert/cert.pem --ssl-key .cert/key.pem",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
