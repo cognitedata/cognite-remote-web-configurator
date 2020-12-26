@@ -15,10 +15,14 @@ export type Discriminator = {
   propertyName: string;
 };
 
+export enum CombineType {
+  NONE, ALLOF, ONEOF
+}
 export class BaseNode {
   public type?: DataType;
   public description?: string;
   public isRequired?: boolean;
+  public combineType = CombineType.NONE;
   public discriminator?: Discriminator;
   public example: any;
 
@@ -37,15 +41,29 @@ export class BaseNode {
     this._data = data;
     this.isRequired = isRequired;
     this.example = schema.example;
+
+    if(this.discriminator){
+      this.combineType = CombineType.ALLOF;
+    } else if(schema.oneOf){
+      this.combineType = CombineType.ONEOF
+    }
   }
 
+  /**
+   * Dicriminator:
+   * This method returns a object as {key(discriminator type): values{object related to that type}}
+   * But from CogniteJsonEditorOptions class, it dynamically get the type of json and replace this object with
+   * correct object type
+   */
   public get data(): IData {
-    if (this.discriminator) {
+    if (this.combineType === CombineType.ALLOF && this.discriminator ) {
       const result: BaseNodes = {};
       const possibleTypeValues = Object.keys(this.discriminator.mapping);      
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
+
+        // Get node for specific type of dicriminator. It is the last section of the schemaPath array
         const node = rootDataNode[schemaPath[schemaPath.length - 1]];
 
         if(node._data instanceof Object){
@@ -60,6 +78,13 @@ export class BaseNode {
         }
         result[key] = node;
       }
+      /**
+       * {
+       *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
+       *    fullAssetHierarchy: { data... }
+       *    noHierarchy: { data... }
+       * }
+       */
       return result;
     } else {
       return this._data;

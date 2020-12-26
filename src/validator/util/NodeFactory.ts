@@ -40,7 +40,22 @@ export const populateChildren = (
   parentSchema: ISchemaNode,
   parentBaseNode: BaseNode 
 ): BaseNode => {
-  if (schema.allOf) {
+  if (schema.oneOf) {
+    const obj = new ObjectNode(schema, {}, isRequired);
+    const dat: any = {};
+    // for (const subSchema of schema.allOf) {
+    schema.oneOf.forEach((subSchema, idx) => {
+      subSchema.schemaType = `${idx}`;
+      const children = populateChildren(subSchema, isRequired, schema, obj);
+      if(children.rowData instanceof Object){
+        dat[idx] = children;
+        // dat['combineType'] = CombineType.ONEOF;
+      }
+    }); 
+    obj.data = dat;
+    return obj;
+
+  } else if (schema.allOf) {
     const obj = new ObjectNode(schema, {}, isRequired);
     let dat: any = {};
     for (const subSchema of schema.allOf) {
@@ -51,6 +66,7 @@ export const populateChildren = (
     }
     obj.data = dat;
     return obj;
+
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired);
     for (const [key, subSchema] of Object.entries(schema.properties)) {

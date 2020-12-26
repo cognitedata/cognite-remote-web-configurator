@@ -7,6 +7,27 @@ paths: {}
 
 components:
   schemas:
+    Dog:
+      type: object
+      required:
+       - bark
+      properties:
+        bark:
+          description: "Dog bark"
+          type: boolean
+        breed:
+          description: "Dog breed"
+          type: string
+          enum: [Dingo, Husky, Retriever, Shepherd]
+    Cat:
+      type: object
+      properties:
+        hunts:
+          description: "Cat hunts"
+          type: boolean
+        age:
+          description: "Cat age"
+          type: integer
     TwinConfiguration:
      description: "Data structure that fully defines a digital twin in the Cognite Digital Twin Application."
      required:
@@ -15,6 +36,10 @@ components:
        - scenes
      type: object
      properties:
+       pet:
+        oneOf:
+         - $ref: '#/components/schemas/Cat'
+         - $ref: '#/components/schemas/Dog'
        header:
          $ref: '#/components/schemas/Header'
        assets:
