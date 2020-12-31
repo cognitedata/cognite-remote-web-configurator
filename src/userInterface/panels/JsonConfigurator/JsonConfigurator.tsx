@@ -8,6 +8,11 @@ import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../../../constants';
+import hash from 'object-hash';
+import Modal from 'antd/es/modal';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
+const { confirm } = Modal;
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -19,6 +24,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
+    const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
 
     const loadJsonConfigs = () => {
         JsonConfigCommandCenter.loadJsonConfigs()
@@ -32,11 +38,28 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     // call with undefind values to create new json config
     const onJsonConfigSelect = (jsonConfigId: number | null) => {
+        if (JsonConfigCommandCenter.isEdited(jsonConfigHash)) {
+            confirm({
+                title: LOCALIZATION.SAVE_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.SAVE_CONTENT,
+                onOk() {
+                    setSelectedJsonConfig(jsonConfigId);
+                }
+            });
+        }
+        else {
+            setSelectedJsonConfig(jsonConfigId);
+        }
+    }
+
+    const setSelectedJsonConfig = (jsonConfigId: number | null) => {
         if (jsonConfigId) {
             if (jsonConfigMap && jsonConfigMap.size > 0) {
-                const jsonConfig = jsonConfigMap.get(jsonConfigId);
-                if (jsonConfig) {
-                    setJsonConfig(jsonConfig as JsonConfig);
+                const selectedJsonConfig = jsonConfigMap.get(jsonConfigId);
+                if (selectedJsonConfig) {
+                    setJsonConfig(selectedJsonConfig as JsonConfig);
+                    setJsonConfigHash(hash((selectedJsonConfig as JsonConfig).data));
                 }
             }
             setSelectedJsonConfigId(jsonConfigId);
@@ -46,6 +69,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 data: {}
             } as JsonConfig);
             setSelectedJsonConfigId(null);
+            setJsonConfigHash(null);
         }
     }
 
@@ -84,7 +108,6 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     useEffect(() => {
         loadJsonConfigs();
-
     }, []);
 
     return (

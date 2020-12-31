@@ -7,6 +7,7 @@ import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
 import { LOCALIZATION } from "../constants";
 import { JSONEditorMode } from "jsoneditor";
+import hash from 'object-hash';
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
@@ -40,7 +41,7 @@ export class JsonConfigCommandCenter {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
         let currentJson;
         if (currentJsonText) {
-            try{
+            try {
                 currentJson = JSON.parse(currentJsonText);
             } catch (e: any) {
                 console.error("Error occurred while parsing json!", e);
@@ -48,13 +49,23 @@ export class JsonConfigCommandCenter {
         }
         return currentJson;
     }
+
     public static get currentFileName(): string {
         const currentJson = JsonConfigCommandCenter.currentJson;
         return currentJson?.header?.name;
     }
 
+    public static isEdited(originalHash: string | null): boolean {
+        if (originalHash === null) {
+            return !!Object.keys(JsonConfigCommandCenter.currentJson).length;
+        }
+        else {
+            return !!(originalHash !== hash(JsonConfigCommandCenter.currentJson));
+        }
+    }
+
     public static updateTitle = (): void => {
-        if(JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback) {
+        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback) {
             const currentTitle = JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED;
             const currentMode = JsonConfigCommandCenter.editor?.getMode();
             JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);
