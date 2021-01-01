@@ -56,12 +56,16 @@ export class JsonConfigCommandCenter {
     }
 
     public static isEdited(originalHash: string | null): boolean {
-        if (originalHash === null) {
-            return !!Object.keys(JsonConfigCommandCenter.currentJson).length;
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        if (currentJson) {
+            if (originalHash === null) {
+                return !!Object.keys(currentJson).length;
+            }
+            else {
+                return !!(originalHash !== hash(currentJson));
+            }
         }
-        else {
-            return !!(originalHash !== hash(JsonConfigCommandCenter.currentJson));
-        }
+        return false
     }
 
     public static updateTitle = (): void => {
