@@ -45,7 +45,7 @@ export const populateChildren = (
     const dat: any = {};
     // for (const subSchema of schema.allOf) {
     schema.oneOf.forEach((subSchema, idx) => {
-      subSchema.schemaType = `${idx}`;
+      // subSchema.schemaType = `${idx}`;
       const children = populateChildren(subSchema, isRequired, schema, obj);
       if(children.rowData instanceof Object){
         dat[idx] = children;

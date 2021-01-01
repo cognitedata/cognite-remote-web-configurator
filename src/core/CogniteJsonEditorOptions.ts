@@ -14,7 +14,7 @@ import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
 import { MapNode } from "../validator/nodes/MapNode";
-import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
+import { BaseNode, BaseNodes, CombineType, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
@@ -51,6 +51,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public modes: JSONEditorMode[] = ["tree", "code"];
 
+    /**
+     * Create and return all posible templates for inserting
+     */
     public get templates(): any {
         const allTemplates: any = [];
         getAllNodes().forEach(ele => {
@@ -64,7 +67,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             allTemplates.push(template);
 
-            if (ele.node.discriminator && ele.node.data) {
+            if (ele.node.combineType === CombineType.ALLOF && ele.node.data) {
                 // If discriminator exists, add all sub types as templates
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
                     const template = {
@@ -77,6 +80,23 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     allTemplates.push(template);
                 });
             }
+
+            /**
+             * This create possibility to add ONE_OF as a whole to parent object
+             */
+            // if (ele.node.combineType === CombineType.ONEOF && ele.node.data) {
+            //     const prefix = ele.key.split(":")[0];
+            //     Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
+            //         const template = {
+            //             text: `${key}-${subKey}`,
+            //             title: subVal.description,
+            //             className: "jsoneditor-type-object",
+            //             field: `${key}`,
+            //             value: getJson(subVal as BaseNode),
+            //         };
+            //         allTemplates.push(template);
+            //     });
+            // }
 
             if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
                 const template = {
@@ -440,7 +460,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
-        const validMenuItems: MenuItem[] = [];
+      
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
         if (error) {
@@ -454,6 +474,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (submenu === undefined || submenu.length === 0) {
             return undefined;
         }
+
+        const validMenuItems: MenuItem[] = [];
 
         submenu?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
@@ -482,7 +504,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
-        const key = parentPath[parentPath.length - 1]
+        const key = parentPath[parentPath.length - 1];
         let resultNode = node;
 
         /**
@@ -513,13 +535,28 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             return ret;
 
-        } else if (resultNode?.data) {
+        } 
+        
+        else if(resultNode?.combineType === CombineType.ONEOF){
+            const res: any = {};
+            Object.values(resultNode.data as BaseNodes).forEach((value) => {
+                Object.entries(value.data as BaseNodes).forEach(([desKey, node]) => {
+                    res[`${desKey}`] = {
+                        description: node.description,
+                    };
+                });
+            });
+            return res;
+        }
+
+        else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = { ...(resultNode.data as BaseNodes) };
 
             Object.entries(res as Record<string, unknown>).forEach(
                 ([key, node]) => {
-                    if ((node as BaseNode).discriminator) {
+                    // if they are descriminator types as data then replace insert items as `type-discriminatorType`
+                    if ((node as BaseNode).combineType === CombineType.ALLOF) {
                         delete res[key];
                         Object.keys(
                             (node as BaseNode).data as Record<string, unknown>
