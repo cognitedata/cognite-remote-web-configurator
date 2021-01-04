@@ -9,7 +9,6 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../../../constants';
 import hash from 'object-hash';
-import { TIMEOUT } from 'dns';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -56,8 +55,13 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
         loadJsonConfigs();
+        setSelectedJsonConfig(null);
         setSelectedJsonConfig(jsonConfigId);
     }
+
+    JsonConfigCommandCenter.getOriginalHash = () => {
+        return jsonConfigHash;
+    };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
         switch (command) {

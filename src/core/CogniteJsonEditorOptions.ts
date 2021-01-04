@@ -219,8 +219,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public onChangeText = (): void => {
-        console.log('');
-        
+        JsonConfigCommandCenter.updateTitle();
     }
 
     /**

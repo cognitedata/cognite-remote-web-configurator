@@ -32,7 +32,7 @@ export const CommandPanel: React.FC<{
 
     const titleUpdateCallBack = (text: string, mode: JSONEditorMode) => {
         setTitle(text);
-        setMode(mode)
+        setMode(mode);
     };
     JsonConfigCommandCenter.titleUpdateCallback = titleUpdateCallBack;
 
@@ -60,6 +60,7 @@ export const CommandPanel: React.FC<{
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
+                            JsonConfigCommandCenter.updateTitle();
                             message.success(LOCALIZATION.SAVE_SUCCESS);
                         })
                         .catch((error: any) => {
@@ -136,8 +137,6 @@ export const CommandPanel: React.FC<{
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
-
-
         </div>
     );
 }

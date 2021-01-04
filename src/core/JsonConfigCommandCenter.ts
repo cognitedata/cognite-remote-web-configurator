@@ -11,6 +11,7 @@ import hash from 'object-hash';
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
+    public static getOriginalHash: () => string | null;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
@@ -57,6 +58,7 @@ export class JsonConfigCommandCenter {
 
     public static isEdited(originalHash: string | null): boolean {
         const currentJson = JsonConfigCommandCenter.currentJson;
+        
         if (currentJson) {
             if (originalHash === null) {
                 return !!Object.keys(currentJson).length;
@@ -69,8 +71,10 @@ export class JsonConfigCommandCenter {
     }
 
     public static updateTitle = (): void => {
-        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback) {
-            const currentTitle = JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED;
+        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalHash) {
+            const originalHash = JsonConfigCommandCenter.getOriginalHash();
+            const edited = JsonConfigCommandCenter.isEdited(originalHash);
+            const currentTitle = (edited ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
             const currentMode = JsonConfigCommandCenter.editor?.getMode();
             JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);
         }
