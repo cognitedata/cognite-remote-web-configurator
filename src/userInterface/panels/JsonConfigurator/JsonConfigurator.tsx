@@ -9,6 +9,7 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../../../constants';
 import hash from 'object-hash';
+import { TIMEOUT } from 'dns';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -33,10 +34,6 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     // call with undefind values to create new json config
-    const onJsonConfigSelect = (jsonConfigId: number | null) => {
-        setSelectedJsonConfig(jsonConfigId);
-    }
-
     const setSelectedJsonConfig = (jsonConfigId: number | null) => {
         if (jsonConfigId) {
             if (jsonConfigMap && jsonConfigMap.size > 0) {
@@ -59,7 +56,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
         loadJsonConfigs();
-        onJsonConfigSelect(jsonConfigId);
+        setSelectedJsonConfig(jsonConfigId);
     }
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
@@ -69,7 +66,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.switchConfig: {
-                onJsonConfigSelect(args[0]);
+                setSelectedJsonConfig(args[0]);
                 break;
             }
             case CommandEvent.saveAs: {
