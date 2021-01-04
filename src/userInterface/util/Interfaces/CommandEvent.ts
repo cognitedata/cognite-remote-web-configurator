@@ -4,5 +4,6 @@ export enum CommandEvent {
     saveAs = "saveAs",
     update = "update",
     delete = "delete",
-    download = "download"
+    download = "download",
+    refresh = "refresh"
 }

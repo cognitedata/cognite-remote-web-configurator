@@ -77,6 +77,17 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
+            case CommandEvent.refresh: {
+                const config = await JsonConfigCommandCenter.onRefresh(selectedJsonConfigId);
+
+                if(jsonConfigMap && config) {
+                    if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
+                        jsonConfigMap.set(selectedJsonConfigId, config);
+                        setJsonConfig(config);
+                    }
+                }
+                break;
+            }
             default:
                 break;
         }

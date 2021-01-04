@@ -32,6 +32,12 @@ export const LOCALIZATION = {
     DELETE_ERROR: 'Delete Cancelled! {{error}}',
     DELETE_INVALID_FILE: 'Delete Cancelled! Please select a file',
 
+    // Refresh Command
+    REFRESH_TITLE: 'Refresh Config',
+    REFRESH_CONTENT: 'Refreshing will fetch the latest version of this config from server',
+    REFRESH_SUCCESS: 'Json Config updated successfully!',
+    REFRESH_ERROR: 'Refresh Cancelled! {{error}}',
+
     // Remove item menu option
     REMOVE_ENABLED: 'Remove this field',
     REMOVE_DISABLED: 'Cannot Remove.',

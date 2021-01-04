@@ -117,6 +117,23 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const onRefreshHandler = () => {
+        confirm({
+            title: LOCALIZATION.REFRESH_TITLE,
+            icon: <ExclamationCircleOutlined />,
+            content: LOCALIZATION.REFRESH_CONTENT,
+            onOk() {
+                props.commandEvent(CommandEvent.refresh)
+                    .then(() => {
+                        message.success(LOCALIZATION.REFRESH_SUCCESS);
+                    })
+                    .catch((error: any) => {
+                        message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    });
+            }
+        });
+    }
+
     const onDownloadHandler = () => {
         props.commandEvent(CommandEvent.download);
     }
@@ -131,6 +148,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
+                {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"sync"} onClick={onRefreshHandler}>Refresh</CommandItem>}
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
