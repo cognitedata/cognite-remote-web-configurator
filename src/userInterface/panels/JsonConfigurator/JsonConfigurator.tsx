@@ -9,10 +9,6 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../../../constants';
 import hash from 'object-hash';
-import Modal from 'antd/es/modal';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-
-const { confirm } = Modal;
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -38,19 +34,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     // call with undefind values to create new json config
     const onJsonConfigSelect = (jsonConfigId: number | null) => {
-        if (JsonConfigCommandCenter.isEdited(jsonConfigHash)) {
-            confirm({
-                title: LOCALIZATION.SAVE_TITLE,
-                icon: <ExclamationCircleOutlined />,
-                content: LOCALIZATION.SAVE_CONTENT,
-                onOk() {
-                    setSelectedJsonConfig(jsonConfigId);
-                }
-            });
-        }
-        else {
-            setSelectedJsonConfig(jsonConfigId);
-        }
+        setSelectedJsonConfig(jsonConfigId);
     }
 
     const setSelectedJsonConfig = (jsonConfigId: number | null) => {
@@ -84,7 +68,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
-            case CommandEvent.createNew: {
+            case CommandEvent.switchConfig: {
                 onJsonConfigSelect(args[0]);
                 break;
             }
@@ -114,10 +98,10 @@ export const JsonConfigurator: React.FC<any> = () => {
         <div className={classes.configurator}>
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
-                    onJsonConfigSelect={onJsonConfigSelect}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId} />
+                    selectedJsonConfigId={selectedJsonConfigId}
+                    jsonConfigHash={jsonConfigHash} />
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>

@@ -1,6 +1,6 @@
 export enum CommandEvent {
     mode = "mode",
-    createNew = "createNew",
+    switchConfig = "switchConfig",
     saveAs = "saveAs",
     update = "update",
     delete = "delete",

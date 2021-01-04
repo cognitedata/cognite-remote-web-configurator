@@ -3,9 +3,10 @@ import classes from './ConfigSelector.module.scss';
 import List from 'antd/es/list';
 
 export const ConfigSelector: React.FC<{
-    onJsonConfigSelect: (jsonConfigId: number) => void,
+    onJsonConfigSelectHandler: (id: number | null) => void,
     jsonConfigMap: Map<number, unknown> | null,
-    selectedJsonConfigId: number | null
+    selectedJsonConfigId: number | null,
+    jsonConfigHash: string | null
 }> = (props) => {
 
     const jsonConfigs: { id: number, name: string }[] = [];
@@ -15,7 +16,6 @@ export const ConfigSelector: React.FC<{
             id: element.id,
             name: element.data?.header?.name
         });
-
     });
 
     if (jsonConfigs.length) {
@@ -24,7 +24,11 @@ export const ConfigSelector: React.FC<{
                 bordered
                 dataSource={jsonConfigs}
                 renderItem={item => (
-                    <List.Item className={`${classes.jsonConfigItem} ` + (item.id === props.selectedJsonConfigId ? classes.selected : "")} onClick={() => props.onJsonConfigSelect(item.id)} key={item.id}>
+                    <List.Item
+                        className={`${classes.jsonConfigItem} ` + (item.id === props.selectedJsonConfigId ? classes.selected : "")}
+                        onClick={() => props.onJsonConfigSelectHandler(item.id)}
+                        key={item.id}
+                    >
                         {item.name}
                     </List.Item>
                 )}
