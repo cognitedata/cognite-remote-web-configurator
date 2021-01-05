@@ -56,9 +56,10 @@ export class JsonConfigCommandCenter {
         return currentJson?.header?.name;
     }
 
+    // is local file is edited
     public static isEdited(): boolean {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        const originalHash = JsonConfigCommandCenter.getOriginalHash()
+        const originalHash = JsonConfigCommandCenter.getOriginalHash();
         if (currentJson) {
             if (originalHash === null) {
                 return !!Object.keys(currentJson).length;
@@ -67,7 +68,7 @@ export class JsonConfigCommandCenter {
                 return !!(originalHash !== hash(currentJson));
             }
         }
-        return false
+        return false;
     }
 
     public static updateTitle = (): void => {

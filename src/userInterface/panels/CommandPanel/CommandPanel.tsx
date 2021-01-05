@@ -11,6 +11,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
+import { JsonConfig } from '../../util/types';
+import hash from 'object-hash';
 
 const { confirm } = Modal;
 
@@ -18,6 +20,28 @@ const isValidFileName = (): boolean => {
     const fileName = JsonConfigCommandCenter.currentFileName;
     if (fileName) {
         return true;
+    }
+    return false;
+}
+
+const isUpdated = (selectedJsonConfigId: number | null): boolean => {
+    if (selectedJsonConfigId) {
+        alert('ok')
+        const originalHash = JsonConfigCommandCenter.getOriginalHash();
+        let updatedhash;
+        JsonConfigCommandCenter.loadJsonConfigs()
+            .then(response => {
+                if (response) {
+                    const selectedJsonConfig = response.get(selectedJsonConfigId);
+                    if (selectedJsonConfig) {
+                        updatedhash = hash((selectedJsonConfig as JsonConfig).data);
+                    }
+                }
+            })
+            .catch(error => {
+                message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+            });
+        return (originalHash !== updatedhash);
     }
     return false;
 }
@@ -97,15 +121,23 @@ export const CommandPanel: React.FC<{
                 icon: <ExclamationCircleOutlined />,
                 content: LOCALIZATION.UPLOAD_CONTENT,
                 onOk() {
-                    props.commandEvent(CommandEvent.update)
-                        .then((response: any) => {
-                            const createdId = response.data.data.items[0].id;
-                            props.reloadJsonConfigs(createdId);
-                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
-                        })
-                        .catch((error: any) => {
-                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                        });
+                    if (isUpdated(props.selectedJsonConfigId)) {
+                        alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
+                    }
+                    else {
+                        props.commandEvent(CommandEvent.update)
+                            .then((response: any) => {
+                                const createdId = response.data.data.items[0].id;
+                                props.reloadJsonConfigs(createdId);
+                                message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                            })
+                            .catch((error: any) => {
+                                message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            });
+                    }
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
                 }
             });
         }
