@@ -56,9 +56,9 @@ export class JsonConfigCommandCenter {
         return currentJson?.header?.name;
     }
 
-    public static isEdited(originalHash: string | null): boolean {
+    public static isEdited(): boolean {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        
+        const originalHash = JsonConfigCommandCenter.getOriginalHash()
         if (currentJson) {
             if (originalHash === null) {
                 return !!Object.keys(currentJson).length;
@@ -72,8 +72,7 @@ export class JsonConfigCommandCenter {
 
     public static updateTitle = (): void => {
         if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalHash) {
-            const originalHash = JsonConfigCommandCenter.getOriginalHash();
-            const edited = JsonConfigCommandCenter.isEdited(originalHash);
+            const edited = JsonConfigCommandCenter.isEdited();
             const currentTitle = (edited ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
             const currentMode = JsonConfigCommandCenter.editor?.getMode();
             JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);

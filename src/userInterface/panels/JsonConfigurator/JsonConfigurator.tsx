@@ -23,7 +23,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
 
     const loadJsonConfigs = () => {
-        JsonConfigCommandCenter.loadJsonConfigs()
+        return JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 setJsonConfigMap(response);
             })
@@ -106,8 +106,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 <SideNavPanel
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId}
-                    jsonConfigHash={jsonConfigHash} />
+                    selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>

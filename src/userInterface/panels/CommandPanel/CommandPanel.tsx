@@ -46,6 +46,22 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const onReloadHandler = (id: number | null) => {
+        if (JsonConfigCommandCenter.isEdited()) {
+            confirm({
+                title: 'confirm',
+                icon: <ExclamationCircleOutlined />,
+                content: 'confirm',
+                onOk() {
+                    props.commandEvent(CommandEvent.reload, id);
+                }
+            });
+        }
+        else {
+            props.commandEvent(CommandEvent.reload, id);
+        }
+    }
+
     const onSaveHandler = () => {
         if (!isValidFileName()) {
             message.error(LOCALIZATION.SAVE_INVALID_FILE);
@@ -132,6 +148,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
+                <CommandItem className={classes.btn} icon={"reload"} onClick={() => onReloadHandler(props.selectedJsonConfigId)}>Reload</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
