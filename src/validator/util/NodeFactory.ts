@@ -40,30 +40,22 @@ export const populateChildren = (
   parentSchema: ISchemaNode,
   parentBaseNode: BaseNode 
 ): BaseNode => {
-  if (schema.oneOf) {
-    const obj = new ObjectNode(schema, {}, isRequired);
-    const dat: any = {};
-    // for (const subSchema of schema.allOf) {
-    schema.oneOf.forEach((subSchema, idx) => {
-      // subSchema.schemaType = `${idx}`;
-      const children = populateChildren(subSchema, isRequired, schema, obj);
-      if(children.rowData instanceof Object){
-        dat[idx] = children;
-        // dat['combineType'] = CombineType.ONEOF;
-      }
-    }); 
-    obj.data = dat;
-    return obj;
 
-  } else if (schema.allOf) {
+  if (schema.allOf || schema.anyOf) {
+    const combined = schema.allOf || schema.anyOf;
     const obj = new ObjectNode(schema, {}, isRequired);
+
     let dat: any = {};
-    for (const subSchema of schema.allOf) {
-      const children = populateChildren(subSchema, isRequired, schema, obj);
-      if(children.rowData instanceof Object){
-        dat = { ...dat, ...children.rowData};
+
+    if(combined){
+      for (const subSchema of combined) {
+        const children = populateChildren(subSchema, isRequired, schema, obj);
+        if(children.rowData instanceof Object){
+          dat = { ...dat, ...children.rowData};
+        }
       }
     }
+
     obj.data = dat;
     return obj;
 

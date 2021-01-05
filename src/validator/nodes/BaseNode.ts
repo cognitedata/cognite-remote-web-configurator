@@ -16,13 +16,13 @@ export type Discriminator = {
 };
 
 export enum CombineType {
-  NONE, ALLOF, ONEOF
+  ALLOF, ONEOF, ANYOF, NOT
 }
 export class BaseNode {
   public type?: DataType;
   public description?: string;
   public isRequired?: boolean;
-  public combineType = CombineType.NONE;
+  public combineType;
   public discriminator?: Discriminator;
   public example: any;
 
@@ -42,10 +42,18 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
 
-    if(this.discriminator){
+  
+    if(schema.allOf){
       this.combineType = CombineType.ALLOF;
-    } else if(schema.oneOf){
+    } 
+    if(schema.oneOf){
       this.combineType = CombineType.ONEOF
+    }
+    if(schema.anyOf){
+      this.combineType = CombineType.ANYOF
+    }
+    if(schema.not){
+      this.combineType = CombineType.NOT
     }
   }
 
@@ -56,7 +64,8 @@ export class BaseNode {
    * correct object type
    */
   public get data(): IData {
-    if (this.combineType === CombineType.ALLOF && this.discriminator ) {
+    if (this.discriminator && this.discriminator.mapping ) {
+
       const result: BaseNodes = {};
       const possibleTypeValues = Object.keys(this.discriminator.mapping);      
 

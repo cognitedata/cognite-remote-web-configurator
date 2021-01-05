@@ -67,7 +67,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             allTemplates.push(template);
 
-            if (ele.node.combineType === CombineType.ALLOF && ele.node.data) {
+            if (ele.node.discriminator && ele.node.data) {
                 // If discriminator exists, add all sub types as templates
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
                     const template = {
@@ -556,7 +556,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             Object.entries(res as Record<string, unknown>).forEach(
                 ([key, node]) => {
                     // if they are descriminator types as data then replace insert items as `type-discriminatorType`
-                    if ((node as BaseNode).combineType === CombineType.ALLOF) {
+                    if ((node as BaseNode).discriminator) {
                         delete res[key];
                         Object.keys(
                             (node as BaseNode).data as Record<string, unknown>

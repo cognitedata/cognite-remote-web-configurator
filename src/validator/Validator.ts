@@ -134,6 +134,7 @@ export const loadSchema = (): Promise<void> => {
           (window as any)["nodes"] = rootDataNode;
           console.log("All Nodes", allNodes);
           console.log("JSON->", getJson(rootDataNode[defaultGroup]));
+          console.log("TWIN_CONFIG", rootDataNode[defaultGroup]);
           resolve();
         } else {
           console.error(err);
