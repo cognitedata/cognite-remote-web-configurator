@@ -4,11 +4,11 @@ import logo from "../../../assets/cognite.png";
 import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
-import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { CommandEvent } from '../../util/Interfaces/CommandEvent';
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter'; 0
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, FileAddOutlined, ReloadOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
+import { ToolItem } from '../../components/ToolItem/ToolItem';
 
 const { confirm } = Modal;
 
@@ -35,6 +35,22 @@ export const SideNavPanel: React.FC<{
         }
     }
 
+    const onReloadHandler = (id: number | null) => {
+        if (JsonConfigCommandCenter.isEdited(props.jsonConfigHash)) {
+            confirm({
+                title: 'confirm',
+                icon: <ExclamationCircleOutlined />,
+                content: 'confirm',
+                onOk() {
+                    props.commandEvent(CommandEvent.reload, id);
+                }
+            });
+        }
+        else {
+            props.commandEvent(CommandEvent.reload, id);
+        }
+    }
+
     return (
         <>
             <div className={classes.top}>
@@ -44,11 +60,15 @@ export const SideNavPanel: React.FC<{
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <div className={classes.createNewBtn}>
+            {/* <div className={classes.createNewBtn}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
-            </div>
+            </div> */}
             <div>
                 <Text strong>Configurations</Text>
+                <div className={classes.toolbar}>
+                    <ToolItem onClick={() => onJsonConfigSelectHandler(null)}><FileAddOutlined /></ToolItem>
+                    <ToolItem onClick={() => onReloadHandler(props.selectedJsonConfigId)}><ReloadOutlined /></ToolItem>
+                </div>
                 <div className={classes.jsonConfigContainer}>
                     <ConfigSelector
                         onJsonConfigSelectHandler={onJsonConfigSelectHandler}

@@ -69,6 +69,11 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
+            case CommandEvent.reload: {
+                loadJsonConfigs();
+                setSelectedJsonConfig(args[0]);
+                break;
+            }
             case CommandEvent.switchConfig: {
                 setSelectedJsonConfig(args[0]);
                 break;
