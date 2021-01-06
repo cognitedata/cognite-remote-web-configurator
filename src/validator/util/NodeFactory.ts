@@ -12,8 +12,8 @@ import { ParseType } from "./Parsers";
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
   if (!schema) {
     return new BaseNode(
-      DataType.unspecified,
-      { type: DataType.unspecified },
+      DataType.any,
+      { type: DataType.any },
       undefined,
       isRequired
     );
@@ -30,7 +30,7 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
     case DataType.object:
       return new ObjectNode(schema, {}, isRequired);
     default:
-      return new BaseNode(DataType.unspecified, schema, [], isRequired);
+      return new BaseNode(DataType.any, schema, {}, isRequired);
   }
 };
 
@@ -40,17 +40,31 @@ export const populateChildren = (
   parentSchema: ISchemaNode,
   parentBaseNode: BaseNode 
 ): BaseNode => {
-  if (schema.allOf) {
+  if (schema.not) {
+    return new BaseNode(ParseType(schema.not.type), schema, {}, isRequired);
+
+  } else if (schema.oneOf) {
+    // schema.oneOf is handled only if discriminator presents at schma,(Check BaseNode `get data()` implementation)
+    return new BaseNode(DataType.object, schema, {}, isRequired);
+
+  } else if (schema.allOf || schema.anyOf) {
+    const associatedSchema = schema.allOf || schema.anyOf;
     const obj = new ObjectNode(schema, {}, isRequired);
+
     let dat: any = {};
-    for (const subSchema of schema.allOf) {
-      const children = populateChildren(subSchema, isRequired, schema, obj);
-      if(children.rowData instanceof Object){
-        dat = { ...dat, ...children.rowData};
+
+    if(associatedSchema){
+      for (const subSchema of associatedSchema) {
+        const children = populateChildren(subSchema, isRequired, schema, obj);
+        obj.subSchemas.push(children);
+        if(children.rowData instanceof Object){
+          dat = { ...dat, ...children.rowData};
+        }
       }
     }
     obj.data = dat;
     return obj;
+
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired);
     for (const [key, subSchema] of Object.entries(schema.properties)) {
