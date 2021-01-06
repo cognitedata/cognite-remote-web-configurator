@@ -124,9 +124,6 @@ export const CommandPanel: React.FC<{
             content: LOCALIZATION.REFRESH_CONTENT,
             onOk() {
                 props.commandEvent(CommandEvent.refresh)
-                    .then(() => {
-                        message.success(LOCALIZATION.REFRESH_SUCCESS);
-                    })
                     .catch((error: any) => {
                         message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                     });
