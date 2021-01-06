@@ -2,9 +2,10 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, BaseNodes } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes, AssociationType } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { STRING_PLACEHOLDER } from "../../constants";
+import { ISchemaNode } from "../interfaces/ISchemaNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -144,4 +145,20 @@ export const replaceString = (str: string, replacement: string) => {
     console.error("String replace value cannot be empty!")
     return "";
   }
+}
+
+export const getAssociationType = (schema: ISchemaNode): AssociationType => {
+  if(schema.allOf){
+    return AssociationType.ALLOF;
+  } 
+  if(schema.oneOf){
+    return AssociationType.ONEOF
+  }
+  if(schema.anyOf){
+    return AssociationType.ANYOF;
+  }
+  if(schema.not){
+    return AssociationType.NOT
+  }
+  return AssociationType.NONE;
 }

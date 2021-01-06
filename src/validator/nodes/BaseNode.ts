@@ -1,5 +1,6 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
+import { getAssociationType } from "../util/Helper";
 import { rootDataNode } from "../Validator";
 
 export type BaseNodes = { [key: string]: BaseNode };
@@ -15,14 +16,14 @@ export type Discriminator = {
   propertyName: string;
 };
 
-export enum CombineType {
-  ALLOF, ONEOF, ANYOF, NOT
+export enum AssociationType {
+  ALLOF, ONEOF, ANYOF, NOT, NONE
 }
 export class BaseNode {
   public type?: DataType;
   public description?: string;
   public isRequired?: boolean;
-  public combineType;
+  public associationType: AssociationType;
   public discriminator?: Discriminator;
   public example: any;
   public subSchemas: BaseNode[] = [];
@@ -42,18 +43,7 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
 
-    if(schema.allOf){
-      this.combineType = CombineType.ALLOF;
-    } 
-    if(schema.oneOf){
-      this.combineType = CombineType.ONEOF
-    }
-    if(schema.anyOf){
-      this.combineType = CombineType.ANYOF;
-    }
-    if(schema.not){
-      this.combineType = CombineType.NOT
-    }
+    this.associationType = getAssociationType(schema);
   }
 
   /**

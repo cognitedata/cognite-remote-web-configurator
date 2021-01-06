@@ -42,13 +42,13 @@ export const populateChildren = (
 ): BaseNode => {
 
   if (schema.allOf || schema.anyOf) {
-    const combined = schema.allOf || schema.anyOf;
+    const associatedSchema = schema.allOf || schema.anyOf;
     const obj = new ObjectNode(schema, {}, isRequired);
 
     let dat: any = {};
 
-    if(combined){
-      for (const subSchema of combined) {
+    if(associatedSchema){
+      for (const subSchema of associatedSchema) {
         const children = populateChildren(subSchema, isRequired, schema, obj);
         obj.subSchemas.push(children);
         if(children.rowData instanceof Object){
