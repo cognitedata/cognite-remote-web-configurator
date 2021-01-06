@@ -129,12 +129,10 @@ export const loadSchema = (): Promise<void> => {
               }
             }
           }
-          console.log("Schema YML!", rootSchema);
-          console.log("Schema Node!", rootDataNode);
-          (window as any)["nodes"] = rootDataNode;
           console.log("All Nodes", allNodes);
-          console.log("JSON->", getJson(rootDataNode[defaultGroup]));
-          console.log("TWIN_CONFIG", rootDataNode[defaultGroup]);
+          console.log("Schema YML", rootSchema);
+          console.log("Schema Node", rootDataNode);
+          console.log("TwinConfig", rootDataNode[defaultGroup]);
           resolve();
         } else {
           console.error(err);

@@ -41,7 +41,7 @@ export const populateChildren = (
   parentBaseNode: BaseNode 
 ): BaseNode => {
   if (schema.oneOf) {
-    // schema.oneOf is handled only if discriminator presents in schma,(Check BaseNode `get data` implementation)
+    // schema.oneOf is handled only if discriminator presents at schma,(Check BaseNode `get data()` implementation)
     return new BaseNode(DataType.object, schema, {}, isRequired);
 
   } else if (schema.allOf || schema.anyOf) {

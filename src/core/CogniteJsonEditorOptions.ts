@@ -52,7 +52,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     public modes: JSONEditorMode[] = ["tree", "code"];
 
     /**
-     * Create and return all posible templates for inserting
+     * Create and return all possible templates for inserting
      */
     public get templates(): any {
         const allTemplates: any = [];
@@ -518,9 +518,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             return ret;
 
-        } 
-
-        else if (resultNode?.data) {
+        } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = { ...(resultNode.data as BaseNodes) };
 

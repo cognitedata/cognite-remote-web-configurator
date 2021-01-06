@@ -18,6 +18,7 @@ export type Discriminator = {
 export enum AssociationType {
   ALLOF, ONEOF, ANYOF, NOT, NONE
 }
+
 export class BaseNode {
   public type?: DataType;
   public description?: string;
@@ -37,11 +38,9 @@ export class BaseNode {
     this.type = type;
     this.description = schema.description;
     this.discriminator = schema.discriminator;
-
     this._data = data;
     this.isRequired = isRequired;
     this.example = schema.example;
-
     this.association = this.getAssociationType(schema);
   }
 
