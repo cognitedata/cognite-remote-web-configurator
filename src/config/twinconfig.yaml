@@ -7,7 +7,12 @@ paths: {}
 
 components:
   schemas:
-
+    AnyValue:
+      description: Can be any value - string, number, boolean, array or object.
+    NotValue:
+      description: Can be any value - expect string.
+      not:
+        type: 'string'
     AnyAnimal:
       anyOf:
         - $ref: '#/components/schemas/Cat'
@@ -62,6 +67,10 @@ components:
        - scenes
      type: object
      properties:
+       notValue:
+         $ref: '#/components/schemas/NotValue' 
+       anyValue:
+         $ref: '#/components/schemas/AnyValue' 
        anyAnimal:
         $ref: '#/components/schemas/AnyAnimal'
        oneAnimal:

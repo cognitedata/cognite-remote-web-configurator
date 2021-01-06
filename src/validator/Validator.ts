@@ -108,7 +108,7 @@ export const loadSchema = (): Promise<void> => {
               description: "root",
               type: "",
               properties: {}
-            }, new BaseNode(DataType.unspecified, val as ISchemaNode, undefined, false));
+            }, new BaseNode(DataType.any, val as ISchemaNode, undefined, false));
             rootDataNode[key] = childrenNodes;
           }
 

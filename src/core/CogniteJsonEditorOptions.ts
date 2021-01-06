@@ -511,7 +511,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return resultNode.sampleData.data;
             }
             const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.unspecified, {
+                [`${key}-sample`]: new BaseNode(DataType.any, {
                     type: DataType.object,
                     description: `Add sample item to ${key}`
                 }, undefined, true)

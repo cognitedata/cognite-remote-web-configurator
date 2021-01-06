@@ -15,7 +15,7 @@ export const ParseType = (type: string): DataType => {
     case "array":
       return DataType.array;
     default:
-      return DataType.unspecified;
+      return DataType.any;
   }
 };
 
