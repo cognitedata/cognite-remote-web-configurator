@@ -24,24 +24,24 @@ const isValidFileName = (): boolean => {
     return false;
 }
 
-const isUpdated = (selectedJsonConfigId: number | null): boolean => {
-    return false;
+const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> => {
     if (selectedJsonConfigId) {
-        alert('ok');
         const originalHash = JsonConfigCommandCenter.getOriginalHash();
-        let updatedHash;
-        JsonConfigCommandCenter.loadJsonConfigs()
+        const updatedHash = await JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 if (response) {
                     const selectedJsonConfig = response.get(selectedJsonConfigId);
                     if (selectedJsonConfig) {
-                        updatedHash = hash((selectedJsonConfig as JsonConfig).data);
+                        return hash((selectedJsonConfig as JsonConfig).data);
                     }
                 }
             })
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
+        console.log('asxx o', originalHash);
+        console.log('asxx u', updatedHash);
+
         return (originalHash !== updatedHash);
     }
     return false;
@@ -71,26 +71,20 @@ export const CommandPanel: React.FC<{
         }
     }
 
-    const onReloadHandler = (id: number | null) => {
-        // if (JsonConfigCommandCenter.isEdited()) {
-        //     confirm({
-        //         title: 'confirm',
-        //         icon: <ExclamationCircleOutlined />,
-        //         content: 'confirm',
-        //         onOk() {
-        //             props.commandEvent(CommandEvent.reload, id);
-        //         }
-        //     });
-        // }
-        // else {
-        //     props.commandEvent(CommandEvent.reload, id);
-        // }
-        const currentJson = JsonConfigCommandCenter.currentJson;
-        if(isUpdated(props.selectedJsonConfigId)){
-            alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
+    const onReloadHandler = async () => {
+        if (await isUpdated(props.selectedJsonConfigId)) {
+            if (JsonConfigCommandCenter.isEdited()) {
+                // get resolved json
+                // CommandEvent.reload
+                // set json config with resolved one
+                alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
+            }
+            else {
+                props.commandEvent(CommandEvent.reload);
+            }
         }
-        else{
-            props.commandEvent(CommandEvent.reload, [id, currentJson]);
+        else {
+            props.commandEvent(CommandEvent.reload);
         }
     }
 
@@ -128,8 +122,10 @@ export const CommandPanel: React.FC<{
                 title: LOCALIZATION.UPLOAD_TITLE,
                 icon: <ExclamationCircleOutlined />,
                 content: LOCALIZATION.UPLOAD_CONTENT,
-                onOk() {
-                    if (isUpdated(props.selectedJsonConfigId)) {
+                async onOk() {
+                    if (await isUpdated(props.selectedJsonConfigId)) {
+                        // set json config with resolved one
+                        // CommandEvent.update
                         alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
                     }
                     else {
@@ -137,6 +133,7 @@ export const CommandPanel: React.FC<{
                             .then((response: any) => {
                                 const createdId = response.data.data.items[0].id;
                                 props.reloadJsonConfigs(createdId);
+                                JsonConfigCommandCenter.updateTitle();
                                 message.success(LOCALIZATION.UPLOAD_SUCCESS);
                             })
                             .catch((error: any) => {
@@ -188,7 +185,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
-                <CommandItem className={classes.btn} icon={"reload"} onClick={() => onReloadHandler(props.selectedJsonConfigId)}>Reload</CommandItem>
+                <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>

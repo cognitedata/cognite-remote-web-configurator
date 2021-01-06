@@ -23,7 +23,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
 
     const loadJsonConfigs = () => {
-        return JsonConfigCommandCenter.loadJsonConfigs()
+        JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 setJsonConfigMap(response);
             })
@@ -71,11 +71,6 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.reload: {
                 loadJsonConfigs();
-                console.log('asxx 0', args[0]);
-                console.log('asxx 1', args[1]);
-                
-                // setSelectedJsonConfig(args[0]);
-                // setJsonConfig(args[1]);
                 break;
             }
             case CommandEvent.switchConfig: {
