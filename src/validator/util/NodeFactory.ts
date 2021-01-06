@@ -50,6 +50,7 @@ export const populateChildren = (
     if(combined){
       for (const subSchema of combined) {
         const children = populateChildren(subSchema, isRequired, schema, obj);
+        obj.subSchemas.push(children);
         if(children.rowData instanceof Object){
           dat = { ...dat, ...children.rowData};
         }

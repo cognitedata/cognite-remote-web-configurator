@@ -25,7 +25,7 @@ export class BaseNode {
   public combineType;
   public discriminator?: Discriminator;
   public example: any;
-
+  public subSchemas: BaseNode[] = [];
   protected _data: IData;
 
   constructor(
@@ -42,7 +42,6 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
 
-  
     if(schema.allOf){
       this.combineType = CombineType.ALLOF;
     } 
@@ -50,7 +49,7 @@ export class BaseNode {
       this.combineType = CombineType.ONEOF
     }
     if(schema.anyOf){
-      this.combineType = CombineType.ANYOF
+      this.combineType = CombineType.ANYOF;
     }
     if(schema.not){
       this.combineType = CombineType.NOT
