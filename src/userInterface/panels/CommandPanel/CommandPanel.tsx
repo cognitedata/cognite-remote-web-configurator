@@ -25,23 +25,24 @@ const isValidFileName = (): boolean => {
 }
 
 const isUpdated = (selectedJsonConfigId: number | null): boolean => {
+    return false;
     if (selectedJsonConfigId) {
-        alert('ok')
+        alert('ok');
         const originalHash = JsonConfigCommandCenter.getOriginalHash();
-        let updatedhash;
+        let updatedHash;
         JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 if (response) {
                     const selectedJsonConfig = response.get(selectedJsonConfigId);
                     if (selectedJsonConfig) {
-                        updatedhash = hash((selectedJsonConfig as JsonConfig).data);
+                        updatedHash = hash((selectedJsonConfig as JsonConfig).data);
                     }
                 }
             })
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
-        return (originalHash !== updatedhash);
+        return (originalHash !== updatedHash);
     }
     return false;
 }
@@ -71,18 +72,25 @@ export const CommandPanel: React.FC<{
     }
 
     const onReloadHandler = (id: number | null) => {
-        if (JsonConfigCommandCenter.isEdited()) {
-            confirm({
-                title: 'confirm',
-                icon: <ExclamationCircleOutlined />,
-                content: 'confirm',
-                onOk() {
-                    props.commandEvent(CommandEvent.reload, id);
-                }
-            });
+        // if (JsonConfigCommandCenter.isEdited()) {
+        //     confirm({
+        //         title: 'confirm',
+        //         icon: <ExclamationCircleOutlined />,
+        //         content: 'confirm',
+        //         onOk() {
+        //             props.commandEvent(CommandEvent.reload, id);
+        //         }
+        //     });
+        // }
+        // else {
+        //     props.commandEvent(CommandEvent.reload, id);
+        // }
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        if(isUpdated(props.selectedJsonConfigId)){
+            alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
         }
-        else {
-            props.commandEvent(CommandEvent.reload, id);
+        else{
+            props.commandEvent(CommandEvent.reload, [id, currentJson]);
         }
     }
 
