@@ -1,6 +1,5 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { getAssociationType } from "../util/Helper";
 import { rootDataNode } from "../Validator";
 
 export type BaseNodes = { [key: string]: BaseNode };
@@ -23,7 +22,7 @@ export class BaseNode {
   public type?: DataType;
   public description?: string;
   public isRequired?: boolean;
-  public associationType: AssociationType;
+  public association: AssociationType;
   public discriminator?: Discriminator;
   public example: any;
   public subSchemas: BaseNode[] = [];
@@ -43,7 +42,7 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
 
-    this.associationType = getAssociationType(schema);
+    this.association = this.getAssociationType(schema);
   }
 
   /**
@@ -95,5 +94,21 @@ export class BaseNode {
 
   public get rowData(): IData {
     return this._data;
+  }
+
+  private getAssociationType(schema: ISchemaNode) {
+    if(schema.allOf){
+      return AssociationType.ALLOF;
+    } 
+    if(schema.oneOf){
+      return AssociationType.ONEOF
+    }
+    if(schema.anyOf){
+      return AssociationType.ANYOF;
+    }
+    if(schema.not){
+      return AssociationType.NOT
+    }
+    return AssociationType.NONE;
   }
 }

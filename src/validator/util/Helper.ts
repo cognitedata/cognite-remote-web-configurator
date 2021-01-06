@@ -147,18 +147,3 @@ export const replaceString = (str: string, replacement: string) => {
   }
 }
 
-export const getAssociationType = (schema: ISchemaNode): AssociationType => {
-  if(schema.allOf){
-    return AssociationType.ALLOF;
-  } 
-  if(schema.oneOf){
-    return AssociationType.ONEOF
-  }
-  if(schema.anyOf){
-    return AssociationType.ANYOF;
-  }
-  if(schema.not){
-    return AssociationType.NOT
-  }
-  return AssociationType.NONE;
-}
