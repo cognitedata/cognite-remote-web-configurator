@@ -28,6 +28,7 @@ const extractField = (key: string) => {
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JSONEditorOptions {
+        console.log('All templates', this.templates);
         return {
             mode: this.mode,
             // modes: this.modes,
@@ -55,8 +56,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
      */
     public get templates(): any {
         const allTemplates: any = [];
+
+        // Here we handle all the add possibilities for each node
         getAllNodes().forEach(ele => {
             const key = extractField(ele.key);
+
+            // Handle: Add as a property of object
             const template = {
                 text: key,
                 title: ele.node.description,
@@ -66,6 +71,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             }
             allTemplates.push(template);
 
+            // Handle: Add as an association type
             if (ele.node.discriminator && ele.node.data) {
                 // If discriminator exists, add all sub types as templates
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
@@ -80,34 +86,32 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 });
             }
 
+            // Handle: Add as sample object for array/map
             if (ele.node instanceof ArrayNode || ele.node instanceof MapNode) {
+                // Handle: if sample object is associationType
                 if(ele.node.sampleData && ele.node.sampleData.discriminator){
-                    // this.pushDiscriminatorTemplates(allTemplates, key, ele.node.sampleData);
-              
                     // If discriminator exists, add all sub types as templates
                     Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
                         const template = {
                             text: `${key}-${subKey}`,
                             title: `Add sample item to ${key}`,
                             className: "jsoneditor-type-object",
-                            field: `${key}`,
+                            field: `${key}-sample`,
                             value: getJson(subVal as BaseNode),
                         };
                         allTemplates.push(template);
                     });
-                }
-                
-            }
-
-            if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
-                const template = {
-                    text: `${key}-sample`,
-                    title: `Add sample item to ${key}`,
-                    className: 'jsoneditor-type-object',
-                    field: `${key}-sample`,
-                    value: ele.sample
-                }
-                allTemplates.push(template);
+                // Handle: add as a direct sample object    
+                } else {
+                    const template = {
+                        text: `${key}-sample`,
+                        title: `Add sample item to ${key}`,
+                        className: 'jsoneditor-type-object',
+                        field: `${key}-sample`,
+                        value: ele.sample
+                    }
+                    allTemplates.push(template);
+                }               
             }
         });
     
@@ -510,7 +514,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         let resultNode = node;
 
         /**
-         * If dicriminator, resultNode should get from data[`type`]
+         * If dicriminator(parent), resultNode should get from data[`type`]
          */
         if (resultNode?.discriminator) {
             const currentData = this.getPathObject(currentJson, parentPath);
@@ -526,31 +530,33 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (resultNode instanceof ArrayNode || resultNode instanceof MapNode) {
             // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
-                // TODO: Check is this possible for other type of nodes
-                // return resultNode.sampleData.data;
-
+                // Handle: Association comes with array/map
                 const res: any = {};
-                this.assignDiscriminators(res, resultNode.sampleData, `${key}`);
+                this.replaceKeyWithDiscriminatorTypes(res, resultNode.sampleData, `${key}`);
                 return res;
+            } else {
+                // Handle: Sample data for array/map
+                const ret: BaseNodes = {
+                    [`${key}-sample`]: new BaseNode(DataType.any, {
+                        type: DataType.object,
+                        description: `Add sample item to ${key}`
+                    }, undefined, true)
+                }
+                return ret;
             }
-            const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.any, {
-                    type: DataType.object,
-                    description: `Add sample item to ${key}`
-                }, undefined, true)
-            }
-            return ret;
 
+        // Handle: Add as property of object
         } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = { ...(resultNode.data as BaseNodes) };
 
+            // Handle: Add as property of association type
             Object.entries(res as Record<string, unknown>).forEach(
                 ([key, subNode]) => {
                     // if they are descriminator types as data then replace insert items as `type-discriminatorType`
                     if ((subNode as BaseNode).discriminator) {
                         // If discriminator available, then node is a BaseNode
-                        this.assignDiscriminators(res, subNode as BaseNode, key);
+                        this.replaceKeyWithDiscriminatorTypes(res, subNode as BaseNode, key);
                     }
                 }
             );
@@ -562,7 +568,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
 
-    private assignDiscriminators(res: any, node: BaseNode, key: string) {
+    private replaceKeyWithDiscriminatorTypes(res: any, node: BaseNode, key: string) {
         delete res[key];
         Object.keys(
             (node as BaseNode).data as Record<string, unknown>
