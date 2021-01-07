@@ -48,7 +48,7 @@ components:
               type: boolean
             breed:
               type: string
-              enum: [Dingo, Husky, Retriever, Shepherd]
+              enum: [Dingo, Husky, Retriever, Shepherd, null]
     Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
       allOf: # Combines the main `Pet` schema with `Cat`-specific properties 
         - $ref: '#/components/schemas/Pet'

@@ -3,7 +3,7 @@ import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { BaseNode, IData } from "./BaseNode";
 
 export class StringNode extends BaseNode {
-  public possibleValues: string[] | undefined;
+  public possibleValues: (string|null)[] | undefined;
   public maxLength: number | undefined;
   public pattern: string | undefined;
 
