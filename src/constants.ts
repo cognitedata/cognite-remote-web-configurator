@@ -38,6 +38,10 @@ export const LOCALIZATION = {
     REFRESH_SUCCESS: 'Json Config updated successfully!',
     REFRESH_ERROR: 'Refresh Cancelled! {{error}}',
 
+    // switch config
+    SWITCH_TITLE:'Switch Config?',
+    SWITCH_CONTENT:'You have some unsaved changes. Are you sure you want to switch without saving?',
+
     // Remove item menu option
     REMOVE_ENABLED: 'Remove this field',
     REMOVE_DISABLED: 'Cannot Remove.',

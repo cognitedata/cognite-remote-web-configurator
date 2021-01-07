@@ -9,6 +9,7 @@ import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
+import { LOCALIZATION } from '../../../constants';
 
 const { confirm } = Modal;
 
@@ -21,9 +22,9 @@ export const SideNavPanel: React.FC<{
     const onJsonConfigSelectHandler = (id: number | null) => {
         if (JsonConfigCommandCenter.isEdited()) {
             confirm({
-                title: 'confirm',
+                title: LOCALIZATION.SWITCH_TITLE,
                 icon: <ExclamationCircleOutlined />,
-                content: 'confirm',
+                content: LOCALIZATION.SWITCH_CONTENT,
                 onOk() {
                     props.commandEvent(CommandEvent.switchConfig, id);
                 }
@@ -48,10 +49,6 @@ export const SideNavPanel: React.FC<{
             </div>
             <div>
                 <Text strong>Configurations</Text>
-                {/* <div className={classes.toolbar}>
-                    <ToolItem onClick={() => onJsonConfigSelectHandler(null)}><FileAddOutlined /></ToolItem>
-                    <ToolItem onClick={() => onReloadHandler(props.selectedJsonConfigId)}><ReloadOutlined /></ToolItem>
-                </div> */}
                 <div className={classes.jsonConfigContainer}>
                     <ConfigSelector
                         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
