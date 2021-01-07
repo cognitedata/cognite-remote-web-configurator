@@ -146,7 +146,7 @@ export const CommandPanel: React.FC<{
                                     });
                             },
                             onCancel: () => {
-                                console.log('canceled');
+                                message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
                             }
                         });
                     }
