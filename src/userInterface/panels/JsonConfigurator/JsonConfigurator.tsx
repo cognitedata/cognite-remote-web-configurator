@@ -107,6 +107,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.reload: {
                 loadJsonConfigs();
+                setJsonConfig(args[0]);
                 break;
             }
             case CommandEvent.switchConfig: {
@@ -126,29 +127,29 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
-            case CommandEvent.refresh: {
-                const serverData = await JsonConfigCommandCenter.onRefresh(selectedJsonConfigId);
-                const serverConfig = serverData.data;
-                const localConfig = JsonConfigCommandCenter.currentJson;
+            // case CommandEvent.refresh: {
+            //     const serverData = await JsonConfigCommandCenter.onRefresh(selectedJsonConfigId);
+            //     const serverConfig = serverData.data;
+            //     const localConfig = JsonConfigCommandCenter.currentJson;
 
-                if (serverConfig && localConfig) {
-                    if (JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
-                        compareJsons.current = { currentJson: localConfig, newJson: serverConfig };
-                        setShowMerge(true);
-                    } else {
-                        if (jsonConfigMap && serverConfig) {
-                            if (selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId)) {
-                                jsonConfigMap.set(selectedJsonConfigId, serverConfig);
-                                setJsonConfig(serverConfig);
-                                message.success(LOCALIZATION.REFRESH_SUCCESS);
-                            }
-                        }
-                    }
-                } else {
-                    console.error("Server config or local config cannot be empty!");
-                }
-                break;
-            }
+            //     if (serverConfig && localConfig) {
+            //         if (JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
+            //             compareJsons.current = { currentJson: localConfig, newJson: serverConfig };
+            //             setShowMerge(true);
+            //         } else {
+            //             if (jsonConfigMap && serverConfig) {
+            //                 if (selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId)) {
+            //                     jsonConfigMap.set(selectedJsonConfigId, serverConfig);
+            //                     setJsonConfig(serverConfig);
+            //                     message.success(LOCALIZATION.REFRESH_SUCCESS);
+            //                 }
+            //             }
+            //         }
+            //     } else {
+            //         console.error("Server config or local config cannot be empty!");
+            //     }
+            //     break;
+            // }
             default:
                 break;
         }
