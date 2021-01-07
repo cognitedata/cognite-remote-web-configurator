@@ -15,13 +15,18 @@ export type Discriminator = {
   propertyName: string;
 };
 
+export enum AssociationType {
+  ALLOF, ONEOF, ANYOF, NOT, NONE
+}
+
 export class BaseNode {
   public type?: DataType;
   public description?: string;
   public isRequired?: boolean;
+  public association: AssociationType;
   public discriminator?: Discriminator;
   public example: any;
-
+  public subSchemas: BaseNode[] = [];
   protected _data: IData;
 
   constructor(
@@ -33,19 +38,28 @@ export class BaseNode {
     this.type = type;
     this.description = schema.description;
     this.discriminator = schema.discriminator;
-
     this._data = data;
     this.isRequired = isRequired;
     this.example = schema.example;
+    this.association = this.getAssociationType(schema);
   }
 
+  /**
+   * Dicriminator:
+   * This method returns a object as {key(discriminator type): values{object related to that type}}
+   * But from CogniteJsonEditorOptions class, it dynamically get the type of json and replace this object with
+   * correct object type
+   */
   public get data(): IData {
-    if (this.discriminator) {
+    if (this.discriminator && this.discriminator.mapping ) {
+
       const result: BaseNodes = {};
       const possibleTypeValues = Object.keys(this.discriminator.mapping);      
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
         const schemaPath = val.split("/");
+
+        // Get node for specific type of dicriminator. It is the last section of the schemaPath array
         const node = rootDataNode[schemaPath[schemaPath.length - 1]];
 
         if(node._data instanceof Object){
@@ -60,6 +74,13 @@ export class BaseNode {
         }
         result[key] = node;
       }
+      /**
+       * {
+       *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
+       *    fullAssetHierarchy: { data... }
+       *    noHierarchy: { data... }
+       * }
+       */
       return result;
     } else {
       return this._data;
@@ -72,5 +93,21 @@ export class BaseNode {
 
   public get rowData(): IData {
     return this._data;
+  }
+
+  private getAssociationType(schema: ISchemaNode) {
+    if(schema.allOf){
+      return AssociationType.ALLOF;
+    } 
+    if(schema.oneOf){
+      return AssociationType.ONEOF
+    }
+    if(schema.anyOf){
+      return AssociationType.ANYOF;
+    }
+    if(schema.not){
+      return AssociationType.NOT
+    }
+    return AssociationType.NONE;
   }
 }

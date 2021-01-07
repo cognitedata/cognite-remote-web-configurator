@@ -2,9 +2,10 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, BaseNodes } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes, AssociationType } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { STRING_PLACEHOLDER } from "../../constants";
+import { ISchemaNode } from "../interfaces/ISchemaNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -102,20 +103,7 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
     return obj.example;
   }
 
-  if (obj instanceof ObjectNode) {
-   if (obj.data) {
-      const dat: any = {};
-      for (const [key, val] of Object.entries(obj.data)) {
-        const valNode = val as BaseNode;
-        if(!valNode.discriminator && (valNode.isRequired || fillAllFields)){
-          dat[key] = getJson(val);
-        }
-      }
-      return dat;
-    } else {
-      return getPrimitiveValue(obj);
-    }
-  } else if (obj instanceof ArrayNode) {
+  if (obj instanceof ArrayNode) {
     if (obj.minItems) {
       const dat: any = [];
       // No need to handle discriminator types since they are optional
@@ -130,8 +118,21 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
     } else {
       return [];
     }
-  } // No need to handle MapNodes, since they are optional always 
-  else {
+  } else if (obj instanceof ObjectNode) {
+    if (obj.data) {
+       const dat: any = {};
+       for (const [key, val] of Object.entries(obj.data)) {
+         const valNode = val as BaseNode;
+         if(!valNode.discriminator && (valNode.isRequired || fillAllFields)){
+           dat[key] = getJson(val);
+         }
+       }
+       return dat;
+     } else {
+       return getPrimitiveValue(obj);
+     }
+   }  // No need to handle MapNodes, since they are optional always 
+    else {
     return getPrimitiveValue(obj);
   }
 };
@@ -145,3 +146,4 @@ export const replaceString = (str: string, replacement: string) => {
     return "";
   }
 }
+
