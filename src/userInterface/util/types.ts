@@ -1,3 +1,5 @@
+import { JSONEditorOptions } from "jsoneditor";
+
 export interface JsonConfig {
     id: number;
     data: {
@@ -14,4 +16,8 @@ export interface MergeOptions {
     serverConfig: any;
     onOk: (mergedJson: any) => void;
     onCancel: () => void;
+}
+
+export interface JsonEditorOptions extends JSONEditorOptions {
+    limitDragging?: boolean;
 }

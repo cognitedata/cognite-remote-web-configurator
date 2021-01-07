@@ -108,7 +108,7 @@ export const loadSchema = (): Promise<void> => {
               description: "root",
               type: "",
               properties: {}
-            }, new BaseNode(DataType.unspecified, val as ISchemaNode, undefined, false));
+            }, new BaseNode(DataType.any, val as ISchemaNode, undefined, false));
             rootDataNode[key] = childrenNodes;
           }
 
@@ -129,11 +129,10 @@ export const loadSchema = (): Promise<void> => {
               }
             }
           }
-          console.log("Schema YML!", rootSchema);
-          console.log("Schema Node!", rootDataNode);
-          (window as any)["nodes"] = rootDataNode;
           console.log("All Nodes", allNodes);
-          console.log("JSON->", getJson(rootDataNode[defaultGroup]));
+          console.log("Schema YML", rootSchema);
+          console.log("Schema Node", rootDataNode);
+          console.log("TwinConfig", rootDataNode[defaultGroup]);
           resolve();
         } else {
           console.error(err);

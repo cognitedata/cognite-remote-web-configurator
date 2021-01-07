@@ -16,6 +16,11 @@ export interface ISchemaNode {
     propertyName: string;
   };
   allOf?: ISchemaNode[];
+  anyOf?: ISchemaNode[];
+  oneOf?: ISchemaNode[];
+  not?: {
+    type: string;
+  };
   example?: any;
 
   // StringNode

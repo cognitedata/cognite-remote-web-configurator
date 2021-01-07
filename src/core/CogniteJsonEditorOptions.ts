@@ -20,6 +20,7 @@ import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../constants'
+import { JsonEditorOptions } from "../userInterface/util/types";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -27,7 +28,7 @@ const extractField = (key: string) => {
 
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
-    public get options(): JSONEditorOptions {
+    public get options(): JsonEditorOptions {
 
         return {
             mode: this.mode,
@@ -44,7 +45,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidate: this.onValidate,
             onChange: this.onChange,
             onError: this.onError,
-            onChangeText: this.onChangeText
+            onChangeText: this.onChangeText,
+            limitDragging: this.limitDragging,
         }
     }
 
@@ -52,6 +54,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public modes: JSONEditorMode[] = ["tree", "code"];
 
+    public limitDragging = true;
+
+    /**
+     * Create and return all possible templates for inserting
+     */
     public get templates(): any {
         const allTemplates: any = [];
         getAllNodes().forEach(ele => {
@@ -435,6 +442,12 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.string: {
                         if (!isString(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                        } else {
+                            const maxLength = Number(schema.maxLength);
+                            const length = value.length;
+                            if(maxLength && length > maxLength) {
+                                errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                            }
                         }
                         break;
                     }
@@ -445,7 +458,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
-        const validMenuItems: MenuItem[] = [];
+
         const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
 
         if (error) {
@@ -459,6 +472,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         if (submenu === undefined || submenu.length === 0) {
             return undefined;
         }
+
+        const validMenuItems: MenuItem[] = [];
 
         submenu?.forEach(subItem => {
             if (validInsertItems !== undefined && validInsertItems.length !== 0) {
@@ -487,7 +502,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
-        const key = parentPath[parentPath.length - 1]
+        const key = parentPath[parentPath.length - 1];
         let resultNode = node;
 
         /**
@@ -511,7 +526,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return resultNode.sampleData.data;
             }
             const ret: BaseNodes = {
-                [`${key}-sample`]: new BaseNode(DataType.unspecified, {
+                [`${key}-sample`]: new BaseNode(DataType.any, {
                     type: DataType.object,
                     description: `Add sample item to ${key}`
                 }, undefined, true)
@@ -524,6 +539,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
             Object.entries(res as Record<string, unknown>).forEach(
                 ([key, node]) => {
+                    // if they are descriminator types as data then replace insert items as `type-discriminatorType`
                     if ((node as BaseNode).discriminator) {
                         delete res[key];
                         Object.keys(

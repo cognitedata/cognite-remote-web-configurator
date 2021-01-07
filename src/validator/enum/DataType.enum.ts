@@ -1,5 +1,5 @@
 export enum DataType {
-    unspecified = "unspecified",
+    any = "any",
     string = "string",
     number = "number",
     boolean = "boolean",
