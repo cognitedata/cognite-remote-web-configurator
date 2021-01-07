@@ -20,6 +20,7 @@ import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../constants'
+import { JsonEditorOptions } from "../userInterface/util/types";
 
 const extractField = (key: string) => {
     return key.split(":")[1]
@@ -27,7 +28,7 @@ const extractField = (key: string) => {
 
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
-    public get options(): JSONEditorOptions | any {
+    public get options(): JsonEditorOptions {
 
         return {
             mode: this.mode,
