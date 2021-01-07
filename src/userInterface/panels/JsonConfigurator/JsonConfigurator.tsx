@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
 import { JsonConfig } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
@@ -9,6 +9,7 @@ import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
 import { LOCALIZATION } from '../../../constants';
 import hash from 'object-hash';
+import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -21,6 +22,8 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
+    const [showMerge, setShowMerge] = useState(false);
+    const compareJsons = useRef<{ currentJson: string, newJson: string}>();
 
     const loadJsonConfigs = () => {
         JsonConfigCommandCenter.loadJsonConfigs()
@@ -50,6 +53,30 @@ export const JsonConfigurator: React.FC<any> = () => {
             } as JsonConfig);
             setSelectedJsonConfigId(null);
             setJsonConfigHash(null);
+        }
+    }
+
+    const handleCancelMerge = () => {
+        message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
+        setShowMerge(false);
+    }
+
+    const handleOkMerge = (mergedJsonString: string) => {
+        setShowMerge(false);
+        let mergedJson;
+        try{
+            mergedJson = JSON.parse(mergedJsonString);
+            mergedJson = { id: selectedJsonConfigId, data: mergedJson };
+        } catch (e: any) {
+            console.error("Error Occurred while parsing json!");
+        }
+
+        if(jsonConfigMap && mergedJson) {
+            if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
+                jsonConfigMap.set(selectedJsonConfigId, mergedJson);
+                setJsonConfig(mergedJson as JsonConfig);
+            }
+            message.success(LOCALIZATION.REFRESH_SUCCESS);
         }
     }
 
@@ -90,6 +117,29 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
+            case CommandEvent.refresh: {
+                const serverData = await JsonConfigCommandCenter.onRefresh(selectedJsonConfigId);
+                const serverConfig = serverData.data;
+                const localConfig = JsonConfigCommandCenter.currentJson;
+
+                if(serverConfig && localConfig) {
+                    if(JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
+                        compareJsons.current = { currentJson: localConfig, newJson: serverConfig };
+                        setShowMerge(true);
+                    } else {
+                        if(jsonConfigMap && serverConfig) {
+                            if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
+                                jsonConfigMap.set(selectedJsonConfigId, serverConfig);
+                                setJsonConfig(serverConfig);
+                                message.success(LOCALIZATION.REFRESH_SUCCESS);
+                            }
+                        }
+                    }
+                } else{
+                    console.error("Server config or local config cannot be empty!");
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -116,6 +166,9 @@ export const JsonConfigurator: React.FC<any> = () => {
                     />
                     <EditorPanel jsonConfig={jsonConfig} />
                 </div>
+            </div>
+            <div>
+                <DiffMerge showPopup={showMerge} serverJson={compareJsons.current?.newJson} localJson={compareJsons.current?.currentJson} onMerge={handleOkMerge} onCancel={handleCancelMerge} />
             </div>
         </div>
     );

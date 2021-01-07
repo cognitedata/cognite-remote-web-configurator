@@ -62,4 +62,13 @@ export class DigitalTwinApi implements Api {
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options)
     }
 
+    public retrieveJson = async (configId: number): Promise<HttpResponse<any>> => {
+        return await cogniteClient.get(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/${configId}`)
+            .then(response => {
+                console.log(`Retrieved Digital Twin Config: ${configId} successfully`);
+                const jsonConfig = response.data.data;
+                return jsonConfig;
+            });
+    }
+
 }

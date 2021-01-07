@@ -84,6 +84,10 @@ export class JsonConfigCommandCenter {
         return await JsonConfigCommandCenter.api.jsonList();
     }
 
+    public static loadJsonConfig = async (configId: number): Promise<any> => {
+        return await JsonConfigCommandCenter.api.retrieveJson(configId);
+    }
+
     public static onModeChange(mode: Modes): void {
         if (JsonConfigCommandCenter.editor) {
             JsonConfigCommandCenter.editor.setMode(mode);
@@ -116,5 +120,13 @@ export class JsonConfigCommandCenter {
         }
         const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
         saveAs(blob, fileName);
+    }
+
+    public static onRefresh = async (selectedJsonConfigId: number | null): Promise<any> => {
+
+        if (selectedJsonConfigId) {
+            // todo: current json vs new json
+            return await JsonConfigCommandCenter.api.retrieveJson(selectedJsonConfigId);
+        }
     }
 }

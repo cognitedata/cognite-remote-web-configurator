@@ -1,6 +1,7 @@
 export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";
+export const LOGIN_API_KEY_TEXT = "apiKey";
 export const DEV_MODE = false;
 export const STRING_PLACEHOLDER = "$$";
 
@@ -30,6 +31,12 @@ export const LOCALIZATION = {
     DELETE_SUCCESS: 'Json Config deleted successfully!',
     DELETE_ERROR: 'Delete Cancelled! {{error}}',
     DELETE_INVALID_FILE: 'Delete Cancelled! Please select a file',
+
+    // Refresh Command
+    REFRESH_TITLE: 'Refresh Config',
+    REFRESH_CONTENT: 'Refreshing will fetch the latest version of this config from server',
+    REFRESH_SUCCESS: 'Json Config updated successfully!',
+    REFRESH_ERROR: 'Refresh Cancelled! {{error}}',
 
     // Remove item menu option
     REMOVE_ENABLED: 'Remove this field',
