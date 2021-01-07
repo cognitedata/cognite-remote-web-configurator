@@ -5,7 +5,6 @@ import { ArrayNode } from "../nodes/ArrayNode";
 import { BaseNode, BaseNodes, AssociationType } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { STRING_PLACEHOLDER } from "../../constants";
-import { ISchemaNode } from "../interfaces/ISchemaNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -86,9 +85,9 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
       return obj.data ?? false;
     case DataType.object:
     case DataType.map:
-      return obj.data ?? {};
+      return {};
     case DataType.array:
-      return obj.data ?? [];
+      return [];
 
     default:
       return undefined;
@@ -104,20 +103,7 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
   }
 
   if (obj instanceof ArrayNode) {
-    if (obj.minItems) {
-      const dat: any = [];
-      // No need to handle discriminator types since they are optional
-      if(!obj.sampleData?.discriminator){
-        const sampleVal = getJson(obj.sampleData);
-
-        for (let i = 0; i < obj.minItems; i++) {
-          dat.push(sampleVal);
-        }
-      }
-      return dat;
-    } else {
-      return [];
-    }
+    return [];
   } else if (obj instanceof ObjectNode) {
     if (obj.data) {
        const dat: any = {};

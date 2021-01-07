@@ -28,7 +28,6 @@ const extractField = (key: string) => {
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JSONEditorOptions {
-
         return {
             mode: this.mode,
             // modes: this.modes,
@@ -81,6 +80,25 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 });
             }
 
+            if (ele.node instanceof ArrayNode || ele.node instanceof MapNode) {
+                if(ele.node.sampleData && ele.node.sampleData.discriminator){
+                    // this.pushDiscriminatorTemplates(allTemplates, key, ele.node.sampleData);
+              
+                    // If discriminator exists, add all sub types as templates
+                    Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
+                        const template = {
+                            text: `${key}-${subKey}`,
+                            title: `Add sample item to ${key}`,
+                            className: "jsoneditor-type-object",
+                            field: `${key}`,
+                            value: getJson(subVal as BaseNode),
+                        };
+                        allTemplates.push(template);
+                    });
+                }
+                
+            }
+
             if (ele.node.type === DataType.array || ele.node.type === DataType.map) {
                 const template = {
                     text: `${key}-sample`,
@@ -92,6 +110,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 allTemplates.push(template);
             }
         });
+    
         return allTemplates;
     }
 
@@ -508,7 +527,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
                 // TODO: Check is this possible for other type of nodes
-                return resultNode.sampleData.data;
+                // return resultNode.sampleData.data;
+
+                const res: any = {};
+                this.assignDiscriminators(res, resultNode.sampleData, `${key}`);
+                return res;
             }
             const ret: BaseNodes = {
                 [`${key}-sample`]: new BaseNode(DataType.any, {
@@ -523,17 +546,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const res: any = { ...(resultNode.data as BaseNodes) };
 
             Object.entries(res as Record<string, unknown>).forEach(
-                ([key, node]) => {
+                ([key, subNode]) => {
                     // if they are descriminator types as data then replace insert items as `type-discriminatorType`
-                    if ((node as BaseNode).discriminator) {
-                        delete res[key];
-                        Object.keys(
-                            (node as BaseNode).data as Record<string, unknown>
-                        ).forEach((desKey) => {
-                            res[`${key}-${desKey}`] = {
-                                description: `Add sample item to ${key}`,
-                            };
-                        });
+                    if ((subNode as BaseNode).discriminator) {
+                        // If discriminator available, then node is a BaseNode
+                        this.assignDiscriminators(res, subNode as BaseNode, key);
                     }
                 }
             );
@@ -542,5 +559,17 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             message.error(LOCALIZATION.INCONSISTENT_VALUE);
             return undefined;
         }
+    }
+
+
+    private assignDiscriminators(res: any, node: BaseNode, key: string) {
+        delete res[key];
+        Object.keys(
+            (node as BaseNode).data as Record<string, unknown>
+        ).forEach((desKey) => {
+            res[`${key}-${desKey}`] = {
+                description: `Add sample item to ${key}`,
+            };
+        });
     }
 }

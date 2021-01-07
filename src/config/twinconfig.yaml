@@ -7,6 +7,16 @@ paths: {}
 
 components:
   schemas:
+    MultiArrayTypes:
+      description: Can be any value - string, number, boolean, array or object.
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: pet_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
     AnyValue:
       description: Can be any value - string, number, boolean, array or object.
     NotValue:
@@ -67,6 +77,11 @@ components:
        - scenes
      type: object
      properties:
+       arbitraryArray:
+        description: "Array of 3D"
+        type: array
+        items:
+          $ref: '#/components/schemas/MultiArrayTypes'  
        notValue:
          $ref: '#/components/schemas/NotValue' 
        anyValue:
