@@ -10,8 +10,8 @@ export interface JsonConfig {
 }
 
 export interface MergeOptions {
-    currentJson: any;
-    newJson: any;
-    onOk: (mergedJsonString: string) => void;
+    localConfig: any;
+    serverConfig: any;
+    onOk: (mergedJson: any) => void;
     onCancel: () => void;
 }

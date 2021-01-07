@@ -99,8 +99,13 @@ export class JsonConfigCommandCenter {
         return await JsonConfigCommandCenter.api.saveJson(currentJson);
     }
 
-    public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
+    public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {
+        let currentJson = JsonConfigCommandCenter.currentJson;
+        if (args) {
+            currentJson = args;
+        }
+        console.log(args);
+
         if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
         }

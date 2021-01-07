@@ -5,14 +5,24 @@ import { Modal } from "antd";
 import AceDiff from "ace-diff";
 import styles from "./DiffMerge.module.scss";
 
-export function DiffMerge(props: { showPopup: boolean, serverJson: any, localJson: any, onMerge: (mergedJsonString: string)=> void , onCancel: () => void }) {
+const getJson = (mergedJsonString: string) => {
+    let mergedJson;
+    try {
+        mergedJson = JSON.parse(mergedJsonString);
+    } catch (e: any) {
+        console.error("Error Occurred while parsing json!");
+    }
+    return mergedJson
+}
+
+export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, serverJson: any, localJson: any, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
 
     const serverJson = JSON.stringify(props.serverJson, null, 2);
     const localJson = JSON.stringify(props.localJson, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
 
     useEffect(() => {
-        if(props.showPopup) {
+        if (props.showPopup) {
             setTimeout(() => {
                 const differ = new AceDiff({
                     element: '.acediff',
@@ -30,22 +40,27 @@ export function DiffMerge(props: { showPopup: boolean, serverJson: any, localJso
 
     const handleCancelMerge = () => {
         props.onCancel();
+        props.setShowMerge(false);
     }
 
     const handleLeftMerge = () => {
         const differ = differInstance.current;
-        if(differ) {
+        if (differ) {
             const mergedJsonString = differ.getEditors().left.getValue();
-            props.onMerge(mergedJsonString);
+            const mergedJson = getJson(mergedJsonString);
+            props.onMerge(mergedJson);
         }
+        props.setShowMerge(false);
     }
 
     const handleRightMerge = () => {
         const differ = differInstance.current;
-        if(differ) {
+        if (differ) {
             const mergedJsonString = differ.getEditors().right.getValue();
-            props.onMerge(mergedJsonString);
+            const mergedJson = getJson(mergedJsonString);
+            props.onMerge(mergedJson);
         }
+        props.setShowMerge(false);
     }
 
 

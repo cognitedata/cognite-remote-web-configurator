@@ -39,9 +39,6 @@ const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> 
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
-        console.log('asxx o', originalHash);
-        console.log('asxx u', updatedHash);
-
         return (originalHash !== updatedHash);
     }
     return false;
@@ -125,9 +122,33 @@ export const CommandPanel: React.FC<{
                 content: LOCALIZATION.UPLOAD_CONTENT,
                 async onOk() {
                     if (await isUpdated(props.selectedJsonConfigId)) {
-                        // set json config with resolved one
-                        // CommandEvent.update
-                        alert('File at the serer has been updated. recomend to use diff view (not implemented!)');
+                        props.setMergeOptions({
+                            localConfig: JsonConfigCommandCenter.currentJson,
+                            serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                                .then(response => {
+                                    if (response) {
+                                        return response.get(props.selectedJsonConfigId).data;
+                                    }
+                                })
+                                .catch(error => {
+                                    message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                                }),
+                            onOk: (mergedJson: any) => {
+                                props.commandEvent(CommandEvent.update, mergedJson)
+                                    .then((response: any) => {
+                                        const createdId = response.data.data.items[0].id;
+                                        props.reloadJsonConfigs(createdId);
+                                        JsonConfigCommandCenter.updateTitle();
+                                        message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                                    })
+                                    .catch((error: any) => {
+                                        message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                                    });
+                            },
+                            onCancel: () => {
+                                console.log('canceled');
+                            }
+                        });
                     }
                     else {
                         props.commandEvent(CommandEvent.update)

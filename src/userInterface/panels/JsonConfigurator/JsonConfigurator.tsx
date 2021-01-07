@@ -22,7 +22,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
-    const [showMerge, setShowMerge] = useState(false);
+    const [showMerge, setShowMerge] = useState<boolean>(false);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -59,7 +59,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     const setMergeOptions = (options: MergeOptions) => {
-        compareJsons.current = { currentJson: options.currentJson, newJson: options.newJson };
+        compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
         setShowMerge(true);
@@ -117,7 +117,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 return await JsonConfigCommandCenter.onSaveAs();
             }
             case CommandEvent.update: {
-                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId);
+                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
             }
             case CommandEvent.delete: {
                 return await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
@@ -179,6 +179,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             </div>
             <div>
                 <DiffMerge
+                    setShowMerge={setShowMerge}
                     showPopup={showMerge}
                     serverJson={compareJsons.current?.newJson}
                     localJson={compareJsons.current?.currentJson}
