@@ -21,6 +21,7 @@ export enum AssociationType {
 
 export class BaseNode {
   public type?: DataType;
+  public nullable?: boolean;
   public description?: string;
   public isRequired?: boolean;
   public association: AssociationType;
@@ -41,6 +42,7 @@ export class BaseNode {
     this._data = data;
     this.isRequired = isRequired;
     this.example = schema.example;
+    this.nullable = schema.nullable;
     this.association = this.getAssociationType(schema);
   }
 
