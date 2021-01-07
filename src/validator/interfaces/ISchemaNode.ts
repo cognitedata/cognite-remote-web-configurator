@@ -9,7 +9,6 @@ export interface ISchemaNode {
 
   // Common Props
   example?: any;
-  additionalProperties?: ISchemaNode;
   required?: string[];
 
   // Association Types
@@ -23,6 +22,10 @@ export interface ISchemaNode {
     mapping: { [key: string]: string };
     propertyName: string;
   };
+  // Free-Form Object
+  additionalProperties?: ISchemaNode;
+  minProperties?: number;
+  maxProperties?: number;
 
   // StringNode
   enum?: string[];
