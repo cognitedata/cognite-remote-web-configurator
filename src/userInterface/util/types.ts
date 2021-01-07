@@ -8,3 +8,10 @@ export interface JsonConfig {
         }
     }
 }
+
+export interface MergeOptions {
+    currentJson: any;
+    newJson: any;
+    onOk: (mergedJsonString: string) => void;
+    onCancel: () => void;
+}

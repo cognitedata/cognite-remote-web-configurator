@@ -11,7 +11,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
-import { JsonConfig } from '../../util/types';
+import { JsonConfig, MergeOptions } from '../../util/types';
 import hash from 'object-hash';
 
 const { confirm } = Modal;
@@ -50,6 +50,7 @@ const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> 
 export const CommandPanel: React.FC<{
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
+    setMergeOptions: (options: MergeOptions) => void
     selectedJsonConfigId: number | null
 }> = (props: any) => {
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);

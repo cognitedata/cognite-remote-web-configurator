@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
-import { JsonConfig } from "../../util/types";
+import { JsonConfig, MergeOptions } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
@@ -23,7 +23,9 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
     const [showMerge, setShowMerge] = useState(false);
-    const compareJsons = useRef<{ currentJson: string, newJson: string}>();
+    const compareJsons = useRef<{ currentJson: string, newJson: string }>();
+    const handleOkMerge = useRef<any>(() => { console.log('not set'); });
+    const handleCancelMerge = useRef<any>(() => null);
 
     const loadJsonConfigs = () => {
         JsonConfigCommandCenter.loadJsonConfigs()
@@ -56,29 +58,36 @@ export const JsonConfigurator: React.FC<any> = () => {
         }
     }
 
-    const handleCancelMerge = () => {
-        message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
-        setShowMerge(false);
+    const setMergeOptions = (options: MergeOptions) => {
+        compareJsons.current = { currentJson: options.currentJson, newJson: options.newJson };
+        handleOkMerge.current = options.onOk;
+        handleCancelMerge.current = options.onCancel;
+        setShowMerge(true);
     }
 
-    const handleOkMerge = (mergedJsonString: string) => {
-        setShowMerge(false);
-        let mergedJson;
-        try{
-            mergedJson = JSON.parse(mergedJsonString);
-            mergedJson = { id: selectedJsonConfigId, data: mergedJson };
-        } catch (e: any) {
-            console.error("Error Occurred while parsing json!");
-        }
+    // const handleCancelMerge = () => {
+    //     message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
+    //     setShowMerge(false);
+    // }
 
-        if(jsonConfigMap && mergedJson) {
-            if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
-                jsonConfigMap.set(selectedJsonConfigId, mergedJson);
-                setJsonConfig(mergedJson as JsonConfig);
-            }
-            message.success(LOCALIZATION.REFRESH_SUCCESS);
-        }
-    }
+    // const handleOkMerge = (mergedJsonString: string) => {
+    //     setShowMerge(false);
+    //     let mergedJson;
+    //     try{
+    //         mergedJson = JSON.parse(mergedJsonString);
+    //         mergedJson = { id: selectedJsonConfigId, data: mergedJson };
+    //     } catch (e: any) {
+    //         console.error("Error Occurred while parsing json!");
+    //     }
+
+    //     if(jsonConfigMap && mergedJson) {
+    //         if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
+    //             jsonConfigMap.set(selectedJsonConfigId, mergedJson);
+    //             setJsonConfig(mergedJson as JsonConfig);
+    //         }
+    //         message.success(LOCALIZATION.REFRESH_SUCCESS);
+    //     }
+    // }
 
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
         loadJsonConfigs();
@@ -122,20 +131,20 @@ export const JsonConfigurator: React.FC<any> = () => {
                 const serverConfig = serverData.data;
                 const localConfig = JsonConfigCommandCenter.currentJson;
 
-                if(serverConfig && localConfig) {
-                    if(JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
+                if (serverConfig && localConfig) {
+                    if (JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
                         compareJsons.current = { currentJson: localConfig, newJson: serverConfig };
                         setShowMerge(true);
                     } else {
-                        if(jsonConfigMap && serverConfig) {
-                            if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
+                        if (jsonConfigMap && serverConfig) {
+                            if (selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId)) {
                                 jsonConfigMap.set(selectedJsonConfigId, serverConfig);
                                 setJsonConfig(serverConfig);
                                 message.success(LOCALIZATION.REFRESH_SUCCESS);
                             }
                         }
                     }
-                } else{
+                } else {
                     console.error("Server config or local config cannot be empty!");
                 }
                 break;
@@ -162,13 +171,20 @@ export const JsonConfigurator: React.FC<any> = () => {
                     <CommandPanel
                         commandEvent={onCommand}
                         reloadJsonConfigs={reloadJsonConfigs}
+                        setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                     />
                     <EditorPanel jsonConfig={jsonConfig} />
                 </div>
             </div>
             <div>
-                <DiffMerge showPopup={showMerge} serverJson={compareJsons.current?.newJson} localJson={compareJsons.current?.currentJson} onMerge={handleOkMerge} onCancel={handleCancelMerge} />
+                <DiffMerge
+                    showPopup={showMerge}
+                    serverJson={compareJsons.current?.newJson}
+                    localJson={compareJsons.current?.currentJson}
+                    onMerge={handleOkMerge.current}
+                    onCancel={handleCancelMerge.current}
+                />
             </div>
         </div>
     );
