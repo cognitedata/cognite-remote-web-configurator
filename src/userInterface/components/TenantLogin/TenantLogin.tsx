@@ -13,9 +13,7 @@ export function TenantLogin(props: {
     authOptions: { project?: string, apiKey?: string, oauthToken?: string }
 }): JSX.Element | null {
 
-    const { project, apiKey, oauthToken } = props.authOptions;
     const advancedOptions = { cdfEnvironment: ''};
-
 
     useEffect(() => {
         if (DEV_MODE) {

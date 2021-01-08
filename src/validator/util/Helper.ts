@@ -2,7 +2,7 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, BaseNodes, AssociationType } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { STRING_PLACEHOLDER } from "../../constants";
 
@@ -25,7 +25,7 @@ export const removeDataNode = (
 export const getNodeInstance = (
   group: string,
   rootDataNode: BaseNodes,
-  rootJsonNode: any,
+  rootJsonNode: Record<string, unknown>,
   paths: (string | number)[]
 ): IValidationResult => {
   let resultNode: BaseNode|undefined = rootDataNode[group];
@@ -67,7 +67,7 @@ export const getNodeInstance = (
     }
 
     if(json){
-      json = json[path];
+      json = json[path] as Record<string, unknown>;
     }
   }
 
@@ -124,7 +124,7 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
 };
 
 
-export const replaceString = (str: string, replacement: string) => {
+export const replaceString = (str: string, replacement: string): string => {
   if(str) {
     return str.replace(STRING_PLACEHOLDER, replacement);
   } else {
