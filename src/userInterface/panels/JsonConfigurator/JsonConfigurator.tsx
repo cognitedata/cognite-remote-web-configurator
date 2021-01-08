@@ -7,7 +7,8 @@ import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
-import { LOCALIZATION } from '../../../constants';
+import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
+import localJsonFile from '../../../config/MauiA.json';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -27,6 +28,10 @@ export const JsonConfigurator: React.FC<any> = () => {
             })
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                if(USE_LOCAL_FILES_AND_NO_LOGIN){
+                    const map = new Map().set(123, {id: 123, data: localJsonFile});
+                    setJsonConfigMap(map);
+                }
             });
     }
 
