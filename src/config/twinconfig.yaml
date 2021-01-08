@@ -69,6 +69,10 @@ components:
               type: boolean
             age:
               type: integer
+            timeSeries:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/TimeseriesFilter'
     TwinConfiguration:
      description: "Data structure that fully defines a digital twin in the Cognite Digital Twin Application."
      required:

@@ -488,7 +488,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 Object.keys(validInsertItems).forEach((key: any) => {
                     if ((subItem.text === key)
                         && (subItem.title === validInsertItems[key].description)
+                        // Also we have to match the keys as a whole
                         // For discriminator types, if any key is added with base type, it needs to be filtered out.
+                        && !existingKeys.includes(key)
                         && !existingKeys.includes(key.split('-')[0])) {
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
