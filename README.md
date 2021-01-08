@@ -60,3 +60,4 @@ To learn React, check out the [React documentation](https://reactjs.org/).
  - Descriptions must be unique
  - oneOf, allOf should comes with a dicriminator
  - anyOf should not comes with
+ - not association accepts only primitive values
