@@ -54,5 +54,6 @@ export const LOCALIZATION = {
     VAL_CANNOT_BE_LESS: "Value cannot be less than $$!",
     VAL_CANNOT_BE_GREATER: "Value cannot be greater than $$!",
     VAL_NOT_BOOLEAN: "Value is not a boolean!",
-    VAL_NOT_STRING: "Value is not a string!"
+    VAL_NOT_STRING: "Value is not a string!",
+    STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!"
 }

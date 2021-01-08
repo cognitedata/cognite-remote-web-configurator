@@ -1,3 +1,5 @@
+import { JSONEditorOptions } from "jsoneditor";
+
 export interface JsonConfig {
     id: number;
     data: {
@@ -7,4 +9,8 @@ export interface JsonConfig {
             type: string;
         }
     }
+}
+
+export interface JsonEditorOptions extends JSONEditorOptions {
+    limitDragging?: boolean;
 }
