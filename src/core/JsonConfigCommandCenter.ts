@@ -104,7 +104,6 @@ export class JsonConfigCommandCenter {
         if (args) {
             currentJson = args;
         }
-        console.log(args);
 
         if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);

@@ -27,20 +27,30 @@ export const JsonConfigurator: React.FC<any> = () => {
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
 
-    const loadJsonConfigs = () => {
-        JsonConfigCommandCenter.loadJsonConfigs()
-            .then(response => {
-                setJsonConfigMap(response);
-            })
+    const loadJsonConfigs = async (jsonConfigId?: number | null) => {
+        const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
+            .then(response => response)
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
+        setJsonConfigMap(jsonConfigs);
+
+        if (jsonConfigId) {
+            setSelectedJsonConfig(jsonConfigId, jsonConfigs);
+        }
     }
 
     // call with undefind values to create new json config
-    const setSelectedJsonConfig = (jsonConfigId: number | null) => {
+    const setSelectedJsonConfig = (jsonConfigId: number | null, jsonConfigs?: Map<number, unknown> | null) => {
         if (jsonConfigId) {
-            if (jsonConfigMap && jsonConfigMap.size > 0) {
+            if (jsonConfigs) {
+                const selectedJsonConfig = jsonConfigs.get(jsonConfigId);
+                if (selectedJsonConfig) {
+                    setJsonConfig(selectedJsonConfig as JsonConfig);
+                    setJsonConfigHash(hash((selectedJsonConfig as JsonConfig).data));
+                }
+            }
+            else if (jsonConfigMap && jsonConfigMap.size > 0) {
                 const selectedJsonConfig = jsonConfigMap.get(jsonConfigId);
                 if (selectedJsonConfig) {
                     setJsonConfig(selectedJsonConfig as JsonConfig);
@@ -56,6 +66,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             setSelectedJsonConfigId(null);
             setJsonConfigHash(null);
         }
+        JsonConfigCommandCenter.updateTitle();
     }
 
     const setMergeOptions = (options: MergeOptions) => {
@@ -90,9 +101,9 @@ export const JsonConfigurator: React.FC<any> = () => {
     // }
 
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
-        loadJsonConfigs();
-        setSelectedJsonConfig(null);
-        setSelectedJsonConfig(jsonConfigId);
+        loadJsonConfigs(jsonConfigId);
+        // setSelectedJsonConfig(null);
+        // setSelectedJsonConfig(jsonConfigId);
     }
 
     JsonConfigCommandCenter.getOriginalHash = () => {
@@ -106,8 +117,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
-                loadJsonConfigs();
-                setJsonConfig(args[0]);
+                loadJsonConfigs(selectedJsonConfigId);
+                if (args[0]) {
+                    setJsonConfig(args[0]);
+                }
                 break;
             }
             case CommandEvent.switchConfig: {
