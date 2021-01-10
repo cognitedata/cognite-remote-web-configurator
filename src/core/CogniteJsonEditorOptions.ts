@@ -9,7 +9,7 @@ import JSONEditor, {
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
-import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
+import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
@@ -243,6 +243,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const schemaType = schemaMeta.type;
         let schemaMetaData: any;
         const discriminator = schemaMeta.discriminator;
+
+        if(schemaType === DataType.any) {
+            return errors;
+        }
 
         if(discriminator) {
             if(schemaType === DataType.object) {
