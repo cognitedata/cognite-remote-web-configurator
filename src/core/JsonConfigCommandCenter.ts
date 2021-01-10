@@ -101,6 +101,7 @@ export class JsonConfigCommandCenter {
 
     public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {
         let currentJson = JsonConfigCommandCenter.currentJson;
+        // overide currentJson with resolved one
         if (args) {
             currentJson = args;
         }

@@ -81,34 +81,8 @@ export const JsonConfigurator: React.FC<any> = () => {
         setShowMerge(true);
     }
 
-    // const handleCancelMerge = () => {
-    //     message.error(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
-    //     setShowMerge(false);
-    // }
-
-    // const handleOkMerge = (mergedJsonString: string) => {
-    //     setShowMerge(false);
-    //     let mergedJson;
-    //     try{
-    //         mergedJson = JSON.parse(mergedJsonString);
-    //         mergedJson = { id: selectedJsonConfigId, data: mergedJson };
-    //     } catch (e: any) {
-    //         console.error("Error Occurred while parsing json!");
-    //     }
-
-    //     if(jsonConfigMap && mergedJson) {
-    //         if(selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId) ) {
-    //             jsonConfigMap.set(selectedJsonConfigId, mergedJson);
-    //             setJsonConfig(mergedJson as JsonConfig);
-    //         }
-    //         message.success(LOCALIZATION.REFRESH_SUCCESS);
-    //     }
-    // }
-
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
         loadJsonConfigs(jsonConfigId);
-        // setSelectedJsonConfig(null);
-        // setSelectedJsonConfig(jsonConfigId);
     }
 
     JsonConfigCommandCenter.getOriginalHash = () => {
@@ -123,9 +97,6 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.reload: {
                 loadJsonConfigs(selectedJsonConfigId, args[0]);
-                // if (args[0]) {
-                //     setJsonConfig(args[0]);
-                // }
                 break;
             }
             case CommandEvent.switchConfig: {
@@ -145,29 +116,6 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
-            // case CommandEvent.refresh: {
-            //     const serverData = await JsonConfigCommandCenter.onRefresh(selectedJsonConfigId);
-            //     const serverConfig = serverData.data;
-            //     const localConfig = JsonConfigCommandCenter.currentJson;
-
-            //     if (serverConfig && localConfig) {
-            //         if (JSON.stringify(serverConfig) !== JSON.stringify(localConfig)) {
-            //             compareJsons.current = { currentJson: localConfig, newJson: serverConfig };
-            //             setShowMerge(true);
-            //         } else {
-            //             if (jsonConfigMap && serverConfig) {
-            //                 if (selectedJsonConfigId && jsonConfigMap.has(selectedJsonConfigId)) {
-            //                     jsonConfigMap.set(selectedJsonConfigId, serverConfig);
-            //                     setJsonConfig(serverConfig);
-            //                     message.success(LOCALIZATION.REFRESH_SUCCESS);
-            //                 }
-            //             }
-            //         }
-            //     } else {
-            //         console.error("Server config or local config cannot be empty!");
-            //     }
-            //     break;
-            // }
             default:
                 break;
         }
