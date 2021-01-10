@@ -14,7 +14,7 @@ import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
 import { MapNode } from "../validator/nodes/MapNode";
-import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
+import { AssociationType, BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
@@ -411,6 +411,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const datatype: DataType = schema.type;
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
+            const associationType = schema.association;
 
             if(!value && value !== 0) {
                 if(isRequired) {
@@ -435,6 +436,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         if(isNaN(Number(value))) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
                         } else {
+                            if(associationType === AssociationType.NOT) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NUMBER });
+                                break;
+                            }
                             if(minimum) {
                                 if(value < minimum) {
                                     errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
@@ -451,6 +456,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.boolean:{
                         if(!isBoolean(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
+                        } else {
+                            if(associationType === AssociationType.NOT) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_BOOLEAN });
+                                break;
+                            }
                         }
                         break;
                     }
@@ -458,6 +468,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         if(!isString(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
                         } else {
+                            if(associationType === AssociationType.NOT) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_STRING });
+                                break;
+                            }
+
                             const maxLength = Number(schema.maxLength);
                             const length = value.length;
                             if(maxLength && length > maxLength) {
