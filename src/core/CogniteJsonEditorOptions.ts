@@ -363,6 +363,22 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     console.error(`Invalid minElement configuration for ${paths.join(".")}`);
                 }
             }
+
+            const shouldBeUnique = schema.unique;
+
+            // uniqueness validation
+
+            if(shouldBeUnique) {
+                const uniqueSet = new Set();
+                json.forEach( (item: any, index: number) => {
+                    if(uniqueSet.has(item)) {
+                        const itemPath = paths.concat([index]);
+                        errors.push({ path: itemPath, message: replaceString(LOCALIZATION.ARR_ELEMENT_VIOLATES_UNIQUENESS, item.toString()) });
+                    } else {
+                        uniqueSet.add(item);
+                    }
+                } );
+            }
         } else {
             console.error(`Schema type: ${schema.type} cannot be validated as an array!`);
         }
