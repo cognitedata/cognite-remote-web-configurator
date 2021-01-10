@@ -2,7 +2,13 @@ import React, {useEffect} from "react";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
 import { ClientSDKProvider, PureObject, TenantSelector } from "@cognite/gearbox";
 import styles from "./TenantLogin.module.scss";
-import {APP_NAME, DEV_MODE, LOGIN_CDF_ENVIRONMENT_OPT_TEXT, LOGIN_HEADER} from "../../../constants";
+import {
+    APP_NAME,
+    DEV_MODE,
+    LOGIN_API_KEY_TEXT,
+    LOGIN_CDF_ENVIRONMENT_OPT_TEXT,
+    LOGIN_HEADER
+} from "../../../constants";
 import {Client} from "../../../cdf/client";
 
 export function TenantLogin(props: {
@@ -13,8 +19,7 @@ export function TenantLogin(props: {
     authOptions: { project?: string, apiKey?: string, oauthToken?: string }
 }): JSX.Element | null {
 
-    const { project, apiKey, oauthToken } = props.authOptions;
-    const advancedOptions = { cdfEnvironment: ''};
+    const advancedOptions = { [LOGIN_CDF_ENVIRONMENT_OPT_TEXT]: '', [LOGIN_API_KEY_TEXT]: ''};
 
 
     useEffect(() => {
@@ -46,19 +51,28 @@ export function TenantLogin(props: {
     const onFinish = async (project: string, options: PureObject | null) => {
         if(project){
             const cdfEnv = options && options[LOGIN_CDF_ENVIRONMENT_OPT_TEXT];
+            const apiKey = options && options[LOGIN_API_KEY_TEXT];
             if(cdfEnv) {
                 props.sdk.setBaseUrl(`https://${cdfEnv}.cognitedata.com`);
             }
-            const token = localStorage.getItem("token") || "";
-            props.sdk.loginWithOAuth({
-                project: project,
-                accessToken: token,
-                onAuthenticate: POPUP,
-                onTokens: ({accessToken}) => {
-                    localStorage.setItem("token", accessToken);
-                },
-            });
-            await props.sdk.authenticate();
+            const savedToken = localStorage.getItem("token") || "";
+
+            if(apiKey) {
+                props.sdk.loginWithApiKey({
+                    project: project,
+                    apiKey: String(apiKey)
+                });
+            } else {
+                props.sdk.loginWithOAuth({
+                    project: project,
+                    accessToken: savedToken,
+                    onAuthenticate: POPUP,
+                    onTokens: ({accessToken}) => {
+                        localStorage.setItem("token", accessToken);
+                    },
+                });
+                await props.sdk.authenticate();
+            }
 
             const status = await props.sdk.login.status();
             if(status?.user){
