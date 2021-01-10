@@ -3,5 +3,4 @@ export interface Api {
     saveJson(json: any): Promise<any>;
     updateJson(id: number, json: any): Promise<any>;
     deleteJson(id: number): Promise<any>;
-    retrieveJson(id: number): Promise<any>;
 }
