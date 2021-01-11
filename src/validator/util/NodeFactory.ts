@@ -9,6 +9,8 @@ import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
+const addedRefs: any = {};
+
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
   switch (ParseType(schema.type)) {
     case DataType.array:
@@ -65,31 +67,41 @@ export const populateChildren = (
         : false;
       // Since `{}` is passed as data for obj, type can be BaseNodes
       (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required, schema, obj);
+      
+      // If sample data is already created, then use previously created one(avoid circular loops)
+      addedRefs[obj.description]= (obj.rowData as BaseNodes)[key];
     }
     return obj;
   } else if (schema.additionalProperties) { 
-    const obj = new MapNode(schema, {}, false, undefined);
-    const sampleData = populateChildren(
-      schema.additionalProperties,
-      false,
-      schema,
-      obj
-    );
-    obj.sampleData = sampleData;
-    return obj;
+    // If sample data is already created, then use previously created one(avoid circular loops)
+    if (schema.additionalProperties.description && addedRefs[schema.additionalProperties.description]) {
+      const obj = new MapNode(schema, {}, false, addedRefs[schema.additionalProperties.description]);
+      return obj;
+    } else {
+      const obj = new MapNode(schema, {}, false, undefined);
+      obj.sampleData = populateChildren(
+        schema.additionalProperties,
+        false,
+        schema,
+        obj
+      );
+      addedRefs[obj.sampleData.description]= obj.sampleData; 
+      return obj;
+    }
   } else if (schema.items) {
-    if (schema.items === parentSchema) {
+    // If sample data is already created, then use previously created one(avoid circular loops)
+    if (schema.items.description && addedRefs[schema.items.description]) {
       const obj = new ArrayNode(
-        { type: DataType.array, id: schema.id },
+        { type: DataType.array, description: schema.description },
         [],
         isRequired,
-        parentBaseNode
+        addedRefs[schema.items.description]
       );
       return obj;
     } else {
       const obj = new ArrayNode(schema, [], isRequired, undefined);
       obj.sampleData = populateChildren(schema.items, false, schema, obj);
-      
+      addedRefs[obj.sampleData.description]= obj.sampleData; 
       return obj;
     }
   } else {

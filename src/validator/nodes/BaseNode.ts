@@ -22,7 +22,7 @@ export enum AssociationType {
 export class BaseNode {
   public type?: DataType;
   public nullable?: boolean;
-  public description?: string;
+  public description: string;
   public isRequired?: boolean;
   public association: AssociationType;
   public discriminator?: Discriminator;

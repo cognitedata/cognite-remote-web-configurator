@@ -1,5 +1,5 @@
 export interface ISchemaNode {
-  description?: string;
+  description: string;
   properties?: { [key: string]: any };
 
   // Type Related
