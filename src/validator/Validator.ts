@@ -105,11 +105,13 @@ export const loadSchema = (): Promise<void> => {
           const rootSchema = api.components.schemas;
 
           // Assign Uinque IDs for schema props
-          for (const [key, val] of Object.entries(rootSchema)) {
+          for (const val of Object.values(rootSchema)) {
             const schemaNode = val as ISchemaNode;
+            schemaNode.description = `${schemaNode.description}${++propCount}`;
+
             if(schemaNode.properties){
               for(const c of Object.values(schemaNode.properties)){
-                c.id = ++propCount;
+                c.description = `${c.description}${++propCount}`;
               }
             }
           }
@@ -119,7 +121,6 @@ export const loadSchema = (): Promise<void> => {
               val as ISchemaNode,
               true,
               {
-                id: ++propCount,
                 description: "root",
                 type: "",
                 properties: {},

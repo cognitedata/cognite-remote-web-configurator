@@ -37,7 +37,7 @@ export class BaseNode {
     isRequired: boolean
   ) {
     this.type = type;
-    this.description = `${schema.description}:${schema.id ?? 0}`;
+    this.description = schema.description;
     this.discriminator = schema.discriminator;
     this._data = data;
     this.isRequired = isRequired;
