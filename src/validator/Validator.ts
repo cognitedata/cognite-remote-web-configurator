@@ -19,6 +19,7 @@ export interface TemplateNode {
 const defaultGroup = "TwinConfiguration";
 
 export const rootDataNode: { [key: string]: BaseNode } = {};
+let propCount = 0;
 const allNodes: TemplateNode[] = [];
 
 export const getNodeMeta = (
@@ -103,12 +104,33 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
 
+          // Assign Uinque IDs for schema props
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = populateChildren(val as ISchemaNode, true, {
-              description: "root",
-              type: "",
-              properties: {}
-            }, new BaseNode(DataType.any, val as ISchemaNode, undefined, false));
+            const schemaNode = val as ISchemaNode;
+            if(schemaNode.properties){
+              for(const c of Object.values(schemaNode.properties)){
+                c.id = ++propCount;
+              }
+            }
+          }
+
+          for (const [key, val] of Object.entries(rootSchema)) {
+            const childrenNodes = populateChildren(
+              val as ISchemaNode,
+              true,
+              {
+                id: ++propCount,
+                description: "root",
+                type: "",
+                properties: {},
+              },
+              new BaseNode(
+                DataType.any,
+                val as ISchemaNode,
+                undefined,
+                false
+              )
+            );
             rootDataNode[key] = childrenNodes;
           }
 
@@ -129,10 +151,10 @@ export const loadSchema = (): Promise<void> => {
               }
             }
           }
-          console.log("All Nodes", allNodes);
           console.log("Schema YML", rootSchema);
           console.log("Schema Node", rootDataNode);
-          console.log("TwinConfig", rootDataNode[defaultGroup]);
+          console.log("All Nodes", allNodes);
+          // console.log("Schema Errors", schemaValidationErrors);
           resolve();
         } else {
           console.error(err);

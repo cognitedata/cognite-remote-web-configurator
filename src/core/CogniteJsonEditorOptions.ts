@@ -68,7 +68,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Handle: Add as a property of object
             const template = {
                 text: key,
-                title: ele.node.description,
+                title: `${key}-${ele.node.description}`,
                 className: 'jsoneditor-type-object',
                 field: key,
                 value: ele.data
@@ -81,7 +81,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 Object.entries(ele.node.data).forEach(([subKey, subVal]) => {
                     const template = {
                         text: `${key}-${subKey}`,
-                        title: `Add sample item to ${key}`,
+                        title: `${key}-${subKey}-${subVal.description}`,
                         className: "jsoneditor-type-object",
                         field: `${key}`,
                         value: getJson(subVal as BaseNode),
@@ -98,7 +98,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
                         const template = {
                             text: `${key}-${subKey}`,
-                            title: `Add sample item to ${key}`,
+                            title: `${key}-${subKey}-${subVal.description}`,
                             className: "jsoneditor-type-object",
                             field: `${key}-sample`,
                             value: getJson(subVal as BaseNode),
@@ -109,7 +109,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 } else {
                     const template = {
                         text: `${key}-sample`,
-                        title: `Add sample item to ${key}`,
+                        title: `${key}-sample-${ele.node.description}`,
                         className: 'jsoneditor-type-object',
                         field: `${key}-sample`,
                         value: ele.sample
@@ -521,7 +521,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     // TODO: Re-implement this method with recursive calls
-    private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null): IData {
+    private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null) {
         const key = parentPath[parentPath.length - 1];
         let resultNode = node;
 
@@ -548,11 +548,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return res;
             } else {
                 // Handle: Sample data for array/map
-                const ret: BaseNodes = {
-                    [`${key}-sample`]: new BaseNode(DataType.any, {
-                        type: DataType.object,
-                        description: `Add sample item to ${key}`
-                    }, undefined, true)
+                const ret = {
+                    [`${key}-sample`]: {
+                        description: `${key}-sample-${resultNode.description}`
+                    }
                 }
                 return ret;
             }
@@ -560,7 +559,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         // Handle: Add as property of object
         } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
-            const res: any = { ...(resultNode.data as BaseNodes) };
+            const res: any = {};
+            Object.entries(resultNode.data).forEach(([key, node]) => {
+                res[key] = { description: `${key}-${node.description}`}
+            });
 
             // Handle: Add as property of association type
             Object.entries(res as Record<string, unknown>).forEach(
@@ -582,11 +584,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private replaceKeyWithDiscriminatorTypes(res: any, node: BaseNode, key: string) {
         delete res[key];
-        Object.keys(
+        Object.entries(
             (node as BaseNode).data as Record<string, unknown>
-        ).forEach((desKey) => {
-            res[`${key}-${desKey}`] = {
-                description: `Add sample item to ${key}`,
+        ).forEach(([subKey, val]) => {
+            res[`${key}-${subKey}`] = {
+                description: `${key}-${subKey}-${(val as BaseNode).description}`,
             };
         });
     }

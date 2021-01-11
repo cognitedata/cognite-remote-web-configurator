@@ -10,14 +10,6 @@ import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
-  if (!schema) {
-    return new BaseNode(
-      DataType.any,
-      { type: DataType.any },
-      undefined,
-      isRequired
-    );
-  }
   switch (ParseType(schema.type)) {
     case DataType.array:
       return new ArrayNode(schema, [], isRequired);
@@ -88,7 +80,7 @@ export const populateChildren = (
   } else if (schema.items) {
     if (schema.items === parentSchema) {
       const obj = new ArrayNode(
-        { type: DataType.array },
+        { type: DataType.array, id: schema.id },
         [],
         isRequired,
         parentBaseNode
