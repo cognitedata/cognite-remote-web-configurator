@@ -561,7 +561,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = {};
             Object.entries(resultNode.data).forEach(([key, node]) => {
-                res[key] = { description: `${key}-${node.description}`}
+                res[key] = {
+                    description: `${key}-${node.description}`,
+                    discriminator: node.discriminator,
+                    data: node.data
+                }
             });
 
             // Handle: Add as property of association type
@@ -580,7 +584,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             return undefined;
         }
     }
-
 
     private replaceKeyWithDiscriminatorTypes(res: any, node: BaseNode, key: string) {
         delete res[key];
