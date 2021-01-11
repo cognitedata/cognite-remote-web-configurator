@@ -4,6 +4,8 @@ import { BaseNode, IData } from "./BaseNode";
 
 export class MapNode extends BaseNode {
   public sampleData: BaseNode | undefined;
+  public minProperties: number | undefined;
+  public maxProperties: number | undefined;
 
   constructor(
     schema: ISchemaNode,
@@ -13,5 +15,7 @@ export class MapNode extends BaseNode {
   ) {
     super(DataType.map, schema, data, isRequired);
     this.sampleData = sampleData;
+    this.minProperties = schema.minProperties;
+    this.maxProperties = schema.maxProperties;
   }
 }
