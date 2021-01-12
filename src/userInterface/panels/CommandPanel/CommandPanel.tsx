@@ -26,7 +26,7 @@ const isValidFileName = (): boolean => {
 const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> => {
     if (selectedJsonConfigId) {
         const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
-        const updatedHash = await JsonConfigCommandCenter.loadJsonConfigs()
+        const updatedJsonConfig = await JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 if (response) {
                     const selectedJsonConfig = response.get(selectedJsonConfigId);
@@ -38,7 +38,7 @@ const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> 
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
-        return (JSON.stringify(originalJsonConfig) !== JSON.stringify(updatedHash));
+        return (JSON.stringify(originalJsonConfig) !== JSON.stringify(updatedJsonConfig));
     }
     return false;
 }
