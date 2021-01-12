@@ -26,6 +26,9 @@ export const LOCALIZATION = {
     UPLOAD_ERROR: 'Save Cancelled! {{error}}',
     UPLOAD_INVALID_FILE: 'Update failed!',
 
+    UPLOAD_WITH_ERRORS_TITLE:'Update File',
+    UPLOAD_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to update file with new changes?',
+
     // Delete command
     DELETE_TITLE: 'Delete Config',
     DELETE_CONTENT: 'Are you sure you want to permanently delete this config?',

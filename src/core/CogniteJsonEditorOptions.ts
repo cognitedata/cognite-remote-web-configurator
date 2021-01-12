@@ -94,7 +94,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Handle: Add as sample object for array/map
             if (ele.node instanceof ArrayNode || ele.node instanceof MapNode) {
                 // Handle: if sample object is associationType
-                if(ele.node.sampleData && ele.node.sampleData.discriminator){
+                if (ele.node.sampleData && ele.node.sampleData.discriminator) {
                     // If discriminator exists, add all sub types as templates
                     Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
                         const template = {
@@ -106,7 +106,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         };
                         allTemplates.push(template);
                     });
-                // Handle: add as a direct sample object    
+                    // Handle: add as a direct sample object    
                 } else {
                     const template = {
                         text: `${key}-sample`,
@@ -116,10 +116,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         value: ele.sample
                     }
                     allTemplates.push(template);
-                }               
+                }
             }
         });
-    
+
         return allTemplates;
     }
 
@@ -244,7 +244,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
-
+        JsonConfigCommandCenter.hasErrors(!!errors.length);
         return errors;
     }
 
@@ -468,7 +468,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         } else {
                             const maxLength = Number(schema.maxLength);
                             const length = value.length;
-                            if(maxLength && length > maxLength) {
+                            if (maxLength && length > maxLength) {
                                 errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
                             }
                         }
@@ -562,7 +562,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return ret;
             }
 
-        // Handle: Add as property of object
+            // Handle: Add as property of object
         } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = { ...(resultNode.data as BaseNodes) };

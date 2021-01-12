@@ -92,11 +92,11 @@ export const CommandPanel: React.FC<{
                 });
             }
             else {
-                props.commandEvent(CommandEvent.reload);
+                props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
             }
         }
         else {
-            props.commandEvent(CommandEvent.reload);
+            props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
         }
     }
 
@@ -125,62 +125,82 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const update = async () => {
+        if (await isUpdated(props.selectedJsonConfigId)) {
+            props.setMergeOptions({
+                localConfig: JsonConfigCommandCenter.currentJson,
+                serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                    .then(response => {
+                        if (response) {
+                            return response.get(props.selectedJsonConfigId).data;
+                        }
+                    })
+                    .catch(error => {
+                        message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    }),
+                onOk: (mergedJson: any) => {
+                    props.commandEvent(CommandEvent.update, mergedJson)
+                        .then((response: any) => {
+                            const createdId = response.data.data.items[0].id;
+                            props.reloadJsonConfigs(createdId);
+                            JsonConfigCommandCenter.updateTitle();
+                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                        })
+                        .catch((error: any) => {
+                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                        });
+                },
+                onCancel: () => {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
+        else {
+            props.commandEvent(CommandEvent.update)
+                .then((response: any) => {
+                    const createdId = response.data.data.items[0].id;
+                    props.reloadJsonConfigs(createdId);
+                    JsonConfigCommandCenter.updateTitle();
+                    message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                })
+                .catch((error: any) => {
+                    message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                });
+        }
+    }
+
     const onUpdateHandler = () => {
         if (!isValidFileName()) {
             message.error(LOCALIZATION.UPLOAD_INVALID_FILE);
         }
         else {
-            confirm({
-                title: LOCALIZATION.UPLOAD_TITLE,
-                icon: <ExclamationCircleOutlined />,
-                content: LOCALIZATION.UPLOAD_CONTENT,
-                async onOk() {
-                    if (await isUpdated(props.selectedJsonConfigId)) {
-                        props.setMergeOptions({
-                            localConfig: JsonConfigCommandCenter.currentJson,
-                            serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
-                                .then(response => {
-                                    if (response) {
-                                        return response.get(props.selectedJsonConfigId).data;
-                                    }
-                                })
-                                .catch(error => {
-                                    message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                                }),
-                            onOk: (mergedJson: any) => {
-                                props.commandEvent(CommandEvent.update, mergedJson)
-                                    .then((response: any) => {
-                                        const createdId = response.data.data.items[0].id;
-                                        props.reloadJsonConfigs(createdId);
-                                        JsonConfigCommandCenter.updateTitle();
-                                        message.success(LOCALIZATION.UPLOAD_SUCCESS);
-                                    })
-                                    .catch((error: any) => {
-                                        message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                                    });
-                            },
-                            onCancel: () => {
-                                message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
-                            }
-                        });
+            // eslint-disable-next-line no-constant-condition
+            if (JsonConfigCommandCenter.hasErrors()) {
+                confirm({
+                    title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                    icon: <ExclamationCircleOutlined />,
+                    content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
+                    async onOk() {
+                        update();
+                    },
+                    onCancel() {
+                        message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
                     }
-                    else {
-                        props.commandEvent(CommandEvent.update)
-                            .then((response: any) => {
-                                const createdId = response.data.data.items[0].id;
-                                props.reloadJsonConfigs(createdId);
-                                JsonConfigCommandCenter.updateTitle();
-                                message.success(LOCALIZATION.UPLOAD_SUCCESS);
-                            })
-                            .catch((error: any) => {
-                                message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                            });
+                });
+            }
+            else {
+                confirm({
+                    title: LOCALIZATION.UPLOAD_TITLE,
+                    icon: <ExclamationCircleOutlined />,
+                    content: LOCALIZATION.UPLOAD_CONTENT,
+                    async onOk() {
+                        update();
+                    },
+                    onCancel() {
+                        message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
                     }
-                },
-                onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
-                }
-            });
+                });
+            }
         }
     }
 

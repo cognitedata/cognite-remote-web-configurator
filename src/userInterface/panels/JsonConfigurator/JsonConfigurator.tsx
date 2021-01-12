@@ -23,6 +23,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const [errors, setErrors] = useState<boolean>(false);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -90,7 +91,14 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     JsonConfigCommandCenter.getOriginalJsonConfig = () => {
-        return originalJsonConfig
+        return originalJsonConfig;
+    };
+
+    JsonConfigCommandCenter.hasErrors = (e?: boolean) => {
+        if (e !== undefined) {
+            setErrors(e);
+        }
+        return errors;
     };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
@@ -124,6 +132,16 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
         }
     }
+
+    useEffect(() => {
+        window.addEventListener("beforeunload", function (e) {
+            if (JsonConfigCommandCenter.isEdited()) {
+                (e || window.event).returnValue = true; //Gecko + IE
+                return true; //Gecko + Webkit, Safari, Chrome etc.
+            }
+            return false;
+        });
+    }, []);
 
     useEffect(() => {
         loadJsonConfigs();
