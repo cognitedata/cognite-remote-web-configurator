@@ -12,7 +12,6 @@ import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
 import { JsonConfig, MergeOptions } from '../../util/types';
-import hash from 'object-hash';
 
 const { confirm } = Modal;
 
@@ -26,20 +25,20 @@ const isValidFileName = (): boolean => {
 
 const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> => {
     if (selectedJsonConfigId) {
-        const originalHash = JsonConfigCommandCenter.getOriginalHash();
+        const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
         const updatedHash = await JsonConfigCommandCenter.loadJsonConfigs()
             .then(response => {
                 if (response) {
                     const selectedJsonConfig = response.get(selectedJsonConfigId);
                     if (selectedJsonConfig) {
-                        return hash((selectedJsonConfig as JsonConfig).data);
+                        return (selectedJsonConfig as JsonConfig).data;
                     }
                 }
             })
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
             });
-        return (originalHash !== updatedHash);
+        return (JSON.stringify(originalJsonConfig) !== JSON.stringify(updatedHash));
     }
     return false;
 }
@@ -83,13 +82,13 @@ export const CommandPanel: React.FC<{
                         .catch(error => {
                             message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                         }),
-                        onOk: (mergedJson: any) => {
-                            props.commandEvent(CommandEvent.reload, mergedJson);
-                        },
-                        onCancel: () => {
-                            // ToDo: update with proper message
-                            message.warning("reload cancelled");
-                        }
+                    onOk: (mergedJson: any) => {
+                        props.commandEvent(CommandEvent.reload, mergedJson);
+                    },
+                    onCancel: () => {
+                        // ToDo: update with proper message
+                        message.warning("reload cancelled");
+                    }
                 });
             }
             else {

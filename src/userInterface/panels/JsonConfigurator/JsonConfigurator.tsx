@@ -7,7 +7,6 @@ import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
-import hash from 'object-hash';
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
 import localJsonFile from '../../../config/MauiA.json';
@@ -22,7 +21,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
-    const [jsonConfigHash, setJsonConfigHash] = useState<string | null>(null);
+    const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
@@ -33,8 +32,8 @@ export const JsonConfigurator: React.FC<any> = () => {
             .then(response => response)
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                if(USE_LOCAL_FILES_AND_NO_LOGIN){
-                    const map = new Map().set(123, {id: 123, data: localJsonFile});
+                if (USE_LOCAL_FILES_AND_NO_LOGIN) {
+                    const map = new Map().set(123, { id: 123, data: localJsonFile });
                     setJsonConfigMap(map);
                 }
             });
@@ -56,10 +55,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 selectedJsonConfig = jsonConfigMap.get(jsonConfigId);
             }
 
-            // set new json config and hash
+            // set new json config and Original
             if (selectedJsonConfig) {
                 setJsonConfig(selectedJsonConfig as JsonConfig);
-                setJsonConfigHash(hash((selectedJsonConfig as JsonConfig).data));
+                setOriginalJsonConfig((selectedJsonConfig as JsonConfig).data);
             }
             // overide if it has resolved version
             if (resolvedJson) {
@@ -74,7 +73,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 data: {}
             } as JsonConfig);
             setSelectedJsonConfigId(null);
-            setJsonConfigHash(null);
+            setOriginalJsonConfig(null);
         }
         JsonConfigCommandCenter.updateTitle();
     }
@@ -90,8 +89,8 @@ export const JsonConfigurator: React.FC<any> = () => {
         loadJsonConfigs(jsonConfigId);
     }
 
-    JsonConfigCommandCenter.getOriginalHash = () => {
-        return jsonConfigHash;
+    JsonConfigCommandCenter.getOriginalJsonConfig = () => {
+        return originalJsonConfig
     };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {

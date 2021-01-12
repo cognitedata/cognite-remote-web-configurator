@@ -7,11 +7,10 @@ import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
 import { LOCALIZATION } from "../constants";
 import { JSONEditorMode } from "jsoneditor";
-import hash from 'object-hash';
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
-    public static getOriginalHash: () => string | null;
+    public static getOriginalJsonConfig: () => any;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
@@ -59,20 +58,20 @@ export class JsonConfigCommandCenter {
     // is local file is edited
     public static isEdited(): boolean {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        const originalHash = JsonConfigCommandCenter.getOriginalHash();
+        const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
         if (currentJson) {
-            if (originalHash === null) {
+            if (originalJsonConfig === null) {
                 return !!Object.keys(currentJson).length;
             }
             else {
-                return !!(originalHash !== hash(currentJson));
+                return !!(JSON.stringify(originalJsonConfig) !== JSON.stringify(currentJson));
             }
         }
         return false;
     }
 
     public static updateTitle = (): void => {
-        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalHash) {
+        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalJsonConfig) {
             const edited = JsonConfigCommandCenter.isEdited();
             const currentTitle = (edited ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
             const currentMode = JsonConfigCommandCenter.editor?.getMode();
