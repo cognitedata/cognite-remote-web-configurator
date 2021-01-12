@@ -15,14 +15,6 @@ import { JsonConfig, MergeOptions } from '../../util/types';
 
 const { confirm } = Modal;
 
-const isValidFileName = (): boolean => {
-    const fileName = JsonConfigCommandCenter.currentFileName;
-    if (fileName) {
-        return true;
-    }
-    return false;
-}
-
 const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> => {
     if (selectedJsonConfigId) {
         const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
@@ -100,9 +92,29 @@ export const CommandPanel: React.FC<{
         }
     }
 
+    const save = () => {
+        props.commandEvent(CommandEvent.saveAs)
+            .then((response: any) => {
+                const createdId = response.data.data.items[0].id;
+                props.reloadJsonConfigs(createdId);
+                JsonConfigCommandCenter.updateTitle();
+                message.success(LOCALIZATION.SAVE_SUCCESS);
+            })
+            .catch((error: any) => {
+                message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+            });
+    }
+
     const onSaveHandler = () => {
-        if (!isValidFileName()) {
-            message.error(LOCALIZATION.SAVE_INVALID_FILE);
+        if (JsonConfigCommandCenter.hasErrors()) {
+            confirm({
+                title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.SAVE_WITH_ERRORS_CONTENT,
+                onOk() {
+                    save();
+                }
+            });
         }
         else {
             confirm({
@@ -110,16 +122,7 @@ export const CommandPanel: React.FC<{
                 icon: <ExclamationCircleOutlined />,
                 content: LOCALIZATION.SAVE_CONTENT,
                 onOk() {
-                    props.commandEvent(CommandEvent.saveAs)
-                        .then((response: any) => {
-                            const createdId = response.data.data.items[0].id;
-                            props.reloadJsonConfigs(createdId);
-                            JsonConfigCommandCenter.updateTitle();
-                            message.success(LOCALIZATION.SAVE_SUCCESS);
-                        })
-                        .catch((error: any) => {
-                            message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                        });
+                    save();
                 }
             });
         }
@@ -170,61 +173,50 @@ export const CommandPanel: React.FC<{
     }
 
     const onUpdateHandler = () => {
-        if (!isValidFileName()) {
-            message.error(LOCALIZATION.UPLOAD_INVALID_FILE);
+        if (JsonConfigCommandCenter.hasErrors()) {
+            confirm({
+                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
+                async onOk() {
+                    update();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                }
+            });
         }
         else {
-            // eslint-disable-next-line no-constant-condition
-            if (JsonConfigCommandCenter.hasErrors()) {
-                confirm({
-                    title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
-                    icon: <ExclamationCircleOutlined />,
-                    content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
-                    async onOk() {
-                        update();
-                    },
-                    onCancel() {
-                        message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
-                    }
-                });
-            }
-            else {
-                confirm({
-                    title: LOCALIZATION.UPLOAD_TITLE,
-                    icon: <ExclamationCircleOutlined />,
-                    content: LOCALIZATION.UPLOAD_CONTENT,
-                    async onOk() {
-                        update();
-                    },
-                    onCancel() {
-                        message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
-                    }
-                });
-            }
+            confirm({
+                title: LOCALIZATION.UPLOAD_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: LOCALIZATION.UPLOAD_CONTENT,
+                async onOk() {
+                    update();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                }
+            });
         }
     }
 
     const onDeleteHandler = () => {
-        if (!isValidFileName()) {
-            message.error(LOCALIZATION.DELETE_INVALID_FILE);
-        }
-        else {
-            confirm({
-                title: LOCALIZATION.DELETE_TITLE,
-                icon: <ExclamationCircleOutlined />,
-                content: LOCALIZATION.DELETE_CONTENT,
-                onOk() {
-                    props.commandEvent(CommandEvent.delete)
-                        .then(() => {
-                            props.reloadJsonConfigs(null);
-                            message.success(LOCALIZATION.DELETE_SUCCESS);
-                        })
-                        .catch((error: any) => {
-                            message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                        });
-                }
-            });
-        }
+        confirm({
+            title: LOCALIZATION.DELETE_TITLE,
+            icon: <ExclamationCircleOutlined />,
+            content: LOCALIZATION.DELETE_CONTENT,
+            onOk() {
+                props.commandEvent(CommandEvent.delete)
+                    .then(() => {
+                        props.reloadJsonConfigs(null);
+                        message.success(LOCALIZATION.DELETE_SUCCESS);
+                    })
+                    .catch((error: any) => {
+                        message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    });
+            }
+        });
     }
 
     const onDownloadHandler = () => {

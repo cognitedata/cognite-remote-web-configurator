@@ -19,6 +19,9 @@ export const LOCALIZATION = {
     SAVE_ERROR: 'Save Cancelled! {{error}}',
     SAVE_INVALID_FILE: 'Save Cancelled! Please add a file name',
 
+    SAVE_WITH_ERRORS_TITLE:'Create New Json Config',
+    SAVE_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to Create New Json Config?',
+
     // Upload command
     UPLOAD_TITLE: 'Update File',
     UPLOAD_CONTENT: 'Do you want to update file with new changes?',

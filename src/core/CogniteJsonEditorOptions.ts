@@ -5,6 +5,8 @@ import JSONEditor, {
     JSONPath,
     MenuItem,
     MenuItemNode,
+    ParseError,
+    SchemaValidationError,
     ValidationError
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
@@ -45,6 +47,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidate: this.onValidate,
             onChange: this.onChange,
             onError: this.onError,
+            onValidationError: this.onValidationError,
             onChangeText: this.onChangeText,
             limitDragging: this.limitDragging,
         }
@@ -244,8 +247,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
-        JsonConfigCommandCenter.hasErrors(!!errors.length);
         return errors;
+    }
+    
+    public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
+        JsonConfigCommandCenter.hasErrors(!!errors.length);
     }
 
     public onChangeText = (): void => {
