@@ -11,6 +11,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
+import { JsonConfig, MergeOptions } from '../../util/types';
 
 const { confirm } = Modal;
 
@@ -22,9 +23,30 @@ const isValidFileName = (): boolean => {
     return false;
 }
 
+const isUpdated = async (selectedJsonConfigId: number | null): Promise<boolean> => {
+    if (selectedJsonConfigId) {
+        const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
+        const updatedJsonConfig = await JsonConfigCommandCenter.loadJsonConfigs()
+            .then(response => {
+                if (response) {
+                    const selectedJsonConfig = response.get(selectedJsonConfigId);
+                    if (selectedJsonConfig) {
+                        return (selectedJsonConfig as JsonConfig).data;
+                    }
+                }
+            })
+            .catch(error => {
+                message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+            });
+        return (JSON.stringify(originalJsonConfig) !== JSON.stringify(updatedJsonConfig));
+    }
+    return false;
+}
+
 export const CommandPanel: React.FC<{
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
+    setMergeOptions: (options: MergeOptions) => void
     selectedJsonConfigId: number | null
 }> = (props: any) => {
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
@@ -32,7 +54,7 @@ export const CommandPanel: React.FC<{
 
     const titleUpdateCallBack = (text: string, mode: JSONEditorMode) => {
         setTitle(text);
-        setMode(mode)
+        setMode(mode);
     };
     JsonConfigCommandCenter.titleUpdateCallback = titleUpdateCallBack;
 
@@ -43,6 +65,38 @@ export const CommandPanel: React.FC<{
         } else {
             setMode(Modes.default);
             props.commandEvent(CommandEvent.mode, Modes.default, evt);
+        }
+    }
+
+    const onReloadHandler = async () => {
+        if (await isUpdated(props.selectedJsonConfigId)) {
+            if (JsonConfigCommandCenter.isEdited()) {
+                props.setMergeOptions({
+                    localConfig: JsonConfigCommandCenter.currentJson,
+                    serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                        .then(response => {
+                            if (response) {
+                                return response.get(props.selectedJsonConfigId).data;
+                            }
+                        })
+                        .catch(error => {
+                            message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                        }),
+                    onOk: (mergedJson: any) => {
+                        props.commandEvent(CommandEvent.reload, mergedJson);
+                    },
+                    onCancel: () => {
+                        // ToDo: update with proper message
+                        message.warning("reload cancelled");
+                    }
+                });
+            }
+            else {
+                props.commandEvent(CommandEvent.reload);
+            }
+        }
+        else {
+            props.commandEvent(CommandEvent.reload);
         }
     }
 
@@ -60,6 +114,7 @@ export const CommandPanel: React.FC<{
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
+                            JsonConfigCommandCenter.updateTitle();
                             message.success(LOCALIZATION.SAVE_SUCCESS);
                         })
                         .catch((error: any) => {
@@ -79,16 +134,51 @@ export const CommandPanel: React.FC<{
                 title: LOCALIZATION.UPLOAD_TITLE,
                 icon: <ExclamationCircleOutlined />,
                 content: LOCALIZATION.UPLOAD_CONTENT,
-                onOk() {
-                    props.commandEvent(CommandEvent.update)
-                        .then((response: any) => {
-                            const createdId = response.data.data.items[0].id;
-                            props.reloadJsonConfigs(createdId);
-                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
-                        })
-                        .catch((error: any) => {
-                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                async onOk() {
+                    if (await isUpdated(props.selectedJsonConfigId)) {
+                        props.setMergeOptions({
+                            localConfig: JsonConfigCommandCenter.currentJson,
+                            serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                                .then(response => {
+                                    if (response) {
+                                        return response.get(props.selectedJsonConfigId).data;
+                                    }
+                                })
+                                .catch(error => {
+                                    message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                                }),
+                            onOk: (mergedJson: any) => {
+                                props.commandEvent(CommandEvent.update, mergedJson)
+                                    .then((response: any) => {
+                                        const createdId = response.data.data.items[0].id;
+                                        props.reloadJsonConfigs(createdId);
+                                        JsonConfigCommandCenter.updateTitle();
+                                        message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                                    })
+                                    .catch((error: any) => {
+                                        message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                                    });
+                            },
+                            onCancel: () => {
+                                message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                            }
                         });
+                    }
+                    else {
+                        props.commandEvent(CommandEvent.update)
+                            .then((response: any) => {
+                                const createdId = response.data.data.items[0].id;
+                                props.reloadJsonConfigs(createdId);
+                                JsonConfigCommandCenter.updateTitle();
+                                message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                            })
+                            .catch((error: any) => {
+                                message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            });
+                    }
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -131,13 +221,12 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
+                <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
-
-
         </div>
     );
 }

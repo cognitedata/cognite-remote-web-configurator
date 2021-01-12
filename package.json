@@ -5,8 +5,8 @@
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@cognite/gearbox": "^2.2.2",
-    "@cognite/sdk": "^3.3.2",
     "@cognite/griff-react": "~0.4.2",
+    "@cognite/sdk": "^3.3.2",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
@@ -15,6 +15,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/yamljs": "^0.2.31",
+    "ace-diff": "^3.0.3",
     "antd": "^3.14.1",
     "cross-env": "^7.0.3",
     "jsoneditor": "^9.1.5",
@@ -55,6 +56,7 @@
     ]
   },
   "devDependencies": {
+    "@types/ace-diff": "^2.1.0",
     "@types/file-saver": "^2.0.1",
     "@types/jsoneditor": "^8.6.0",
     "@types/lodash-es": "^4.17.4",

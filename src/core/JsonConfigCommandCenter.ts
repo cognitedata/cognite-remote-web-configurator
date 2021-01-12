@@ -10,6 +10,7 @@ import { JSONEditorMode } from "jsoneditor";
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
+    public static getOriginalJsonConfig: () => any;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
@@ -40,7 +41,7 @@ export class JsonConfigCommandCenter {
         const currentJsonText = JsonConfigCommandCenter.editor?.getText();
         let currentJson;
         if (currentJsonText) {
-            try{
+            try {
                 currentJson = JSON.parse(currentJsonText);
             } catch (e: any) {
                 console.error("Error occurred while parsing json!", e);
@@ -48,14 +49,31 @@ export class JsonConfigCommandCenter {
         }
         return currentJson;
     }
+
     public static get currentFileName(): string {
         const currentJson = JsonConfigCommandCenter.currentJson;
         return currentJson?.header?.name;
     }
 
+    // is local file is edited
+    public static isEdited(): boolean {
+        const currentJson = JsonConfigCommandCenter.currentJson;
+        const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
+        if (currentJson) {
+            if (originalJsonConfig === null) {
+                return !!Object.keys(currentJson).length;
+            }
+            else {
+                return !!(JSON.stringify(originalJsonConfig) !== JSON.stringify(currentJson));
+            }
+        }
+        return false;
+    }
+
     public static updateTitle = (): void => {
-        if(JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback) {
-            const currentTitle = JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED;
+        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalJsonConfig) {
+            const edited = JsonConfigCommandCenter.isEdited();
+            const currentTitle = (edited ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
             const currentMode = JsonConfigCommandCenter.editor?.getMode();
             JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);
         }
@@ -76,8 +94,13 @@ export class JsonConfigCommandCenter {
         return await JsonConfigCommandCenter.api.saveJson(currentJson);
     }
 
-    public static onUpdate = async (selectedJsonConfigId: number | null): Promise<any> => {
-        const currentJson = JsonConfigCommandCenter.currentJson;
+    public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {
+        let currentJson = JsonConfigCommandCenter.currentJson;
+        // overide currentJson with resolved one
+        if (args) {
+            currentJson = args;
+        }
+
         if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
         }
