@@ -510,6 +510,17 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                                 if(maxLength && length > maxLength) {
                                     errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
                                 }
+
+                                const pattern = schema.pattern;
+
+                                if (pattern) {
+                                    const regex = new RegExp(pattern);
+                                    const matches = regex.test(value);
+
+                                    if(!matches) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_VIOLATES_PATTERN, pattern) });
+                                    }
+                                }
                             }
                         }
                         break;
