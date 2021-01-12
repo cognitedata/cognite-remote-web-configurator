@@ -9,12 +9,12 @@ import JSONEditor, {
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
-import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
+import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
 import { MapNode } from "../validator/nodes/MapNode";
-import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
+import { AssociationType, BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
@@ -106,7 +106,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         };
                         allTemplates.push(template);
                     });
-                // Handle: add as a direct sample object    
+                // Handle: add as a direct sample object
                 } else {
                     const template = {
                         text: `${key}-sample`,
@@ -116,10 +116,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         value: ele.sample
                     }
                     allTemplates.push(template);
-                }               
+                }
             }
         });
-    
+
         return allTemplates;
     }
 
@@ -272,6 +272,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         let schemaMetaData: any;
         const discriminator = schemaMeta.discriminator;
 
+        if(schemaType === DataType.any) {
+            return errors;
+        }
+
         if (discriminator) {
             if (schemaType === DataType.object) {
                 schemaMetaData = schemaMeta.data;
@@ -391,6 +395,22 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     console.error(`Invalid minElement configuration for ${paths.join(".")}`);
                 }
             }
+
+            const shouldBeUnique = schema.uniqueItems;
+
+            // uniqueness validation
+
+            if(shouldBeUnique) {
+                const uniqueSet = new Set();
+                json.forEach( (item: any, index: number) => {
+                    if(uniqueSet.has(item)) {
+                        const itemPath = paths.concat([index]);
+                        errors.push({ path: itemPath, message: replaceString(LOCALIZATION.ARR_ELEMENT_VIOLATES_UNIQUENESS, item.toString()) });
+                    } else {
+                        uniqueSet.add(item);
+                    }
+                } );
+            }
         } else {
             console.error(`Schema type: ${schema.type} cannot be validated as an array!`);
         }
@@ -419,6 +439,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const datatype: DataType = schema.type;
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
+            const associationType = schema.association;
 
             if (!value && value !== 0) {
                 if (isRequired) {
@@ -440,36 +461,66 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.number: {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
-                        if (isNaN(Number(value))) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
-                        } else {
-                            if (minimum) {
-                                if (value < minimum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
-                                }
+
+                        if (associationType === AssociationType.NOT) {
+                            if (!isNaN(Number(value))) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NUMBER });
                             }
-                            if (maximum) {
-                                if (value > maximum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                        } else {
+                            if (isNaN(Number(value))) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
+                            } else {
+                                if (minimum) {
+                                    if (value < minimum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
+                                    }
+                                }
+                                if (maximum) {
+                                    if (value > maximum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                                    }
                                 }
                             }
                         }
                         break;
                     }
                     case DataType.boolean: {
-                        if (!isBoolean(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
+                        if (associationType === AssociationType.NOT) {
+                            if (isBoolean(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_BOOLEAN });
+                            }
+                        } else {
+                            if (!isBoolean(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
+                            }
                         }
                         break;
                     }
                     case DataType.string: {
-                        if (!isString(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                        if (associationType === AssociationType.NOT) {
+                            if (isString(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_STRING });
+                            }
                         } else {
-                            const maxLength = Number(schema.maxLength);
-                            const length = value.length;
-                            if(maxLength && length > maxLength) {
-                                errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                            if (!isString(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                            } else {
+                                const maxLength = Number(schema.maxLength);
+                                const length = value.length;
+                                if(maxLength && length > maxLength) {
+                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                                }
+
+                                const pattern = schema.pattern;
+
+                                if (pattern) {
+                                    const regex = new RegExp(pattern);
+                                    const matches = regex.test(value);
+
+                                    if(!matches) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_VIOLATES_PATTERN, pattern) });
+                                    }
+                                }
                             }
                         }
                         break;

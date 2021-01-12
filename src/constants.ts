@@ -64,7 +64,12 @@ export const LOCALIZATION = {
     VAL_NOT_NUMBER: "Value is not a number!",
     VAL_CANNOT_BE_LESS: "Value cannot be less than $$!",
     VAL_CANNOT_BE_GREATER: "Value cannot be greater than $$!",
+    VAL_CANNOT_BE_BOOLEAN: "Value cannot be boolean!",
+    VAL_CANNOT_BE_NUMBER: "Value cannot be number!",
+    VAL_CANNOT_BE_STRING: "Value cannot be string!",
     VAL_NOT_BOOLEAN: "Value is not a boolean!",
     VAL_NOT_STRING: "Value is not a string!",
-    STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!"
+    STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!",
+    STRING_VIOLATES_PATTERN: "String does not provide a match for pattern: $$!",
+    ARR_ELEMENT_VIOLATES_UNIQUENESS: "item: $$ violates array uniqueness constraint!"
 }
