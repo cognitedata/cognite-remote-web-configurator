@@ -61,5 +61,4 @@ export class DigitalTwinApi implements Api {
 
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins/delete`, options)
     }
-
 }

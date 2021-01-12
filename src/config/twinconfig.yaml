@@ -7,6 +7,16 @@ paths: {}
 
 components:
   schemas:
+    MultiArrayTypes:
+      description: Can be any value - string, number, boolean, array or object.
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: pet_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
     AnyValue:
       description: Can be any value - string, number, boolean, array or object.
     NotValue:
@@ -48,7 +58,7 @@ components:
               type: boolean
             breed:
               type: string
-              enum: [Dingo, Husky, Retriever, Shepherd]
+              enum: [Dingo, Husky, Retriever, Shepherd, null]
     Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
       allOf: # Combines the main `Pet` schema with `Cat`-specific properties 
         - $ref: '#/components/schemas/Pet'
@@ -59,6 +69,10 @@ components:
               type: boolean
             age:
               type: integer
+            timeSeries:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/TimeseriesFilter'
     TwinConfiguration:
      description: "Data structure that fully defines a digital twin in the Cognite Digital Twin Application."
      required:
@@ -67,6 +81,11 @@ components:
        - scenes
      type: object
      properties:
+       arbitraryArray:
+        description: "Array of 3D"
+        type: array
+        items:
+          $ref: '#/components/schemas/MultiArrayTypes'  
        notValue:
          $ref: '#/components/schemas/NotValue' 
        anyValue:

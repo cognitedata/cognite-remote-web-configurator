@@ -6,6 +6,7 @@ export class ArrayNode extends BaseNode {
   public minItems?: number | undefined;
   public maxItems?: number | undefined;
   public sampleData: BaseNode | undefined;
+  public uniqueItems: boolean | undefined;
 
   constructor(schema: ISchemaNode, data: IData, isRequired: boolean, sampleData?: BaseNode) {
     super(DataType.array, schema, [], isRequired);
@@ -13,5 +14,6 @@ export class ArrayNode extends BaseNode {
     this.maxItems = schema.maxItems;
     this._data = data;
     this.sampleData = sampleData;
+    this.uniqueItems = schema.uniqueItems;
   }
 }

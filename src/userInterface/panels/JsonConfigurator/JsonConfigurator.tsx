@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
-import { JsonConfig } from "../../util/types";
+import { JsonConfig, MergeOptions } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { EditorPanel } from '../EditorPanel/EditorPanel';
 import message from 'antd/es/message';
-import { LOCALIZATION } from '../../../constants';
+import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
+import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
+import localJsonFile from '../../../config/MauiA.json';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -19,25 +21,50 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
+    const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
+    const [showMerge, setShowMerge] = useState<boolean>(false);
+    const compareJsons = useRef<{ currentJson: string, newJson: string }>();
+    const handleOkMerge = useRef<any>(() => { console.log('not set'); });
+    const handleCancelMerge = useRef<any>(() => null);
 
-    const loadJsonConfigs = () => {
-        JsonConfigCommandCenter.loadJsonConfigs()
-            .then(response => {
-                setJsonConfigMap(response);
-            })
+    const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
+        const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
+            .then(response => response)
             .catch(error => {
                 message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+                if (USE_LOCAL_FILES_AND_NO_LOGIN) {
+                    const map = new Map().set(123, { id: 123, data: localJsonFile });
+                    setJsonConfigMap(map);
+                }
             });
+        setJsonConfigMap(jsonConfigs);
+
+        if (jsonConfigId) {
+            setSelectedJsonConfig(jsonConfigId, jsonConfigs, resolvedJson);
+        }
     }
 
     // call with undefind values to create new json config
-    const onJsonConfigSelect = (jsonConfigId: number | null) => {
+    const setSelectedJsonConfig = (jsonConfigId: number | null, jsonConfigs?: Map<number, unknown> | null, resolvedJson?: any) => {
         if (jsonConfigId) {
-            if (jsonConfigMap && jsonConfigMap.size > 0) {
-                const jsonConfig = jsonConfigMap.get(jsonConfigId);
-                if (jsonConfig) {
-                    setJsonConfig(jsonConfig as JsonConfig);
-                }
+            let selectedJsonConfig;
+            if (jsonConfigs) {
+                selectedJsonConfig = jsonConfigs.get(jsonConfigId);
+            }
+            else if (jsonConfigMap && jsonConfigMap.size > 0) {
+                selectedJsonConfig = jsonConfigMap.get(jsonConfigId);
+            }
+
+            // set new json config and Original
+            if (selectedJsonConfig) {
+                setJsonConfig(selectedJsonConfig as JsonConfig);
+                setOriginalJsonConfig((selectedJsonConfig as JsonConfig).data);
+            }
+            // overide if it has resolved version
+            if (resolvedJson) {
+                setJsonConfig({
+                    data: resolvedJson
+                } as JsonConfig);
             }
             setSelectedJsonConfigId(jsonConfigId);
         }
@@ -46,13 +73,25 @@ export const JsonConfigurator: React.FC<any> = () => {
                 data: {}
             } as JsonConfig);
             setSelectedJsonConfigId(null);
+            setOriginalJsonConfig(null);
         }
+        JsonConfigCommandCenter.updateTitle();
+    }
+
+    const setMergeOptions = (options: MergeOptions) => {
+        compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
+        handleOkMerge.current = options.onOk;
+        handleCancelMerge.current = options.onCancel;
+        setShowMerge(true);
     }
 
     const reloadJsonConfigs = (jsonConfigId: number | null) => {
-        loadJsonConfigs();
-        onJsonConfigSelect(jsonConfigId);
+        loadJsonConfigs(jsonConfigId);
     }
+
+    JsonConfigCommandCenter.getOriginalJsonConfig = () => {
+        return originalJsonConfig
+    };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
         switch (command) {
@@ -60,15 +99,19 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
-            case CommandEvent.createNew: {
-                onJsonConfigSelect(args[0]);
+            case CommandEvent.reload: {
+                loadJsonConfigs(selectedJsonConfigId, args[0]);
+                break;
+            }
+            case CommandEvent.switchConfig: {
+                setSelectedJsonConfig(args[0]);
                 break;
             }
             case CommandEvent.saveAs: {
                 return await JsonConfigCommandCenter.onSaveAs();
             }
             case CommandEvent.update: {
-                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId);
+                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
             }
             case CommandEvent.delete: {
                 return await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
@@ -84,14 +127,12 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     useEffect(() => {
         loadJsonConfigs();
-
     }, []);
 
     return (
         <div className={classes.configurator}>
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
-                    onJsonConfigSelect={onJsonConfigSelect}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
                     selectedJsonConfigId={selectedJsonConfigId} />
@@ -101,10 +142,21 @@ export const JsonConfigurator: React.FC<any> = () => {
                     <CommandPanel
                         commandEvent={onCommand}
                         reloadJsonConfigs={reloadJsonConfigs}
+                        setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                     />
                     <EditorPanel jsonConfig={jsonConfig} />
                 </div>
+            </div>
+            <div>
+                <DiffMerge
+                    setShowMerge={setShowMerge}
+                    showPopup={showMerge}
+                    serverJson={compareJsons.current?.newJson}
+                    localJson={compareJsons.current?.currentJson}
+                    onMerge={handleOkMerge.current}
+                    onCancel={handleCancelMerge.current}
+                />
             </div>
         </div>
     );
