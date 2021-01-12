@@ -249,9 +249,9 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const errors = this.validateFields(json, schemaMeta);
         return errors;
     }
-    
+
     public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
-        JsonConfigCommandCenter.hasErrors(!!errors.length);
+        JsonConfigCommandCenter.hasErrors = !!errors.length;
     }
 
     public onChangeText = (): void => {

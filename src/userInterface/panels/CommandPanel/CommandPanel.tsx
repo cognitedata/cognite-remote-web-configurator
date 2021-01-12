@@ -106,7 +106,7 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (JsonConfigCommandCenter.hasErrors()) {
+        if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
                 icon: <ExclamationCircleOutlined />,
@@ -173,7 +173,7 @@ export const CommandPanel: React.FC<{
     }
 
     const onUpdateHandler = () => {
-        if (JsonConfigCommandCenter.hasErrors()) {
+        if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
                 icon: <ExclamationCircleOutlined />,

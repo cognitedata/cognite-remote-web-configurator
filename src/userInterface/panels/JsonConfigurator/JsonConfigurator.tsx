@@ -26,7 +26,6 @@ export const JsonConfigurator: React.FC<any> = () => {
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
-    let errors = false
 
     const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
         const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
@@ -92,14 +91,6 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     JsonConfigCommandCenter.getOriginalJsonConfig = () => {
         return originalJsonConfig;
-    };
-
-    JsonConfigCommandCenter.hasErrors = (e?: boolean) => {
-        if (e !== undefined) {
-            // setErrors(e);
-            errors = e;
-        }
-        return errors;
     };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
