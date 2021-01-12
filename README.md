@@ -54,3 +54,10 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 # json-validator
+
+## Limitations
+ - Schema should have only 2 deep levels(Should use refs for deep levels)
+ - Descriptions must be unique
+ - oneOf, allOf should comes with a dicriminator
+ - anyOf should not comes with
+ - not association accepts only primitive values

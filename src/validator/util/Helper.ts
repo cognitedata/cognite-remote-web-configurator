@@ -2,10 +2,9 @@ import { DataType } from "../enum/DataType.enum";
 import { ErrorType, IValidationResult } from "../interfaces/IValidationResult";
 import { MapNode } from "../nodes/MapNode";
 import { ArrayNode } from "../nodes/ArrayNode";
-import { BaseNode, BaseNodes, AssociationType } from "../nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../nodes/BaseNode";
 import { ObjectNode } from "../nodes/ObjectNode";
 import { STRING_PLACEHOLDER } from "../../constants";
-import { ISchemaNode } from "../interfaces/ISchemaNode";
 
 export const removeDataNode = (
   data: Record<string, unknown>,
@@ -26,7 +25,7 @@ export const removeDataNode = (
 export const getNodeInstance = (
   group: string,
   rootDataNode: BaseNodes,
-  rootJsonNode: any,
+  rootJsonNode: Record<string, unknown>,
   paths: (string | number)[]
 ): IValidationResult => {
   let resultNode: BaseNode|undefined = rootDataNode[group];
@@ -68,7 +67,7 @@ export const getNodeInstance = (
     }
 
     if(json){
-      json = json[path];
+      json = json[path] as Record<string, unknown>;
     }
   }
 
@@ -86,9 +85,9 @@ const getPrimitiveValue = (obj: BaseNode | undefined) => {
       return obj.data ?? false;
     case DataType.object:
     case DataType.map:
-      return obj.data ?? {};
+      return {};
     case DataType.array:
-      return obj.data ?? [];
+      return [];
 
     default:
       return undefined;
@@ -104,20 +103,7 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
   }
 
   if (obj instanceof ArrayNode) {
-    if (obj.minItems) {
-      const dat: any = [];
-      // No need to handle discriminator types since they are optional
-      if(!obj.sampleData?.discriminator){
-        const sampleVal = getJson(obj.sampleData);
-
-        for (let i = 0; i < obj.minItems; i++) {
-          dat.push(sampleVal);
-        }
-      }
-      return dat;
-    } else {
-      return [];
-    }
+    return [];
   } else if (obj instanceof ObjectNode) {
     if (obj.data) {
        const dat: any = {};
@@ -138,7 +124,7 @@ export const getJson = (obj: BaseNode | undefined, fillAllFields = false): any =
 };
 
 
-export const replaceString = (str: string, replacement: string) => {
+export const replaceString = (str: string, replacement: string): string => {
   if(str) {
     return str.replace(STRING_PLACEHOLDER, replacement);
   } else {

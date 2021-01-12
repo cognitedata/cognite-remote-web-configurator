@@ -21,7 +21,6 @@ export function TenantLogin(props: {
 
     const advancedOptions = { [LOGIN_CDF_ENVIRONMENT_OPT_TEXT]: '', [LOGIN_API_KEY_TEXT]: ''};
 
-
     useEffect(() => {
         if (DEV_MODE) {
             Client.sdk.loginWithOAuth({
