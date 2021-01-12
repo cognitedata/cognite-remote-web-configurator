@@ -11,6 +11,13 @@ export interface JsonConfig {
     }
 }
 
+export interface MergeOptions {
+    localConfig: any;
+    serverConfig: any;
+    onOk: (mergedJson: any) => void;
+    onCancel: () => void;
+}
+
 export interface JsonEditorOptions extends JSONEditorOptions {
     limitDragging?: boolean;
 }

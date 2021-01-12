@@ -45,6 +45,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidate: this.onValidate,
             onChange: this.onChange,
             onError: this.onError,
+            onChangeText: this.onChangeText,
             limitDragging: this.limitDragging,
         }
     }
@@ -233,7 +234,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public onError = (err: any): void => {
-        if(err) {
+        if (err) {
             message.error(err.message);
         }
     }
@@ -245,6 +246,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const errors = this.validateFields(json, schemaMeta);
 
         return errors;
+    }
+
+    public onChangeText = (): void => {
+        JsonConfigCommandCenter.updateTitle();
     }
 
     /**
@@ -267,8 +272,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         let schemaMetaData: any;
         const discriminator = schemaMeta.discriminator;
 
-        if(discriminator) {
-            if(schemaType === DataType.object) {
+        if (discriminator) {
+            if (schemaType === DataType.object) {
                 schemaMetaData = schemaMeta.data;
             } else if (schemaType === DataType.array || schemaType === DataType.map) {
                 schemaMetaData = schemaMeta.sampleData;
@@ -313,8 +318,8 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 case DataType.map:
                 case DataType.array: {
 
-                    if(schemaType === DataType.array) {
-                        const arrayValidationErrors =  this.validateArray(json, schemaMeta, paths);
+                    if (schemaType === DataType.array) {
+                        const arrayValidationErrors = this.validateArray(json, schemaMeta, paths);
                         errors = arrayValidationErrors.concat(errors);
                     }
 
@@ -343,7 +348,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 }
                 default: {
                     schemaMetaData = schemaMeta;
-                    const valueErrors =  this.validateValues(json, schemaMetaData, paths);
+                    const valueErrors = this.validateValues(json, schemaMetaData, paths);
                     errors = valueErrors.concat(errors);
                 }
             }
@@ -351,7 +356,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
 
         if (missingRequiredFields.length >= 1) {
-            if(missingRequiredFields.length === 1) {
+            if (missingRequiredFields.length === 1) {
                 errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, missingRequiredFields[0]) });
             } else {
                 errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELDS_NOT_AVAIL, missingRequiredFields.join(',')) });
@@ -363,23 +368,23 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private validateArray(json: any, schema: any, paths: any, errors: ValidationError[] = []) {
 
-        if(schema.type === DataType.array) {
+        if (schema.type === DataType.array) {
             const maxItems = Number(schema.maxItems);
             const minItems = Number(schema.minItems);
 
             const elementCount = json.length;
-            if(!isNaN(maxItems)) {
-                if(maxItems >= 0) {
-                    if(elementCount > maxItems) {
+            if (!isNaN(maxItems)) {
+                if (maxItems >= 0) {
+                    if (elementCount > maxItems) {
                         errors.push({ path: paths, message: replaceString(LOCALIZATION.MAX_ARR_ELEMENTS_EXCEEDED, maxItems.toString()) });
                     }
                 } else {
                     console.error(`Invalid maxElement configuration for ${paths.join(".")}`);
                 }
             }
-            if(!isNaN(minItems)) {
-                if(minItems >= 0 ) {
-                    if(elementCount < minItems) {
+            if (!isNaN(minItems)) {
+                if (minItems >= 0) {
+                    if (elementCount < minItems) {
                         errors.push({ path: paths, message: replaceString(LOCALIZATION.MIN_ARR_ELEMENTS_NOT_FOUND, minItems.toString()) });
                     }
                 } else {
@@ -409,25 +414,25 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return errors;
     }
 
-    private validateValues(value: string | boolean | number | null | undefined, schema: any, paths: any[], errors: ValidationError[] = []) : ValidationError[] {
-        if(schema) {
+    private validateValues(value: string | boolean | number | null | undefined, schema: any, paths: any[], errors: ValidationError[] = []): ValidationError[] {
+        if (schema) {
             const datatype: DataType = schema.type;
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
 
-            if(!value && value !== 0) {
-                if(isRequired) {
+            if (!value && value !== 0) {
+                if (isRequired) {
                     errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BE_EMPTY });
                 }
             } else {
-                if(possibleValues && possibleValues.length) {
+                if (possibleValues && possibleValues.length) {
                     let isOneOfPossibleValues = false;
-                    for(const possibleVal of possibleValues) {
-                        if(value === possibleVal) {
+                    for (const possibleVal of possibleValues) {
+                        if (value === possibleVal) {
                             isOneOfPossibleValues = true;
                         }
                     }
-                    if(!isOneOfPossibleValues) {
+                    if (!isOneOfPossibleValues) {
                         errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
                     }
                 }
@@ -435,30 +440,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.number: {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
-                        if(isNaN(Number(value))) {
+                        if (isNaN(Number(value))) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
                         } else {
-                            if(minimum) {
-                                if(value < minimum) {
+                            if (minimum) {
+                                if (value < minimum) {
                                     errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
                                 }
                             }
-                            if(maximum) {
-                                if(value > maximum) {
+                            if (maximum) {
+                                if (value > maximum) {
                                     errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
                                 }
                             }
                         }
                         break;
                     }
-                    case DataType.boolean:{
-                        if(!isBoolean(value)) {
+                    case DataType.boolean: {
+                        if (!isBoolean(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
                         }
                         break;
                     }
-                    case DataType.string:{
-                        if(!isString(value)) {
+                    case DataType.string: {
+                        if (!isString(value)) {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
                         } else {
                             const maxLength = Number(schema.maxLength);
