@@ -5,8 +5,7 @@ import List from 'antd/es/list';
 export const ConfigSelector: React.FC<{
     onJsonConfigSelectHandler: (id: number | null) => void,
     jsonConfigMap: Map<number, unknown> | null,
-    selectedJsonConfigId: number | null,
-    jsonConfigHash: string | null
+    selectedJsonConfigId: number | null
 }> = (props) => {
 
     const jsonConfigs: { id: number, name: string }[] = [];

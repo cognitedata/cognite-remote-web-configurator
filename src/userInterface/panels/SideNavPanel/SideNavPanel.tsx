@@ -54,7 +54,6 @@ export const SideNavPanel: React.FC<{
                         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
                         jsonConfigMap={props.jsonConfigMap}
                         selectedJsonConfigId={props.selectedJsonConfigId}
-                        jsonConfigHash={props.jsonConfigHash}
                     />
                 </div>
             </div>
