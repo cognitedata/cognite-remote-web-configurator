@@ -396,7 +396,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 }
             }
 
-            const shouldBeUnique = schema.unique;
+            const shouldBeUnique = schema.uniqueItems;
 
             // uniqueness validation
 
@@ -461,50 +461,55 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     case DataType.number: {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
-                        if (isNaN(Number(value))) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
-                        } else {
-                            if(associationType === AssociationType.NOT) {
+
+                        if (associationType === AssociationType.NOT) {
+                            if (!isNaN(Number(value))) {
                                 errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NUMBER });
-                                break;
                             }
-                            if (minimum) {
-                                if (value < minimum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
+                        } else {
+                            if (isNaN(Number(value))) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
+                            } else {
+                                if (minimum) {
+                                    if (value < minimum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
+                                    }
                                 }
-                            }
-                            if (maximum) {
-                                if (value > maximum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                                if (maximum) {
+                                    if (value > maximum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                                    }
                                 }
                             }
                         }
                         break;
                     }
                     case DataType.boolean: {
-                        if (!isBoolean(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
-                        } else {
-                            if(associationType === AssociationType.NOT) {
+                        if (associationType === AssociationType.NOT) {
+                            if (isBoolean(value)) {
                                 errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_BOOLEAN });
-                                break;
+                            }
+                        } else {
+                            if (!isBoolean(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
                             }
                         }
                         break;
                     }
                     case DataType.string: {
-                        if (!isString(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
-                        } else {
-                            if(associationType === AssociationType.NOT) {
+                        if (associationType === AssociationType.NOT) {
+                            if (isString(value)) {
                                 errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_STRING });
-                                break;
                             }
-
-                            const maxLength = Number(schema.maxLength);
-                            const length = value.length;
-                            if(maxLength && length > maxLength) {
-                                errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                        } else {
+                            if (!isString(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                            } else {
+                                const maxLength = Number(schema.maxLength);
+                                const length = value.length;
+                                if(maxLength && length > maxLength) {
+                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                                }
                             }
                         }
                         break;
