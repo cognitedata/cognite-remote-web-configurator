@@ -117,21 +117,7 @@ export const loadSchema = (): Promise<void> => {
           }
 
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = populateChildren(
-              val as ISchemaNode,
-              true,
-              {
-                description: "root",
-                type: "",
-                properties: {},
-              },
-              new BaseNode(
-                DataType.any,
-                val as ISchemaNode,
-                undefined,
-                false
-              )
-            );
+            const childrenNodes = populateChildren(val as ISchemaNode, true);
             rootDataNode[key] = childrenNodes;
           }
 

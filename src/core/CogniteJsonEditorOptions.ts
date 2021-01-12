@@ -14,7 +14,7 @@ import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
 import { MapNode } from "../validator/nodes/MapNode";
-import { BaseNode, BaseNodes, IData } from "../validator/nodes/BaseNode";
+import { BaseNode, BaseNodes } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";

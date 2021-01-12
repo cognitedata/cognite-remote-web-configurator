@@ -30,9 +30,7 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
 
 export const populateChildren = (
   schema: ISchemaNode,
-  isRequired: boolean,
-  parentSchema: ISchemaNode,
-  parentBaseNode: BaseNode 
+  isRequired: boolean
 ): BaseNode => {
   if (schema.not) {
     return new BaseNode(ParseType(schema.not.type), schema, {}, isRequired);
@@ -49,7 +47,7 @@ export const populateChildren = (
 
     if(associatedSchema){
       for (const subSchema of associatedSchema) {
-        const children = populateChildren(subSchema, isRequired, schema, obj);
+        const children = populateChildren(subSchema, isRequired);
         obj.subSchemas.push(children);
         if(children.rowData instanceof Object){
           dat = { ...dat, ...children.rowData};
@@ -66,7 +64,7 @@ export const populateChildren = (
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       // Since `{}` is passed as data for obj, type can be BaseNodes
-      (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required, schema, obj);
+      (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required);
       
       // If sample data is already created, then use previously created one(avoid circular loops)
       addedRefs[obj.description]= (obj.rowData as BaseNodes)[key];
@@ -79,12 +77,7 @@ export const populateChildren = (
       return obj;
     } else {
       const obj = new MapNode(schema, {}, false, undefined);
-      obj.sampleData = populateChildren(
-        schema.additionalProperties,
-        false,
-        schema,
-        obj
-      );
+      obj.sampleData = populateChildren(schema.additionalProperties, false);
       addedRefs[obj.sampleData.description]= obj.sampleData; 
       return obj;
     }
@@ -100,7 +93,7 @@ export const populateChildren = (
       return obj;
     } else {
       const obj = new ArrayNode(schema, [], isRequired, undefined);
-      obj.sampleData = populateChildren(schema.items, false, schema, obj);
+      obj.sampleData = populateChildren(schema.items, false);
       addedRefs[obj.sampleData.description]= obj.sampleData; 
       return obj;
     }
