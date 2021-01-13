@@ -12,6 +12,12 @@ import { ParseType } from "./Parsers";
 const addedRefs: any = {};
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
+  if(schema.additionalProperties){
+    return new MapNode(schema, {}, isRequired, undefined);
+  } else if(schema.items){
+    return new ArrayNode(schema, [], isRequired);
+  }
+  // TODO: why map type is not handled here
   switch (ParseType(schema.type)) {
     case DataType.array:
       return new ArrayNode(schema, [], isRequired);
@@ -39,35 +45,48 @@ export const populateChildren = (
     // schema.oneOf is handled only if discriminator presents at schma,(Check BaseNode `get data()` implementation)
     return new BaseNode(DataType.object, schema, {}, isRequired);
 
-  } else if (schema.allOf || schema.anyOf) {
-    const associatedSchema = schema.allOf || schema.anyOf;
+  } else if (schema.allOf) {
     const obj = new ObjectNode(schema, {}, isRequired);
-
     let dat: any = {};
 
-    if(associatedSchema){
-      for (const subSchema of associatedSchema) {
-        const children = populateChildren(subSchema, isRequired);
-        obj.subSchemas.push(children);
-        if(children.rowData instanceof Object){
-          dat = { ...dat, ...children.rowData};
-        }
+    for (const subSchema of schema.allOf) {
+
+        // let children: BaseNode = getPrimitiveObject(subSchema, isRequired);
+
+        // if(subSchema.description && addedRefs[subSchema.description]){
+        //   children = addedRefs[subSchema.description];
+        // } else {
+        //   addedRefs[subSchema.description] = children;
+        //   Object.assign(children, populateChildren(subSchema, isRequired)); 
+        // }
+
+      const children = populateChildren(subSchema, isRequired);
+      if(children.rowData instanceof Object){
+        dat = { ...dat, ...children.rowData};
       }
     }
+    
     obj.data = dat;
     return obj;
 
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired);
     for (const [key, subSchema] of Object.entries(schema.properties)) {
+
       const required = schema.required
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
-      // Since `{}` is passed as data for obj, type can be BaseNodes
-      (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required);
       
-      // If sample data is already created, then use previously created one(avoid circular loops)
-      addedRefs[obj.description]= (obj.rowData as BaseNodes)[key];
+      let children: any = getPrimitiveObject(subSchema, required);
+
+      if(subSchema.description && addedRefs[subSchema.description]){
+        children = addedRefs[subSchema.description];
+      } else {
+        addedRefs[subSchema.description] = children;
+        Object.assign(children, populateChildren(subSchema, required));   
+      }
+      // Since `{}` is passed as data for obj, type can be BaseNodes
+      (obj.rowData as BaseNodes)[key] = children;
     }
     return obj;
   } else if (schema.additionalProperties) { 

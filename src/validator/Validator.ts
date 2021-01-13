@@ -122,9 +122,7 @@ export const loadSchema = (): Promise<void> => {
           }
 
           // Populate root nodes
-          for (const key1 of Object.keys(rootSchema)) {
-            const group = rootDataNode[key1];
-
+          for (const [key1, group] of Object.entries(rootDataNode)) {
             if (group.data) {
               for (const [key2, val2] of Object.entries(group.data)) {
                 if (group.type === DataType.object) {

@@ -1,6 +1,8 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
+import { getDefaultPrimitiveVal } from "../util/Parsers";
 import { rootDataNode } from "../Validator";
+import { StringNode } from "./StringNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
 export type IData =
@@ -64,17 +66,20 @@ export class BaseNode {
         // Get node for specific type of dicriminator. It is the last section of the schemaPath array
         const node = rootDataNode[schemaPath[schemaPath.length - 1]];
 
-        if(node._data instanceof Object){
-          // TODO: avoid any type.
-          // TODO: create StringNode here.
-          (node._data as any)[this.discriminator.propertyName] = {
-            type: 'string',
-            data: key,
-            possibleValues: possibleTypeValues,
-            isRequired: true
-          };
+        if(node){
+          if(node._data instanceof Object){
+            // TODO: avoid any type.
+            // TODO: create StringNode here.
+            (node._data as any)[this.discriminator.propertyName] = {
+              type: 'string',
+              data: key,
+              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
+              possibleValues: possibleTypeValues,
+              isRequired: true
+            };
+          }
+          result[key] = node;
         }
-        result[key] = node;
       }
       /**
        * {

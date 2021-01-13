@@ -29,7 +29,7 @@ const extractField = (key: string) => {
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public get options(): JsonEditorOptions {
-
+        console.log('Templates', this.templates);
         return {
             mode: this.mode,
             // modes: this.modes,
