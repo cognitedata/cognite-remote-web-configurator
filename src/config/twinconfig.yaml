@@ -201,8 +201,14 @@ components:
          items:
            type: number
            format: float
-         
+       exceptStrings:
+         not: 
+          type: string
+       nullableString: 
+        type: string
+        nullable: true
        name:
+         maxLength: 2
          description: "Name of the twin, as it will be shown in the Digital Twin Application."
          type: string
        thumbnailImageId:
