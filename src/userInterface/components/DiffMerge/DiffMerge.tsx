@@ -71,15 +71,10 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
             onCancel={handleCancelMerge}
             width={1050}
             footer={
-                props.saveAfterMerge ?
-                    [
-                        <Button key="left" onClick={handleLeftMerge}>Accept Server Version and Save</Button>,
-                        <Button key="your" onClick={handleRightMerge}>Accept Local Version and Save</Button>
-                    ] :
-                    [
-                        <Button key="left" onClick={handleLeftMerge}>Accept Server Version</Button>,
-                        <Button key="your" onClick={handleRightMerge}>Accept Local Version</Button>
-                    ]
+                [
+                    <Button key="left" onClick={handleLeftMerge}>Accept Server Version {props.saveAfterMerge ? 'and Save' : ''}</Button>,
+                    <Button key="your" onClick={handleRightMerge}>Accept Local Version {props.saveAfterMerge ? 'and Save' : ''}</Button>
+                ]
             }
         >
             <div className={styles.editorLblContainer}>
