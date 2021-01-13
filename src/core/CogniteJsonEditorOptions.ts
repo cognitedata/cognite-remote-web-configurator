@@ -5,6 +5,8 @@ import JSONEditor, {
     JSONPath,
     MenuItem,
     MenuItemNode,
+    ParseError,
+    SchemaValidationError,
     ValidationError
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
@@ -45,6 +47,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidate: this.onValidate,
             onChange: this.onChange,
             onError: this.onError,
+            onValidationError: this.onValidationError,
             onChangeText: this.onChangeText,
             limitDragging: this.limitDragging,
         }
@@ -94,7 +97,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Handle: Add as sample object for array/map
             if (ele.node instanceof ArrayNode || ele.node instanceof MapNode) {
                 // Handle: if sample object is associationType
-                if(ele.node.sampleData && ele.node.sampleData.discriminator){
+                if (ele.node.sampleData && ele.node.sampleData.discriminator) {
                     // If discriminator exists, add all sub types as templates
                     Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
                         const template = {
@@ -244,8 +247,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
-
         return errors;
+    }
+
+    public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
+        JsonConfigCommandCenter.hasErrors = !!errors.length;
     }
 
     public onChangeText = (): void => {
@@ -613,7 +619,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return ret;
             }
 
-        // Handle: Add as property of object
+            // Handle: Add as property of object
         } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = { ...(resultNode.data as BaseNodes) };
