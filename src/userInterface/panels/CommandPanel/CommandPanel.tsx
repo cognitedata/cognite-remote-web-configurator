@@ -85,7 +85,7 @@ export const CommandPanel: React.FC<{
                 });
             }
             else {
-                props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
+                props.commandEvent(CommandEvent.reload);
             }
         }
         else {

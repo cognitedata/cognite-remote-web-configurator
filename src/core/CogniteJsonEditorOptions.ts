@@ -446,23 +446,29 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
             const associationType = schema.association;
+            const nullable = schema.nullable;
+
+            if (possibleValues && possibleValues.length) {
+                let isOneOfPossibleValues = false;
+                for (const possibleVal of possibleValues) {
+                    if (value === possibleVal) {
+                        isOneOfPossibleValues = true;
+                    }
+                }
+                if (!isOneOfPossibleValues) {
+                    errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
+                }
+            }
+
+            if(!nullable && value === null) {
+                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NULL });
+            }
 
             if (!value && value !== 0) {
                 if (isRequired) {
                     errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BE_EMPTY });
                 }
             } else {
-                if (possibleValues && possibleValues.length) {
-                    let isOneOfPossibleValues = false;
-                    for (const possibleVal of possibleValues) {
-                        if (value === possibleVal) {
-                            isOneOfPossibleValues = true;
-                        }
-                    }
-                    if (!isOneOfPossibleValues) {
-                        errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
-                    }
-                }
                 switch (datatype) {
                     case DataType.number: {
                         const minimum = schema.minimum;
