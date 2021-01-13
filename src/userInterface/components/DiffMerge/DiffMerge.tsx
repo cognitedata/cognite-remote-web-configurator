@@ -15,7 +15,7 @@ const getJson = (mergedJsonString: string) => {
     return mergedJson
 }
 
-export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, serverJson: any, localJson: any, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
+export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, serverJson: any, localJson: any, saveAfterMerge: boolean, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
 
     const serverJson = JSON.stringify(props.serverJson, null, 2);
     const localJson = JSON.stringify(props.localJson, null, 2);
@@ -70,14 +70,17 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
             visible={props.showPopup}
             onCancel={handleCancelMerge}
             width={1050}
-            footer={[
-                <Button key="left" onClick={handleLeftMerge}>
-                    Accept Server Version
-                </Button>,
-                <Button key="your" onClick={handleRightMerge}>
-                    Accept Local Version
-                </Button>
-            ]}
+            footer={
+                props.saveAfterMerge ?
+                    [
+                        <Button key="left" onClick={handleLeftMerge}>Accept Server Version and Save</Button>,
+                        <Button key="your" onClick={handleRightMerge}>Accept Local Version and Save</Button>
+                    ] :
+                    [
+                        <Button key="left" onClick={handleLeftMerge}>Accept Server Version</Button>,
+                        <Button key="your" onClick={handleRightMerge}>Accept Local Version</Button>
+                    ]
+            }
         >
             <div className={styles.editorLblContainer}>
                 <span className="editor-lbl"> Server Version</span>

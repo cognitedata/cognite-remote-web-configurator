@@ -74,6 +74,7 @@ export const CommandPanel: React.FC<{
                         .catch(error => {
                             message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                         }),
+                    saveAfterMerge: false,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
                     },
@@ -141,6 +142,7 @@ export const CommandPanel: React.FC<{
                     .catch(error => {
                         message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                     }),
+                saveAfterMerge: true,
                 onOk: (mergedJson: any) => {
                     props.commandEvent(CommandEvent.update, mergedJson)
                         .then((response: any) => {
