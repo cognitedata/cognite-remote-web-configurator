@@ -208,7 +208,7 @@ components:
         type: string
         nullable: true
        name:
-         maxLength: 2
+         maxLength: 6
          description: "Name of the twin, as it will be shown in the Digital Twin Application."
          type: string
        thumbnailImageId:
