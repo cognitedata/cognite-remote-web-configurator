@@ -50,22 +50,11 @@ export const populateChildren = (
     let dat: any = {};
 
     for (const subSchema of schema.allOf) {
-
-        // let children: BaseNode = getPrimitiveObject(subSchema, isRequired);
-
-        // if(subSchema.description && addedRefs[subSchema.description]){
-        //   children = addedRefs[subSchema.description];
-        // } else {
-        //   addedRefs[subSchema.description] = children;
-        //   Object.assign(children, populateChildren(subSchema, isRequired)); 
-        // }
-
       const children = populateChildren(subSchema, isRequired);
       if(children.rowData instanceof Object){
         dat = { ...dat, ...children.rowData};
       }
     }
-    
     obj.data = dat;
     return obj;
 
@@ -89,33 +78,14 @@ export const populateChildren = (
       (obj.rowData as BaseNodes)[key] = children;
     }
     return obj;
-  } else if (schema.additionalProperties) { 
-    // If sample data is already created, then use previously created one(avoid circular loops)
-    if (schema.additionalProperties.description && addedRefs[schema.additionalProperties.description]) {
-      const obj = new MapNode(schema, {}, false, addedRefs[schema.additionalProperties.description]);
-      return obj;
-    } else {
+  } else if (schema.additionalProperties) {
       const obj = new MapNode(schema, {}, false, undefined);
-      obj.sampleData = populateChildren(schema.additionalProperties, false);
-      addedRefs[obj.sampleData.description]= obj.sampleData; 
+      obj.sampleData = populateChildren(schema.additionalProperties, false); 
       return obj;
-    }
   } else if (schema.items) {
-    // If sample data is already created, then use previously created one(avoid circular loops)
-    if (schema.items.description && addedRefs[schema.items.description]) {
-      const obj = new ArrayNode(
-        { type: DataType.array, description: schema.description },
-        [],
-        isRequired,
-        addedRefs[schema.items.description]
-      );
-      return obj;
-    } else {
       const obj = new ArrayNode(schema, [], isRequired, undefined);
       obj.sampleData = populateChildren(schema.items, false);
-      addedRefs[obj.sampleData.description]= obj.sampleData; 
       return obj;
-    }
   } else {
     return getPrimitiveObject(schema, isRequired);
   }

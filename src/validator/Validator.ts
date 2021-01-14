@@ -139,7 +139,6 @@ export const loadSchema = (): Promise<void> => {
           console.log("Schema YML", rootSchema);
           console.log("Schema Node", rootDataNode);
           console.log("All Nodes", allNodes);
-          // console.log("Schema Errors", schemaValidationErrors);
           resolve();
         } else {
           console.error(err);

@@ -70,13 +70,17 @@ export class BaseNode {
           if(node._data instanceof Object){
             // TODO: avoid any type.
             // TODO: create StringNode here.
-            (node._data as any)[this.discriminator.propertyName] = {
-              type: 'string',
-              data: key,
-              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
-              possibleValues: possibleTypeValues,
-              isRequired: true
-            };
+            if((node._data as BaseNodes)[this.discriminator.propertyName]){
+              (node._data as any)[this.discriminator.propertyName] = {
+                type: 'string',
+                data: key,
+                description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
+                possibleValues: possibleTypeValues,
+                isRequired: true
+              };
+            } else {
+              console.error('error');
+            }
           }
           result[key] = node;
         }
