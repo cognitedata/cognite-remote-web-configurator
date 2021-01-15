@@ -7,7 +7,7 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleOutlined, WarningTwoTone } from '@ant-design/icons';
+import { ExclamationCircleOutlined, ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
@@ -123,7 +123,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: LOCALIZATION.SAVE_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <ExclamationCircleTwoTone />,
                 content: LOCALIZATION.SAVE_CONTENT,
                 onOk() {
                     save();
