@@ -77,10 +77,10 @@ export const CommandPanel: React.FC<{
                     saveAfterMerge: false,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
+                        message.success(LOCALIZATION.REFRESH_SUCCESS);
                     },
                     onCancel: () => {
-                        // ToDo: update with proper message
-                        message.warning("reload cancelled");
+                        message.warning(LOCALIZATION.REFRESH_ERROR);
                     }
                 });
             }
