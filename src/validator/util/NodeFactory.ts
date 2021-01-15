@@ -9,6 +9,7 @@ import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
+// To store previously populated children to avoid circular cycles 
 const addedRefs: any = {};
 
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
@@ -68,6 +69,7 @@ export const populateChildren = (
       
       let children: any = getPrimitiveObject(subSchema, required);
 
+      // If these children are previousy generated the used the cached one
       if(subSchema.description && addedRefs[subSchema.description]){
         children = addedRefs[subSchema.description];
       } else {
