@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/cognite-remote-web-configurator/static/css/main.cce54de0.chunk.css",
-    "main.js": "/cognite-remote-web-configurator/static/js/main.726b970e.chunk.js",
-    "main.js.map": "/cognite-remote-web-configurator/static/js/main.726b970e.chunk.js.map",
+    "main.js": "/cognite-remote-web-configurator/static/js/main.a060e75d.chunk.js",
+    "main.js.map": "/cognite-remote-web-configurator/static/js/main.a060e75d.chunk.js.map",
     "runtime-main.js": "/cognite-remote-web-configurator/static/js/runtime-main.23358efa.js",
     "runtime-main.js.map": "/cognite-remote-web-configurator/static/js/runtime-main.23358efa.js.map",
     "static/css/2.5d5f40f8.chunk.css": "/cognite-remote-web-configurator/static/css/2.5d5f40f8.chunk.css",
@@ -15,13 +15,13 @@
     "static/css/main.cce54de0.chunk.css.map": "/cognite-remote-web-configurator/static/css/main.cce54de0.chunk.css.map",
     "static/js/2.42bd99f9.chunk.js.LICENSE.txt": "/cognite-remote-web-configurator/static/js/2.42bd99f9.chunk.js.LICENSE.txt",
     "static/media/JsonEditorContainer.scss": "/cognite-remote-web-configurator/static/media/jsoneditor-icons.15f2789d.svg",
-    "static/media/twinconfig.4784ab9d.yaml": "/cognite-remote-web-configurator/static/media/twinconfig.4784ab9d.yaml"
+    "static/media/twinconfig.69952d13.yaml": "/cognite-remote-web-configurator/static/media/twinconfig.69952d13.yaml"
   },
   "entrypoints": [
     "static/js/runtime-main.23358efa.js",
     "static/css/2.5d5f40f8.chunk.css",
     "static/js/2.42bd99f9.chunk.js",
     "static/css/main.cce54de0.chunk.css",
-    "static/js/main.726b970e.chunk.js"
+    "static/js/main.a060e75d.chunk.js"
   ]
 }
