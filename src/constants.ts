@@ -2,7 +2,7 @@ export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";
 export const LOGIN_API_KEY_TEXT = "apiKey";
-export const DEV_MODE = true;
+export const DEV_MODE = false;
 export const USE_LOCAL_FILES_AND_NO_LOGIN = false;
 export const STRING_PLACEHOLDER = "$$";
 

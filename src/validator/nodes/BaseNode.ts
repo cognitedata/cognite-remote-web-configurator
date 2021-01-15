@@ -1,6 +1,5 @@
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { getDefaultPrimitiveVal } from "../util/Parsers";
 import { rootDataNode } from "../Validator";
 import { StringNode } from "./StringNode";
 
@@ -58,29 +57,27 @@ export class BaseNode {
     if (this.discriminator && this.discriminator.mapping ) {
 
       const result: BaseNodes = {};
-      const possibleTypeValues = Object.keys(this.discriminator.mapping);      
+      const keysForDiscriminatorTypes = Object.keys(this.discriminator.mapping);      
 
       for (const [key, val] of Object.entries(this.discriminator.mapping)) {
-        const schemaPath = val.split("/");
+        const schemaPathSections = val.split("/");
 
         // Get node for specific type of dicriminator. It is the last section of the schemaPath array
-        const node = rootDataNode[schemaPath[schemaPath.length - 1]];
+        const typeIndicatorKey = schemaPathSections[schemaPathSections.length - 1];
+        const node = rootDataNode[typeIndicatorKey];
 
-        if(node){
-          if(node._data instanceof Object){
-            // TODO: avoid any type.
-            // TODO: create StringNode here.
-            if((node._data as BaseNodes)[this.discriminator.propertyName]){
-              (node._data as any)[this.discriminator.propertyName] = {
-                type: 'string',
-                data: key,
-                description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
-                possibleValues: possibleTypeValues,
-                isRequired: true
-              };
-            } else {
-              console.error('error');
-            }
+        if(node && node._data instanceof Object){
+          // TODO: create StringNode here.(It is not allowed in TS; create BaseNode inside a BaseNode)
+          if((node._data as BaseNodes)[this.discriminator.propertyName]){
+            (node._data as BaseNodes)[this.discriminator.propertyName] = {
+              type: DataType.string,
+              data: key,
+              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
+              possibleValues: keysForDiscriminatorTypes,
+              isRequired: true
+            } as StringNode;
+          } else {
+            console.error('Error: Failed to read data from BaseNode');
           }
           result[key] = node;
         }

@@ -39,6 +39,8 @@ export const populateChildren = (
   schema: ISchemaNode,
   isRequired: boolean
 ): BaseNode => {
+  // Any part of the discriminator is not handled here. All are handled in `get Data` method of BaseNode
+
   if (schema.not) {
     return new BaseNode(ParseType(schema.not.type), schema, {}, isRequired);
 
@@ -67,9 +69,9 @@ export const populateChildren = (
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       
-      let children: any = getPrimitiveObject(subSchema, required);
+      let children: BaseNode = getPrimitiveObject(subSchema, required);
 
-      // If these children are previousy generated the used the cached one
+      // If these children are previousy generated, then used the cached one to avoid causing to circular iterations
       if(subSchema.description && addedRefs[subSchema.description]){
         children = addedRefs[subSchema.description];
       } else {
@@ -80,6 +82,8 @@ export const populateChildren = (
       (obj.rowData as BaseNodes)[key] = children;
     }
     return obj;
+  
+  // MapNodes and ArrayNodes are handled in a similar way
   } else if (schema.additionalProperties) {
       const obj = new MapNode(schema, {}, false, undefined);
       obj.sampleData = populateChildren(schema.additionalProperties, false); 
