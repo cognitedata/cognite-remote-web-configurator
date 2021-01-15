@@ -7,7 +7,7 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
@@ -77,10 +77,10 @@ export const CommandPanel: React.FC<{
                     saveAfterMerge: false,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
+                        message.success(LOCALIZATION.REFRESH_SUCCESS);
                     },
                     onCancel: () => {
-                        // ToDo: update with proper message
-                        message.warning("reload cancelled");
+                        message.warning(LOCALIZATION.REFRESH_ERROR);
                     }
                 });
             }
@@ -110,20 +110,26 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
                 content: LOCALIZATION.SAVE_WITH_ERRORS_CONTENT,
                 onOk() {
                     save();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
         else {
             confirm({
                 title: LOCALIZATION.SAVE_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <ExclamationCircleTwoTone />,
                 content: LOCALIZATION.SAVE_CONTENT,
                 onOk() {
                     save();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -178,7 +184,7 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
                 content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
@@ -191,7 +197,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: LOCALIZATION.UPLOAD_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <ExclamationCircleTwoTone />,
                 content: LOCALIZATION.UPLOAD_CONTENT,
                 async onOk() {
                     update();
@@ -206,7 +212,7 @@ export const CommandPanel: React.FC<{
     const onDeleteHandler = () => {
         confirm({
             title: LOCALIZATION.DELETE_TITLE,
-            icon: <ExclamationCircleOutlined />,
+            icon: <WarningTwoTone twoToneColor="#ff4d4f" />,
             content: LOCALIZATION.DELETE_CONTENT,
             onOk() {
                 props.commandEvent(CommandEvent.delete)
@@ -217,7 +223,11 @@ export const CommandPanel: React.FC<{
                     .catch((error: any) => {
                         message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                     });
-            }
+            },
+            onCancel() {
+                message.warn(LOCALIZATION.DELETE_ERROR.replace('{{error}}', ''));
+            },
+            okType: 'danger',
         });
     }
 
