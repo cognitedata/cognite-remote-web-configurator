@@ -7,7 +7,7 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleOutlined, ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
+import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
@@ -110,12 +110,12 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
-                icon: <WarningTwoTone twoToneColor="#faad14"/>,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
                 content: LOCALIZATION.SAVE_WITH_ERRORS_CONTENT,
                 onOk() {
                     save();
                 },
-                onCancel(){
+                onCancel() {
                     message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
@@ -128,7 +128,7 @@ export const CommandPanel: React.FC<{
                 onOk() {
                     save();
                 },
-                onCancel(){
+                onCancel() {
                     message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
@@ -184,7 +184,7 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
-                icon: <WarningTwoTone twoToneColor="#faad14"/>,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
                 content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
@@ -212,7 +212,7 @@ export const CommandPanel: React.FC<{
     const onDeleteHandler = () => {
         confirm({
             title: LOCALIZATION.DELETE_TITLE,
-            icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
+            icon: <WarningTwoTone twoToneColor="#ff4d4f" />,
             content: LOCALIZATION.DELETE_CONTENT,
             onOk() {
                 props.commandEvent(CommandEvent.delete)
@@ -224,7 +224,7 @@ export const CommandPanel: React.FC<{
                         message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                     });
             },
-            onCancel(){
+            onCancel() {
                 message.warn(LOCALIZATION.DELETE_ERROR.replace('{{error}}', ''));
             },
             okType: 'danger',
