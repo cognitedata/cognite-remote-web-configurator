@@ -7,7 +7,7 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
@@ -110,10 +110,13 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
                 content: LOCALIZATION.SAVE_WITH_ERRORS_CONTENT,
                 onOk() {
                     save();
+                },
+                onCancel(){
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -124,6 +127,9 @@ export const CommandPanel: React.FC<{
                 content: LOCALIZATION.SAVE_CONTENT,
                 onOk() {
                     save();
+                },
+                onCancel(){
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
