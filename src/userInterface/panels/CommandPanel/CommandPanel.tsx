@@ -110,7 +110,7 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
-                icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
+                icon: <WarningTwoTone twoToneColor="#faad14"/>,
                 content: LOCALIZATION.SAVE_WITH_ERRORS_CONTENT,
                 onOk() {
                     save();
@@ -184,7 +184,7 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
-                icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
+                icon: <WarningTwoTone twoToneColor="#faad14"/>,
                 content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
@@ -212,7 +212,7 @@ export const CommandPanel: React.FC<{
     const onDeleteHandler = () => {
         confirm({
             title: LOCALIZATION.DELETE_TITLE,
-            icon: <ExclamationCircleOutlined />,
+            icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
             content: LOCALIZATION.DELETE_CONTENT,
             onOk() {
                 props.commandEvent(CommandEvent.delete)
@@ -223,7 +223,11 @@ export const CommandPanel: React.FC<{
                     .catch((error: any) => {
                         message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                     });
-            }
+            },
+            onCancel(){
+                message.warn(LOCALIZATION.DELETE_ERROR.replace('{{error}}', ''));
+            },
+            okType: 'danger',
         });
     }
 
