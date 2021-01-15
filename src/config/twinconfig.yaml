@@ -276,7 +276,24 @@ components:
        - name
      type: object
      properties:
+       email:
+         description: "Email of the twin, as it will be shown in the Digital Twin Application."
+         type: string
+         pattern: ^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$
+       listOfNumbers:
+         type: array
+         uniqueItems: true
+         items:
+           type: number
+           format: float
+       exceptStrings:
+         not: 
+          type: string
+       nullableString: 
+        type: string
+        nullable: true
        name:
+         maxLength: 6
          description: "Name of the twin, as it will be shown in the Digital Twin Application."
          type: string
        thumbnailImageId:

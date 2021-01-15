@@ -14,6 +14,7 @@ export interface JsonConfig {
 export interface MergeOptions {
     localConfig: any;
     serverConfig: any;
+    saveAfterMerge: boolean;
     onOk: (mergedJson: any) => void;
     onCancel: () => void;
 }

@@ -19,12 +19,18 @@ export const LOCALIZATION = {
     SAVE_ERROR: 'Save Cancelled! {{error}}',
     SAVE_INVALID_FILE: 'Save Cancelled! Please add a file name',
 
+    SAVE_WITH_ERRORS_TITLE:'Create New Json Config',
+    SAVE_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to Create New Json Config?',
+
     // Upload command
     UPLOAD_TITLE: 'Update File',
     UPLOAD_CONTENT: 'Do you want to update file with new changes?',
     UPLOAD_SUCCESS: 'Data updated successfully!',
     UPLOAD_ERROR: 'Save Cancelled! {{error}}',
     UPLOAD_INVALID_FILE: 'Update failed!',
+
+    UPLOAD_WITH_ERRORS_TITLE:'Update File',
+    UPLOAD_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to update file with new changes?',
 
     // Delete command
     DELETE_TITLE: 'Delete Config',
@@ -64,7 +70,13 @@ export const LOCALIZATION = {
     VAL_NOT_NUMBER: "Value is not a number!",
     VAL_CANNOT_BE_LESS: "Value cannot be less than $$!",
     VAL_CANNOT_BE_GREATER: "Value cannot be greater than $$!",
+    VAL_CANNOT_BE_BOOLEAN: "Value cannot be boolean!",
+    VAL_CANNOT_BE_NUMBER: "Value cannot be number!",
+    VAL_CANNOT_BE_STRING: "Value cannot be string!",
+    VAL_CANNOT_BE_NULL: "Value cannot be null!",
     VAL_NOT_BOOLEAN: "Value is not a boolean!",
     VAL_NOT_STRING: "Value is not a string!",
-    STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!"
+    STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!",
+    STRING_VIOLATES_PATTERN: "String does not provide a match for pattern: $$!",
+    ARR_ELEMENT_VIOLATES_UNIQUENESS: "item: $$ violates array uniqueness constraint!"
 }

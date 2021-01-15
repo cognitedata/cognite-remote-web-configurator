@@ -5,16 +5,18 @@ import JSONEditor, {
     JSONPath,
     MenuItem,
     MenuItemNode,
+    ParseError,
+    SchemaValidationError,
     ValidationError
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
-import { getNodeMeta, getAllNodes, removeNode } from "../validator/Validator";
+import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
 import { MapNode } from "../validator/nodes/MapNode";
-import { BaseNode, BaseNodes } from "../validator/nodes/BaseNode";
+import { AssociationType, BaseNode, BaseNodes } from "../validator/nodes/BaseNode";
 import { ArrayNode } from "../validator/nodes/ArrayNode";
 import { DataType } from "../validator/enum/DataType.enum";
 import { getJson, replaceString } from "../validator/util/Helper";
@@ -45,6 +47,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidate: this.onValidate,
             onChange: this.onChange,
             onError: this.onError,
+            onValidationError: this.onValidationError,
             onChangeText: this.onChangeText,
             limitDragging: this.limitDragging,
         }
@@ -94,7 +97,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             // Handle: Add as sample object for array/map
             if (ele.node instanceof ArrayNode || ele.node instanceof MapNode) {
                 // Handle: if sample object is associationType
-                if(ele.node.sampleData && ele.node.sampleData.discriminator){
+                if (ele.node.sampleData && ele.node.sampleData.discriminator) {
                     // If discriminator exists, add all sub types as templates
                     Object.entries(ele.node.sampleData.data as BaseNodes).forEach(([subKey, subVal]) => {
                         const template = {
@@ -106,7 +109,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         };
                         allTemplates.push(template);
                     });
-                // Handle: add as a direct sample object    
+                // Handle: add as a direct sample object
                 } else {
                     const template = {
                         text: `${key}-sample`,
@@ -116,10 +119,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         value: ele.sample
                     }
                     allTemplates.push(template);
-                }               
+                }
             }
         });
-    
+
         return allTemplates;
     }
 
@@ -244,8 +247,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
-
         return errors;
+    }
+
+    public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
+        JsonConfigCommandCenter.hasErrors = !!errors.length;
     }
 
     public onChangeText = (): void => {
@@ -271,6 +277,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const schemaType = schemaMeta.type;
         let schemaMetaData: any;
         const discriminator = schemaMeta.discriminator;
+
+        if(schemaType === DataType.any) {
+            return errors;
+        }
 
         if (discriminator) {
             if (schemaType === DataType.object) {
@@ -391,6 +401,22 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     console.error(`Invalid minElement configuration for ${paths.join(".")}`);
                 }
             }
+
+            const shouldBeUnique = schema.uniqueItems;
+
+            // uniqueness validation
+
+            if(shouldBeUnique) {
+                const uniqueSet = new Set();
+                json.forEach( (item: any, index: number) => {
+                    if(uniqueSet.has(item)) {
+                        const itemPath = paths.concat([index]);
+                        errors.push({ path: itemPath, message: replaceString(LOCALIZATION.ARR_ELEMENT_VIOLATES_UNIQUENESS, item.toString()) });
+                    } else {
+                        uniqueSet.add(item);
+                    }
+                } );
+            }
         } else {
             console.error(`Schema type: ${schema.type} cannot be validated as an array!`);
         }
@@ -419,57 +445,94 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const datatype: DataType = schema.type;
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
+            const associationType = schema.association;
+            const nullable = schema.nullable;
+
+            if (possibleValues && possibleValues.length) {
+                let isOneOfPossibleValues = false;
+                for (const possibleVal of possibleValues) {
+                    if (value === possibleVal) {
+                        isOneOfPossibleValues = true;
+                    }
+                }
+                if (!isOneOfPossibleValues) {
+                    errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
+                }
+            }
+
+            if(!nullable && value === null) {
+                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NULL });
+            }
 
             if (!value && value !== 0) {
                 if (isRequired) {
                     errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BE_EMPTY });
                 }
             } else {
-                if (possibleValues && possibleValues.length) {
-                    let isOneOfPossibleValues = false;
-                    for (const possibleVal of possibleValues) {
-                        if (value === possibleVal) {
-                            isOneOfPossibleValues = true;
-                        }
-                    }
-                    if (!isOneOfPossibleValues) {
-                        errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
-                    }
-                }
                 switch (datatype) {
                     case DataType.number: {
                         const minimum = schema.minimum;
                         const maximum = schema.maximum;
-                        if (isNaN(Number(value))) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
-                        } else {
-                            if (minimum) {
-                                if (value < minimum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
-                                }
+
+                        if (associationType === AssociationType.NOT) {
+                            if (!isNaN(Number(value))) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NUMBER });
                             }
-                            if (maximum) {
-                                if (value > maximum) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                        } else {
+                            if (isNaN(Number(value))) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_NUMBER });
+                            } else {
+                                if (minimum) {
+                                    if (value < minimum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
+                                    }
+                                }
+                                if (maximum) {
+                                    if (value > maximum) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                                    }
                                 }
                             }
                         }
                         break;
                     }
                     case DataType.boolean: {
-                        if (!isBoolean(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
+                        if (associationType === AssociationType.NOT) {
+                            if (isBoolean(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_BOOLEAN });
+                            }
+                        } else {
+                            if (!isBoolean(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_BOOLEAN });
+                            }
                         }
                         break;
                     }
                     case DataType.string: {
-                        if (!isString(value)) {
-                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                        if (associationType === AssociationType.NOT) {
+                            if (isString(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_STRING });
+                            }
                         } else {
-                            const maxLength = Number(schema.maxLength);
-                            const length = value.length;
-                            if(maxLength && length > maxLength) {
-                                errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                            if (!isString(value)) {
+                                errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_STRING });
+                            } else {
+                                const maxLength = Number(schema.maxLength);
+                                const length = value.length;
+                                if(maxLength && length > maxLength) {
+                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                                }
+
+                                const pattern = schema.pattern;
+
+                                if (pattern) {
+                                    const regex = new RegExp(pattern);
+                                    const matches = regex.test(value);
+
+                                    if(!matches) {
+                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_VIOLATES_PATTERN, pattern) });
+                                    }
+                                }
                             }
                         }
                         break;
@@ -561,7 +624,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return ret;
             }
 
-        // Handle: Add as property of object
+            // Handle: Add as property of object
         } else if (resultNode?.data) {
             // Since some nodes might be deleted by the logic below, this object must be cloned.
             const res: any = {};

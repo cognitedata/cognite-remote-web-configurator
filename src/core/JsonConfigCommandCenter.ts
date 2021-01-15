@@ -11,6 +11,7 @@ import { JSONEditorMode } from "jsoneditor";
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
     public static getOriginalJsonConfig: () => any;
+    public static hasErrors = false;
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
