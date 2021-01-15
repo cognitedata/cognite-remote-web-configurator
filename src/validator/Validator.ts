@@ -17,9 +17,12 @@ export interface TemplateNode {
   sample: any;
 }
 const defaultGroup = "TwinConfiguration";
-
 export const rootDataNode: { [key: string]: BaseNode } = {};
+
+// propCount in a counter which is used to make the description is uniquie for all schemaTypes. 
+// Otherwise schema types cannot be identified uniquely from templates array
 let propCount = 0;
+
 const allNodes: TemplateNode[] = [];
 
 export const getNodeMeta = (
@@ -104,7 +107,7 @@ export const loadSchema = (): Promise<void> => {
         if (api) {
           const rootSchema = api.components.schemas;
 
-          // Assign Uinque IDs for schema props
+          // Assign a unique identifire for all the property descriptions
           for (const val of Object.values(rootSchema)) {
             const schemaNode = val as ISchemaNode;
             schemaNode.description = `${schemaNode.description}${++propCount}`;

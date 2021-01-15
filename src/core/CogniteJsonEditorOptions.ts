@@ -587,7 +587,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         return subTree;
     }
 
-    // TODO: Re-implement this method with recursive calls
     private getValidInsertItems(parentPath: (string | number)[], currentJson: any, node: BaseNode | undefined | null) {
         const key = parentPath[parentPath.length - 1];
         let resultNode = node;
@@ -607,7 +606,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
          * returning a IData object with matching key and description
          */
         if (resultNode instanceof ArrayNode || resultNode instanceof MapNode) {
-            // TODO: Refactor/Test this code. This might fail when a discriminator type comes inside an Array or Map
             if (resultNode.sampleData?.discriminator) {
                 // Handle: Association comes with array/map
                 const res: any = {};
