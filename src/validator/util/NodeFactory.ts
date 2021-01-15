@@ -9,15 +9,16 @@ import { ObjectNode } from "../nodes/ObjectNode";
 import { StringNode } from "../nodes/StringNode";
 import { ParseType } from "./Parsers";
 
+// To store previously populated children to avoid circular cycles 
+const addedRefs: any = {};
+
 const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
-  if (!schema) {
-    return new BaseNode(
-      DataType.any,
-      { type: DataType.any },
-      undefined,
-      isRequired
-    );
+  if(schema.additionalProperties){
+    return new MapNode(schema, {}, isRequired, undefined);
+  } else if(schema.items){
+    return new ArrayNode(schema, [], isRequired);
   }
+  // TODO: why map type is not handled here
   switch (ParseType(schema.type)) {
     case DataType.array:
       return new ArrayNode(schema, [], isRequired);
@@ -36,10 +37,10 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
 
 export const populateChildren = (
   schema: ISchemaNode,
-  isRequired: boolean,
-  parentSchema: ISchemaNode,
-  parentBaseNode: BaseNode 
+  isRequired: boolean
 ): BaseNode => {
+  // Any part of the discriminator is not handled here. All are handled in `get Data` method of BaseNode
+
   if (schema.not) {
     return new BaseNode(ParseType(schema.not.type), schema, {}, isRequired);
 
@@ -47,19 +48,14 @@ export const populateChildren = (
     // schema.oneOf is handled only if discriminator presents at schma,(Check BaseNode `get data()` implementation)
     return new BaseNode(DataType.object, schema, {}, isRequired);
 
-  } else if (schema.allOf || schema.anyOf) {
-    const associatedSchema = schema.allOf || schema.anyOf;
+  } else if (schema.allOf) {
     const obj = new ObjectNode(schema, {}, isRequired);
-
     let dat: any = {};
 
-    if(associatedSchema){
-      for (const subSchema of associatedSchema) {
-        const children = populateChildren(subSchema, isRequired, schema, obj);
-        obj.subSchemas.push(children);
-        if(children.rowData instanceof Object){
-          dat = { ...dat, ...children.rowData};
-        }
+    for (const subSchema of schema.allOf) {
+      const children = populateChildren(subSchema, isRequired);
+      if(children.rowData instanceof Object){
+        dat = { ...dat, ...children.rowData};
       }
     }
     obj.data = dat;
@@ -68,38 +64,34 @@ export const populateChildren = (
   } else if (schema.properties) {
     const obj = new ObjectNode(schema, {}, isRequired);
     for (const [key, subSchema] of Object.entries(schema.properties)) {
+
       const required = schema.required
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
-      // Since `{}` is passed as data for obj, type can be BaseNodes
-      (obj.rowData as BaseNodes)[key] = populateChildren(subSchema, required, schema, obj);
-    }
-    return obj;
-  } else if (schema.additionalProperties) { 
-    const obj = new MapNode(schema, {}, false, undefined);
-    const sampleData = populateChildren(
-      schema.additionalProperties,
-      false,
-      schema,
-      obj
-    );
-    obj.sampleData = sampleData;
-    return obj;
-  } else if (schema.items) {
-    if (schema.items === parentSchema) {
-      const obj = new ArrayNode(
-        { type: DataType.array },
-        [],
-        isRequired,
-        parentBaseNode
-      );
-      return obj;
-    } else {
-      const obj = new ArrayNode(schema, [], isRequired, undefined);
-      obj.sampleData = populateChildren(schema.items, false, schema, obj);
       
-      return obj;
+      let children: BaseNode = getPrimitiveObject(subSchema, required);
+
+      // If these children are previousy generated, then used the cached one to avoid causing to circular iterations
+      if(subSchema.description && addedRefs[subSchema.description]){
+        children = addedRefs[subSchema.description];
+      } else {
+        addedRefs[subSchema.description] = children;
+        Object.assign(children, populateChildren(subSchema, required));   
+      }
+      // Since `{}` is passed as data for obj, type can be BaseNodes
+      (obj.rowData as BaseNodes)[key] = children;
     }
+    return obj;
+  
+  // MapNodes and ArrayNodes are handled in a similar way
+  } else if (schema.additionalProperties) {
+      const obj = new MapNode(schema, {}, false, undefined);
+      obj.sampleData = populateChildren(schema.additionalProperties, false); 
+      return obj;
+  } else if (schema.items) {
+      const obj = new ArrayNode(schema, [], isRequired, undefined);
+      obj.sampleData = populateChildren(schema.items, false);
+      return obj;
   } else {
     return getPrimitiveObject(schema, isRequired);
   }

@@ -7,6 +7,78 @@ paths: {}
 
 components:
   schemas:
+    MultiTypeArray:
+      description: Can be any value - string, number, boolean, array or object.
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: pet_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+    AnyValue:
+      description: Can be any value - string, number, boolean, array or object.
+    NotValue:
+      description: Can be any value - expect string.
+      not:
+        type: 'string'
+    AnyAnimal:
+      anyOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+    OneAnimal:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+      discriminator:
+        propertyName: pet_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog' 
+
+    Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
+      description: "Cat DEsc"
+      allOf: # Combines the main `Pet` schema with `Cat`-specific properties 
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          # all other properties specific to a `Cat`
+          properties:
+            baby:
+              $ref: '#/components/schemas/Cat'
+            hunts:
+              type: boolean
+            age:
+              type: integer
+            timeSeries:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/TimeseriesFilter'
+    Dog: 
+      description: "Dog DEsc"
+      allOf: # Combines the main `Pet` schema with `Dog`-specific properties 
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          # all other properties specific to a `Dog`
+          properties:
+            bark:
+              type: boolean
+            breed:
+              type: string
+              enum: [Dingo, Husky, Retriever, Shepherd, null]
+    Pet:
+      description: "Pet DEsc"
+      type: object
+      required:
+        - pet_type
+      properties:
+        pet_type:
+          type: string
+      discriminator:
+        propertyName: pet_type
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
     TwinConfiguration:
      description: "Data structure that fully defines a digital twin in the Cognite Digital Twin Application."
      required:
@@ -15,6 +87,19 @@ components:
        - scenes
      type: object
      properties:
+       arbitraryArray:
+        description: "Array of 3D"
+        type: array
+        items:
+          $ref: '#/components/schemas/MultiTypeArray'  
+       notValue:
+         $ref: '#/components/schemas/NotValue' 
+       anyValue:
+         $ref: '#/components/schemas/AnyValue' 
+       anyAnimal:
+        $ref: '#/components/schemas/AnyAnimal'
+       cat:
+        $ref: '#/components/schemas/Cat'
        header:
          $ref: '#/components/schemas/Header'
        assets:
@@ -307,6 +392,8 @@ components:
          $ref: '#/components/schemas/Color'
        material:
          $ref: '#/components/schemas/ThreeDModelMaterialBase'
+       moreData:
+         $ref: '#/components/schemas/GeometryData'
 
     PointCloudColorSource:
       type: string
