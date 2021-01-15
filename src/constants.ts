@@ -8,41 +8,41 @@ export const STRING_PLACEHOLDER = "$$";
 
 // String Constants
 export const LOCALIZATION = {
-    RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve json configs! {{error}}',
+    RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve configurations! {{error}}',
     UNTITLED: "Untitled",
     INCONSISTENT_VALUE: 'Inconsistent value. Remove and insert it again to fill missing fields',
 
     // Save command
-    SAVE_TITLE: 'Create New Json Config',
-    SAVE_CONTENT: 'Do you want to create new Json Config?',
-    SAVE_SUCCESS: 'Data saved successfully!',
+    SAVE_TITLE: 'Create New Configuration',
+    SAVE_CONTENT: 'Do you want to save the new configuration?',
+    SAVE_SUCCESS: 'Configuration saved successfully!',
     SAVE_ERROR: 'Save Cancelled! {{error}}',
-    SAVE_INVALID_FILE: 'Save Cancelled! Please add a file name',
+    SAVE_INVALID_FILE: 'Save Cancelled! Please add header -> name field',
 
-    SAVE_WITH_ERRORS_TITLE:'Create New Json Config',
-    SAVE_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to Create New Json Config?',
+    SAVE_WITH_ERRORS_TITLE:'Create New Configuration',
+    SAVE_WITH_ERRORS_CONTENT:'Configuration contains errors! Are you sure you want to save this configuration?',
 
     // Upload command
-    UPLOAD_TITLE: 'Update File',
-    UPLOAD_CONTENT: 'Do you want to update file with new changes?',
-    UPLOAD_SUCCESS: 'Data updated successfully!',
-    UPLOAD_ERROR: 'Save Cancelled! {{error}}',
+    UPLOAD_TITLE: 'Update Configuration',
+    UPLOAD_CONTENT: 'Do you want to update the configuration with new changes?',
+    UPLOAD_SUCCESS: 'Configuration updated successfully!',
+    UPLOAD_ERROR: 'Update Cancelled! {{error}}',
     UPLOAD_INVALID_FILE: 'Update failed!',
 
-    UPLOAD_WITH_ERRORS_TITLE:'Update File',
-    UPLOAD_WITH_ERRORS_CONTENT:'File contains errors! Are you sure you want to update file with new changes?',
+    UPLOAD_WITH_ERRORS_TITLE:'Update Configuration',
+    UPLOAD_WITH_ERRORS_CONTENT:'Configuration contains errors! Are you sure you want to update with new changes?',
 
     // Delete command
-    DELETE_TITLE: 'Delete Config',
-    DELETE_CONTENT: 'Are you sure you want to permanently delete this config?',
-    DELETE_SUCCESS: 'Json Config deleted successfully!',
+    DELETE_TITLE: 'Delete Configuration',
+    DELETE_CONTENT: 'Are you sure you want to permanently delete this configuration?',
+    DELETE_SUCCESS: 'Configuration deleted successfully!',
     DELETE_ERROR: 'Delete Cancelled! {{error}}',
-    DELETE_INVALID_FILE: 'Delete Cancelled! Please select a file',
+    DELETE_INVALID_FILE: 'Delete Cancelled! Please select a configuration',
 
     // Refresh Command
-    REFRESH_TITLE: 'Refresh Config',
-    REFRESH_CONTENT: 'Refreshing will fetch the latest version of this config from server',
-    REFRESH_SUCCESS: 'Json Config updated successfully!',
+    REFRESH_TITLE: 'Refresh Configuration',
+    REFRESH_CONTENT: 'Refreshing will fetch the latest version of this configuration from the server',
+    REFRESH_SUCCESS: 'Configuration updated successfully!',
     REFRESH_ERROR: 'Refresh Cancelled! {{error}}',
 
     // switch config
