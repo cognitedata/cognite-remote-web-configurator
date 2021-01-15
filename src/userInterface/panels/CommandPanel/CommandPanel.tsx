@@ -184,7 +184,7 @@ export const CommandPanel: React.FC<{
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <WarningTwoTone twoToneColor="#eb2f96"/>,
                 content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
@@ -197,7 +197,7 @@ export const CommandPanel: React.FC<{
         else {
             confirm({
                 title: LOCALIZATION.UPLOAD_TITLE,
-                icon: <ExclamationCircleOutlined />,
+                icon: <ExclamationCircleTwoTone />,
                 content: LOCALIZATION.UPLOAD_CONTENT,
                 async onOk() {
                     update();
