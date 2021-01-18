@@ -11,6 +11,8 @@ import JSONEditor, {
 } from "jsoneditor";
 import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
+import isPlainObject from "lodash-es/isPlainObject";
+import isArray from "lodash-es/isArray";
 import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
@@ -108,7 +110,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         };
                         allTemplates.push(template);
                     });
-                // Handle: add as a direct sample object
+                    // Handle: add as a direct sample object
                 } else {
                     const template = {
                         text: `${key}-sample`,
@@ -158,37 +160,41 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 item.click = undefined;
                 item.submenu = this.createValidInsertMenu(item.submenu, currentJson, parentPath);
             }
-
-            // if removeNode validation returns error
-            // Remove default Remove(Delete) function and alert the error
-            // except for ErrorType.InvalidPath
+                // if removeNode validation returns error
+                // Remove default Remove(Delete) function and alert the error
+                // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
                 item.title = LOCALIZATION.REMOVE_ENABLED;
-                if (removePossibility.error) {
-                    // allows Remove even it has InvalidPath error
-                    if (removePossibility.error.type === ErrorType.InvalidPath) {
-                        item.title = LOCALIZATION.REMOVE_INVALID_PATH;
-                    } else {
-                        item.className = "warning-triangle";
-                        switch (removePossibility.error.type) {
-                            case ErrorType.RequiredNode:
-                                item.title = LOCALIZATION.REMOVE_MANDATORY;
-                                item.click = () => {
-                                    message.error(LOCALIZATION.REMOVE_MANDATORY);
-                                }
-                                break;
-                            case ErrorType.MinLength:
-                                item.title = LOCALIZATION.REMOVE_MINIMUM_LENGTH;
-                                item.click = () => {
-                                    message.error(LOCALIZATION.REMOVE_MINIMUM_LENGTH);
-                                }
-                                break;
-                            default:
-                                item.title = LOCALIZATION.REMOVE_DISABLED;
-                                item.click = () => {
-                                    message.error(LOCALIZATION.REMOVE_DISABLED);
-                                }
-                                break;
+                const errors = JsonConfigCommandCenter.errors;
+                const pathString = `.${path.join('.')}`;
+
+                if(!errors.has(pathString)) { // allow remove if validation errors are available
+                    if (removePossibility.error) {
+                        // allows Remove even it has InvalidPath error
+                        if (removePossibility.error.type === ErrorType.InvalidPath) {
+                            item.title = LOCALIZATION.REMOVE_INVALID_PATH;
+                        } else {
+                            item.className = "warning-triangle";
+                            switch (removePossibility.error.type) {
+                                case ErrorType.RequiredNode:
+                                    item.title = LOCALIZATION.REMOVE_MANDATORY;
+                                    item.click = () => {
+                                        message.error(LOCALIZATION.REMOVE_MANDATORY);
+                                    }
+                                    break;
+                                case ErrorType.MinLength:
+                                    item.title = LOCALIZATION.REMOVE_MINIMUM_LENGTH;
+                                    item.click = () => {
+                                        message.error(LOCALIZATION.REMOVE_MINIMUM_LENGTH);
+                                    }
+                                    break;
+                                default:
+                                    item.title = LOCALIZATION.REMOVE_DISABLED;
+                                    item.click = () => {
+                                        message.error(LOCALIZATION.REMOVE_DISABLED);
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -250,6 +256,17 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
+        const errorMap = new Map<string, string>();
+        errors.forEach((val: any ) => {
+            if (val.error) { // for errors in tree mode
+                errorMap.set(`.${val.error.path.join('.')}`, val.error.message);
+            }
+            if (val.dataPath) { // for errors in code mode
+                errorMap.set(val.dataPath, val.message);
+            }
+        })
+        JsonConfigCommandCenter.errors = errorMap;
+
         JsonConfigCommandCenter.hasErrors = !!errors.length;
     }
 
@@ -276,8 +293,16 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const schemaType = schemaMeta.type;
         let schemaMetaData: any;
         const discriminator = schemaMeta.discriminator;
+        const nullable = schemaMeta.nullable;
 
-        if(schemaType === DataType.any) {
+        if (schemaType === DataType.any) {
+            return errors;
+        }
+
+        // check nullable
+        if (!nullable && json === null) {
+            errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NULL });
+
             return errors;
         }
 
@@ -293,6 +318,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             switch (schemaType) {
                 case DataType.object: {
                     schemaMetaData = schemaMeta.data;
+
+                    if (!isPlainObject(json)) {
+                        errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OBJECT });
+                        return errors;
+                    }
 
                     for (const childKey of Object.keys(schemaMetaData)) {
                         const childValue = json[childKey];
@@ -319,7 +349,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                     for (const jsonChildKey of Object.keys(json)) { // validate unnecessary fields
                         if (!validatedKeys.has(jsonChildKey)) {
                             const newPath = paths.concat([jsonChildKey]);
-                            errors.push({ path: newPath, message: replaceString(LOCALIZATION.NOT_VALID_KEY, jsonChildKey) });
+                            errors.push({
+                                path: newPath,
+                                message: replaceString(LOCALIZATION.NOT_VALID_KEY, jsonChildKey)
+                            });
                         }
                     }
                     break;
@@ -328,8 +361,21 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 case DataType.array: {
 
                     if (schemaType === DataType.array) {
+
+                        if (!isArray(json)) {
+                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_ARR });
+                            return errors;
+                        }
+
                         const arrayValidationErrors = this.validateArray(json, schemaMeta, paths);
                         errors = arrayValidationErrors.concat(errors);
+                    }
+
+                    if (schemaType === DataType.map) {
+                        if (!isPlainObject(json)) {
+                            errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OBJECT });
+                            return errors;
+                        }
                     }
 
                     schemaMetaData = schemaMeta.sampleData;
@@ -366,9 +412,15 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
         if (missingRequiredFields.length >= 1) {
             if (missingRequiredFields.length === 1) {
-                errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, missingRequiredFields[0]) });
+                errors.push({
+                    path: paths,
+                    message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, missingRequiredFields[0])
+                });
             } else {
-                errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELDS_NOT_AVAIL, missingRequiredFields.join(',')) });
+                errors.push({
+                    path: paths,
+                    message: replaceString(LOCALIZATION.REQUIRED_FIELDS_NOT_AVAIL, missingRequiredFields.join(','))
+                });
             }
         }
 
@@ -385,7 +437,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             if (!isNaN(maxItems)) {
                 if (maxItems >= 0) {
                     if (elementCount > maxItems) {
-                        errors.push({ path: paths, message: replaceString(LOCALIZATION.MAX_ARR_ELEMENTS_EXCEEDED, maxItems.toString()) });
+                        errors.push({
+                            path: paths,
+                            message: replaceString(LOCALIZATION.MAX_ARR_ELEMENTS_EXCEEDED, maxItems.toString())
+                        });
                     }
                 } else {
                     console.error(`Invalid maxElement configuration for ${paths.join(".")}`);
@@ -394,7 +449,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             if (!isNaN(minItems)) {
                 if (minItems >= 0) {
                     if (elementCount < minItems) {
-                        errors.push({ path: paths, message: replaceString(LOCALIZATION.MIN_ARR_ELEMENTS_NOT_FOUND, minItems.toString()) });
+                        errors.push({
+                            path: paths,
+                            message: replaceString(LOCALIZATION.MIN_ARR_ELEMENTS_NOT_FOUND, minItems.toString())
+                        });
                     }
                 } else {
                     console.error(`Invalid minElement configuration for ${paths.join(".")}`);
@@ -405,16 +463,19 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
             // uniqueness validation
 
-            if(shouldBeUnique) {
+            if (shouldBeUnique) {
                 const uniqueSet = new Set();
                 json.forEach( (item: any, index: number) => {
-                    if(uniqueSet.has(item)) {
+                    if (uniqueSet.has(item)) {
                         const itemPath = paths.concat([index]);
-                        errors.push({ path: itemPath, message: replaceString(LOCALIZATION.ARR_ELEMENT_VIOLATES_UNIQUENESS, item.toString()) });
+                        errors.push({
+                            path: itemPath,
+                            message: replaceString(LOCALIZATION.ARR_ELEMENT_VIOLATES_UNIQUENESS, item.toString())
+                        });
                     } else {
                         uniqueSet.add(item);
                     }
-                } );
+                });
             }
         } else {
             console.error(`Schema type: ${schema.type} cannot be validated as an array!`);
@@ -431,10 +492,16 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 const childErrors = this.validateFields(json, discriminatorMeta, paths);
                 errors = childErrors.concat(errors);
             } else {
-                errors.push({ path: paths, message: replaceString(LOCALIZATION.DISCRIM_INVALID_TYPE, discriminator.propertyName) });
+                errors.push({
+                    path: paths,
+                    message: replaceString(LOCALIZATION.DISCRIM_INVALID_TYPE, discriminator.propertyName)
+                });
             }
         } else {
-            errors.push({ path: paths, message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, discriminator.propertyName) });
+            errors.push({
+                path: paths,
+                message: replaceString(LOCALIZATION.REQUIRED_FIELD_NOT_AVAIL, discriminator.propertyName)
+            });
         }
         return errors;
     }
@@ -445,7 +512,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             const possibleValues = schema.possibleValues;
             const isRequired = schema.isRequired;
             const associationType = schema.association;
-            const nullable = schema.nullable;
 
             if (possibleValues && possibleValues.length) {
                 let isOneOfPossibleValues = false;
@@ -457,10 +523,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 if (!isOneOfPossibleValues) {
                     errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OF_POSSIBLE_VALS });
                 }
-            }
-
-            if(!nullable && value === null) {
-                errors.push({ path: paths, message: LOCALIZATION.VAL_CANNOT_BE_NULL });
             }
 
             if (!value && value !== 0) {
@@ -483,12 +545,18 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             } else {
                                 if (minimum) {
                                     if (value < minimum) {
-                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum) });
+                                        errors.push({
+                                            path: paths,
+                                            message: replaceString(LOCALIZATION.VAL_CANNOT_BE_LESS, minimum)
+                                        });
                                     }
                                 }
                                 if (maximum) {
                                     if (value > maximum) {
-                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum) });
+                                        errors.push({
+                                            path: paths,
+                                            message: replaceString(LOCALIZATION.VAL_CANNOT_BE_GREATER, maximum)
+                                        });
                                     }
                                 }
                             }
@@ -518,8 +586,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             } else {
                                 const maxLength = Number(schema.maxLength);
                                 const length = value.length;
-                                if(maxLength && length > maxLength) {
-                                    errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString()) });
+                                if (maxLength && length > maxLength) {
+                                    errors.push({
+                                        path: paths,
+                                        message: replaceString(LOCALIZATION.STRING_LENGTH_EXCEEDED, maxLength.toString())
+                                    });
                                 }
 
                                 const pattern = schema.pattern;
@@ -528,8 +599,11 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                                     const regex = new RegExp(pattern);
                                     const matches = regex.test(value);
 
-                                    if(!matches) {
-                                        errors.push({ path: paths, message: replaceString(LOCALIZATION.STRING_VIOLATES_PATTERN, pattern) });
+                                    if (!matches) {
+                                        errors.push({
+                                            path: paths,
+                                            message: replaceString(LOCALIZATION.STRING_VIOLATES_PATTERN, pattern)
+                                        });
                                     }
                                 }
                             }
