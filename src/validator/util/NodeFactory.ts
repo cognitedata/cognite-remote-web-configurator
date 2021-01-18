@@ -12,7 +12,7 @@ import { ParseType } from "./Parsers";
 // To store previously populated children to avoid circular cycles 
 const addedRefs: any = {};
 
-const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
+const getSampleObject = (schema: ISchemaNode, isRequired: boolean) => {
   if(schema.additionalProperties){
     return new MapNode(schema, {}, isRequired, undefined);
   } else if(schema.items){
@@ -30,6 +30,8 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
       return new BooleanNode(schema, false, isRequired);
     case DataType.object:
       return new ObjectNode(schema, {}, isRequired);
+    case DataType.map:
+      return new MapNode(schema, {}, isRequired, undefined);
     default:
       return new BaseNode(DataType.any, schema, {}, isRequired);
   }
@@ -69,11 +71,14 @@ export const populateChildren = (
         ? schema.required.findIndex((s) => s === key) !== -1
         : false;
       
-      let children: BaseNode = getPrimitiveObject(subSchema, required);
+      let children: BaseNode = getSampleObject(subSchema, required);
 
       // If these children are previousy generated, then used the cached one to avoid causing to circular iterations
       if(subSchema.description && addedRefs[subSchema.description]){
-        children = addedRefs[subSchema.description];
+        // Create a clone from cached node(otherwise changes done in BaseNode will affect to other nodes)
+        const newSampleObj = getSampleObject(subSchema, required);
+        Object.assign(newSampleObj, addedRefs[subSchema.description]);  
+        children = newSampleObj;
       } else {
         addedRefs[subSchema.description] = children;
         Object.assign(children, populateChildren(subSchema, required));   
@@ -93,6 +98,6 @@ export const populateChildren = (
       obj.sampleData = populateChildren(schema.items, false);
       return obj;
   } else {
-    return getPrimitiveObject(schema, isRequired);
+    return getSampleObject(schema, isRequired);
   }
 };

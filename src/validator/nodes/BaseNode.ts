@@ -1,3 +1,4 @@
+import { JsonConfigCommandCenter } from "../../core/JsonConfigCommandCenter";
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { rootDataNode } from "../Validator";
@@ -44,7 +45,7 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
     this.nullable = schema.nullable;
-    this.association = this.getAssociationType(schema);
+    this.association = this.getAssociationType(schema);  
   }
 
   /**
@@ -63,26 +64,23 @@ export class BaseNode {
         const schemaPathSections = val.split("/");
 
         // Get node for specific type of dicriminator. It is the last section of the schemaPath array
-        const typeIndicatorKey = schemaPathSections[schemaPathSections.length - 1];
-        const node = rootDataNode[typeIndicatorKey];
+        const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
+        const nodeObjectForType = rootDataNode[stringKeyForType];
 
-        if(node && node._data instanceof Object){
-          // TODO: create StringNode here.(It is not allowed in TS; create BaseNode inside a BaseNode)
-          if((node._data as BaseNodes)[this.discriminator.propertyName]){
-            (node._data as BaseNodes)[this.discriminator.propertyName] = {
-              type: DataType.string,
-              data: key,
-              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
-              possibleValues: keysForDiscriminatorTypes,
-              isRequired: true
-            } as StringNode;
-          } else {
-            console.error('Error: Failed to read data from BaseNode');
-          }
-          result[key] = node;
+        if(nodeObjectForType && nodeObjectForType._data instanceof Object){
+          const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
+         
+          // Change property values which are specific to discriminator type
+          typeIndicatorProperty.data = key;
+          typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
+
+          result[key] = nodeObjectForType;
+        } else { 
+          JsonConfigCommandCenter.errors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
         }
       }
       /**
+       * Example result:
        * {
        *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
        *    fullAssetHierarchy: { data... }
