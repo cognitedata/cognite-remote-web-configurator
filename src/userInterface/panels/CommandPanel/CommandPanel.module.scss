@@ -1,11 +1,20 @@
 .commandsContainer {
     display: grid;
     grid-template-columns: 20% 30% auto;
-    grid-template-areas: "leftPanel titlePanel rightPanel";
+    grid-template-areas: 
+    'errorPanel errorPanel errorPanel'
+    'leftPanel titlePanel rightPanel';
     grid-gap: 10px;
     padding: 8px;
     background-color: #3883fa;
     color: white;
+}
+
+.errorPanel {
+    grid-area: errorPanel;
+    font-weight: bold;
+    padding: 4px 8px;
+    background-color: #ff4d4f;
 }
 
 .leftPanel {

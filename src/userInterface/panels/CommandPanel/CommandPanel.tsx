@@ -237,6 +237,11 @@ export const CommandPanel: React.FC<{
 
     return (
         <div className={classes.commandsContainer}>
+            {JsonConfigCommandCenter.hasConfigErrors ?
+                <div className={classes.errorPanel}>
+                    <WarningTwoTone twoToneColor="#faad14" /><span> Configuration Schema has errors! Validations may not work as expected</span>
+                </div>
+                : null}
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
                 <Switch checkedChildren="code" unCheckedChildren="tree" checked={mode === 'code'} onChange={onModeSwitch} />

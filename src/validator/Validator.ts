@@ -9,6 +9,7 @@ import { getJson, getNodeInstance } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
 import { MapNode } from "./nodes/MapNode";
 import { ArrayNode } from "./nodes/ArrayNode";
+import { JsonConfigCommandCenter } from "../core/JsonConfigCommandCenter";
 
 export interface TemplateNode {
   key: string;
@@ -112,8 +113,8 @@ export const loadSchema = (): Promise<void> => {
             const schemaNode = val as ISchemaNode;
             schemaNode.description = `${schemaNode.description}${++propCount}`;
 
-            if(schemaNode.properties){
-              for(const c of Object.values(schemaNode.properties)){
+            if (schemaNode.properties) {
+              for (const c of Object.values(schemaNode.properties)) {
                 c.description = `${c.description}${++propCount}`;
               }
             }
@@ -144,6 +145,7 @@ export const loadSchema = (): Promise<void> => {
           console.log("All Nodes", allNodes);
           resolve();
         } else {
+          JsonConfigCommandCenter.hasConfigErrors = true;
           console.error(err);
           reject();
         }
