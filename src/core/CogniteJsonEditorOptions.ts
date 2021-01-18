@@ -165,7 +165,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 // except for ErrorType.InvalidPath
             else if (item.text === "Remove") {
                 item.title = LOCALIZATION.REMOVE_ENABLED;
-                const errors = JsonConfigCommandCenter.errors;
+                const errors = JsonConfigCommandCenter.editorErrors;
                 const pathString = `.${path.join('.')}`;
 
                 if(!errors.has(pathString)) { // allow remove if validation errors are available
@@ -256,16 +256,30 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
     }
 
     public onValidationError = (errors: ReadonlyArray<SchemaValidationError | ParseError>): void => {
-        const errorMap = new Map<string, string>();
+        const errorMap = new Map<string, string[]>();
         errors.forEach((val: any ) => {
+            let key = "";
+            let value = "";
+
             if (val.error) { // for errors in tree mode
-                errorMap.set(`.${val.error.path.join('.')}`, val.error.message);
+                key = `.${val.error.path.join('.')}`;
+                value = val.error.message;
             }
             if (val.dataPath) { // for errors in code mode
-                errorMap.set(val.dataPath, val.message);
+                key = val.dataPath;
+                value = val.message;
+            }
+
+            if(key && value) {
+                let valueArr = errorMap.get(key);
+                if (!valueArr) {
+                    valueArr = [];
+                    errorMap.set(key, valueArr);
+                }
+                valueArr.push(value);
             }
         })
-        JsonConfigCommandCenter.errors = errorMap;
+        JsonConfigCommandCenter.editorErrors = errorMap;
 
         JsonConfigCommandCenter.hasErrors = !!errors.length;
     }

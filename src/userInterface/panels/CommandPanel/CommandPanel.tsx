@@ -238,7 +238,7 @@ export const CommandPanel: React.FC<{
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
-                {JsonConfigCommandCenter.errors.map(error => (
+                {JsonConfigCommandCenter.schemaErrors.map(error => (
                     <div className={classes.errorItem}>
                         <WarningTwoTone twoToneColor="#faad14" />
                         <span> {error}</span>
