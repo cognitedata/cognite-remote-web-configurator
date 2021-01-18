@@ -237,6 +237,14 @@ export const CommandPanel: React.FC<{
 
     return (
         <div className={classes.commandsContainer}>
+            <div className={classes.errorPanel}>
+                {JsonConfigCommandCenter.errors.map(error => (
+                    <div className={classes.errorItem}>
+                        <WarningTwoTone twoToneColor="#faad14" />
+                        <span> {error}</span>
+                    </div>
+                ))}
+            </div>
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
                 <Switch checkedChildren="code" unCheckedChildren="tree" checked={mode === 'code'} onChange={onModeSwitch} />
