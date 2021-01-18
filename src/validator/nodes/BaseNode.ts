@@ -74,9 +74,13 @@ export class BaseNode {
           typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
 
           result[key] = nodeRelatedToSubType;
+        } else {
+          // TODO: push this error to top error 
+          alert(`Error occured while parsing schema. ${typeIndicatorKey} is not available`);
         }
       }
       /**
+       * Example result:
        * {
        *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
        *    fullAssetHierarchy: { data... }

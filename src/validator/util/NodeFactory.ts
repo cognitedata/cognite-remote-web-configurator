@@ -29,6 +29,7 @@ const getPrimitiveObject = (schema: ISchemaNode, isRequired: boolean) => {
     case DataType.boolean:
       return new BooleanNode(schema, false, isRequired);
     case DataType.object:
+    case DataType.map:
       return new ObjectNode(schema, {}, isRequired);
     default:
       return new BaseNode(DataType.any, schema, {}, isRequired);
@@ -73,6 +74,7 @@ export const populateChildren = (
 
       // If these children are previousy generated, then used the cached one to avoid causing to circular iterations
       if(subSchema.description && addedRefs[subSchema.description]){
+        // Create a clone from cached node(otherwise changes BaseNode will affect to other )nodes
         const newSampleObj = getPrimitiveObject(subSchema, required);
         Object.assign(newSampleObj, addedRefs[subSchema.description]);  
         children = newSampleObj;
