@@ -146,7 +146,6 @@ export const loadSchema = (): Promise<void> => {
           resolve();
         } else {
           JsonConfigCommandCenter.errors.push('Configuration Schema has errors! Validations may not work as expected');
-          JsonConfigCommandCenter.errors.push('another error');
           console.error(err);
           reject();
         }
