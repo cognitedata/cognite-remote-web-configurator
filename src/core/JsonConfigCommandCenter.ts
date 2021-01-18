@@ -11,6 +11,7 @@ import { JSONEditorMode } from "jsoneditor";
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
     public static getOriginalJsonConfig: () => any;
+    public static errors = new Map();
     public static hasErrors = false;
     public static errors: string[] = [];
     private static editorInstance: CogniteJsonEditor;
@@ -98,7 +99,7 @@ export class JsonConfigCommandCenter {
 
     public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {
         let currentJson = JsonConfigCommandCenter.currentJson;
-        // overide currentJson with resolved one
+        // override currentJson with resolved one
         if (args) {
             currentJson = args;
         }
