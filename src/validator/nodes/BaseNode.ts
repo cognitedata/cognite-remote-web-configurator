@@ -44,7 +44,7 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
     this.nullable = schema.nullable;
-    this.association = this.getAssociationType(schema);
+    this.association = this.getAssociationType(schema);  
   }
 
   /**
@@ -64,22 +64,16 @@ export class BaseNode {
 
         // Get node for specific type of dicriminator. It is the last section of the schemaPath array
         const typeIndicatorKey = schemaPathSections[schemaPathSections.length - 1];
-        const node = rootDataNode[typeIndicatorKey];
+        const nodeRelatedToSubType = rootDataNode[typeIndicatorKey];
 
-        if(node && node._data instanceof Object){
-          // TODO: create StringNode here.(It is not allowed in TS; create BaseNode inside a BaseNode)
-          if((node._data as BaseNodes)[this.discriminator.propertyName]){
-            (node._data as BaseNodes)[this.discriminator.propertyName] = {
-              type: DataType.string,
-              data: key,
-              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
-              possibleValues: keysForDiscriminatorTypes,
-              isRequired: true
-            } as StringNode;
-          } else {
-            console.error('Error: Failed to read data from BaseNode');
-          }
-          result[key] = node;
+        if(nodeRelatedToSubType && nodeRelatedToSubType._data instanceof Object){
+          const typeIndicatorProperty = (nodeRelatedToSubType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
+         
+          // Change property values which are specific to discriminator type
+          typeIndicatorProperty.data = key;
+          typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
+
+          result[key] = nodeRelatedToSubType;
         }
       }
       /**

@@ -73,7 +73,9 @@ export const populateChildren = (
 
       // If these children are previousy generated, then used the cached one to avoid causing to circular iterations
       if(subSchema.description && addedRefs[subSchema.description]){
-        children = addedRefs[subSchema.description];
+        const newSampleObj = getPrimitiveObject(subSchema, required);
+        Object.assign(newSampleObj, addedRefs[subSchema.description]);  
+        children = newSampleObj;
       } else {
         addedRefs[subSchema.description] = children;
         Object.assign(children, populateChildren(subSchema, required));   
