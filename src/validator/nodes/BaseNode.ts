@@ -76,7 +76,7 @@ export class BaseNode {
 
           result[key] = nodeObjectForType;
         } else { 
-          JsonConfigCommandCenter.errors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
+          JsonConfigCommandCenter.schemaErrors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
         }
       }
       /**
