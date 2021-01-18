@@ -12,6 +12,7 @@ export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
     public static getOriginalJsonConfig: () => any;
     public static hasErrors = false;
+    public static errors: string[] = [];
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
