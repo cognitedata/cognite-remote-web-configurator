@@ -64,19 +64,19 @@ export class BaseNode {
         const schemaPathSections = val.split("/");
 
         // Get node for specific type of dicriminator. It is the last section of the schemaPath array
-        const typeIndicatorKey = schemaPathSections[schemaPathSections.length - 1];
-        const nodeRelatedToSubType = rootDataNode[typeIndicatorKey];
+        const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
+        const nodeObjectForType = rootDataNode[stringKeyForType];
 
-        if(nodeRelatedToSubType && nodeRelatedToSubType._data instanceof Object){
-          const typeIndicatorProperty = (nodeRelatedToSubType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
+        if(nodeObjectForType && nodeObjectForType._data instanceof Object){
+          const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
          
           // Change property values which are specific to discriminator type
           typeIndicatorProperty.data = key;
           typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
 
-          result[key] = nodeRelatedToSubType;
+          result[key] = nodeObjectForType;
         } else { 
-          JsonConfigCommandCenter.errors.push(`Error occured while parsing schema. ${typeIndicatorKey} is not available`);
+          JsonConfigCommandCenter.errors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
         }
       }
       /**
