@@ -1,3 +1,4 @@
+import { JsonConfigCommandCenter } from "../../core/JsonConfigCommandCenter";
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
 import { rootDataNode } from "../Validator";
@@ -74,9 +75,8 @@ export class BaseNode {
           typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
 
           result[key] = nodeRelatedToSubType;
-        } else {
-          // TODO: push this error to top error 
-          alert(`Error occured while parsing schema. ${typeIndicatorKey} is not available`);
+        } else { 
+          JsonConfigCommandCenter.errors.push(`Error occured while parsing schema. ${typeIndicatorKey} is not available`);
         }
       }
       /**
