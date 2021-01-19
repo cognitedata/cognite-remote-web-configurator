@@ -18,12 +18,12 @@ export const extractErrorMessage = (error: string): string => {
 }
 
 export const JsonConfigurator: React.FC<any> = () => {
-    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
