@@ -13,6 +13,7 @@ import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
 import isPlainObject from "lodash-es/isPlainObject";
 import isArray from "lodash-es/isArray";
+import isNumber from "lodash-es/isNumber";
 import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
@@ -390,6 +391,24 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                             errors.push({ path: paths, message: LOCALIZATION.VAL_NOT_OBJECT });
                             return errors;
                         }
+                        const maxProperties = schemaMeta.maxProperties;
+                        const minProperties = schemaMeta.minProperties;
+                        const noOfProperties = Object.keys(json).length;
+
+                        if (isNumber(maxProperties) && noOfProperties > maxProperties) {
+                            errors.push({
+                                path: paths,
+                                message: replaceString(LOCALIZATION.INVALID_MAX_NO_KEY_PAIRS, maxProperties.toString())
+                            });
+                        }
+
+                        if (isNumber(minProperties) && noOfProperties < minProperties) {
+                            errors.push({
+                                path: paths,
+                                message: replaceString(LOCALIZATION.INVALID_MIN_NO_KEY_PAIRS, minProperties.toString())
+                            });
+                        }
+
                     }
 
                     schemaMetaData = schemaMeta.sampleData;
