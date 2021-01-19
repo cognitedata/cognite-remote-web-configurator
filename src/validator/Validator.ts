@@ -104,9 +104,11 @@ const getSample = (node: BaseNode) => {
 export const loadSchema = (schema?: any): Promise<void> => {
   let schemaFile = ymlFile;
   if (schema) {
-    schemaFile = schema
+    schemaFile = schema;
+    // schemaFile = '/cognite-remote-web-configurator/static/media/twinconfig.69952d13.yaml';
   }
-  console.log('asds',schemaFile);
+  console.log('asd schemaFile', schemaFile);
+
   return new Promise((resolve, reject) => {
     YAML.load(schemaFile, (ymlJson: any) => {
       SwaggerParser.validate(ymlJson, (err, api) => {

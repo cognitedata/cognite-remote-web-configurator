@@ -126,8 +126,9 @@ export class JsonConfigCommandCenter {
     }
 
     public static onLoadSchema = async (elm: HTMLElement | null, schema: any): Promise<void> => {
+
         if (elm) {
-            JsonConfigCommandCenter.createEditor(elm);
+            JsonConfigCommandCenter.createEditor(elm, schema);
         }
     }
 }

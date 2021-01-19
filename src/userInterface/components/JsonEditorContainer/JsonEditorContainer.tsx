@@ -7,7 +7,7 @@ export function JsonEditorContainer(props: { jsonEditorElm: any, json: any }): J
     useEffect(() => {
         if (props.jsonEditorElm.current !== null) {
             // create the editor
-            JsonConfigCommandCenter.createEditor(props.jsonEditorElm.current);
+            // JsonConfigCommandCenter.createEditor(props.jsonEditorElm.current);
         }
     }, [props.jsonEditorElm.current]);
 
