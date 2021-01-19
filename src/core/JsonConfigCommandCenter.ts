@@ -17,8 +17,8 @@ export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement): Promise<void> {
-        await loadSchema();
+    public static async createEditor(elm: HTMLElement, schema?: any): Promise<void> {
+        await loadSchema(schema);
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
@@ -125,10 +125,9 @@ export class JsonConfigCommandCenter {
         saveAs(blob, fileName);
     }
 
-    public static onLoadSchema = async (schema: any): Promise<void> => {
-        console.log('asd', schema);
-        await loadSchema(schema);
-        JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
-        const options = new CogniteJsonEditorOptions();
+    public static onLoadSchema = async (elm: HTMLElement | null, schema: any): Promise<void> => {
+        if (elm) {
+            JsonConfigCommandCenter.createEditor(elm);
+        }
     }
 }

@@ -18,6 +18,7 @@ export const extractErrorMessage = (error: string): string => {
 }
 
 export const JsonConfigurator: React.FC<any> = () => {
+    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
@@ -123,7 +124,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.loadSchema: {
-                JsonConfigCommandCenter.onLoadSchema(args[0]);
+                JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
                 break;
             }
             default:
@@ -161,7 +162,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                     />
-                    <EditorPanel jsonConfig={jsonConfig} />
+                    <EditorPanel jsonEditorElm={jsonEditorElm} jsonConfig={jsonConfig} />
                 </div>
             </div>
             <div>
