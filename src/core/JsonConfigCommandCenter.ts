@@ -124,4 +124,11 @@ export class JsonConfigCommandCenter {
         const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
         saveAs(blob, fileName);
     }
+
+    public static onLoadSchema = async (schema: any): Promise<void> => {
+        console.log('asd', schema);
+        await loadSchema(schema);
+        JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
+        const options = new CogniteJsonEditorOptions();
+    }
 }

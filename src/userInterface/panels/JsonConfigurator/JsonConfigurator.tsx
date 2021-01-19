@@ -122,6 +122,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
+            case CommandEvent.loadSchema: {
+                JsonConfigCommandCenter.onLoadSchema(args[0]);
+                break;
+            }
             default:
                 break;
         }

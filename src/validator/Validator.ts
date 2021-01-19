@@ -101,9 +101,14 @@ const getSample = (node: BaseNode) => {
   return null;
 };
 
-export const loadSchema = (): Promise<void> => {
+export const loadSchema = (schema?: any): Promise<void> => {
+  let schemaFile = ymlFile;
+  if (schema) {
+    schemaFile = schema
+  }
+  console.log('asds',schemaFile);
   return new Promise((resolve, reject) => {
-    YAML.load(ymlFile, (ymlJson: any) => {
+    YAML.load(schemaFile, (ymlJson: any) => {
       SwaggerParser.validate(ymlJson, (err, api) => {
         if (api) {
           const rootSchema = api.components.schemas;

@@ -12,6 +12,8 @@ import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
 import { JsonConfig, MergeOptions } from '../../util/types';
+import { FileUploader } from '../../components/FileUploader/FileUploader';
+import { UploadFile } from 'antd/lib/upload/interface';
 
 const { confirm } = Modal;
 
@@ -235,6 +237,10 @@ export const CommandPanel: React.FC<{
         props.commandEvent(CommandEvent.download);
     }
 
+    const onLoadSchema = (file: UploadFile | undefined) => {
+        props.commandEvent(CommandEvent.loadSchema, file);
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
@@ -259,6 +265,7 @@ export const CommandPanel: React.FC<{
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
+            <FileUploader onUpload={onLoadSchema}>load custom</FileUploader>
         </div>
     );
 }
