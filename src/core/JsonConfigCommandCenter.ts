@@ -129,7 +129,7 @@ export class JsonConfigCommandCenter {
         console.log('asd', schema);
 
         if (elm) {
-            JsonConfigCommandCenter.createEditor(elm, schema);
+            JsonConfigCommandCenter.createEditor(elm, schema.originFileObj.name);
         }
     }
 }
