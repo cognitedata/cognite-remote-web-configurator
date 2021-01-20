@@ -3,7 +3,6 @@ import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
-import { populateChildren } from "./util/NodeFactory";
 import { BaseNode } from "./nodes/BaseNode";
 import { getJson, getNodeInstance } from "./util/Helper";
 import { DataType } from "./enum/DataType.enum";
@@ -12,6 +11,7 @@ import { ArrayNode } from "./nodes/ArrayNode";
 import { JsonConfigCommandCenter } from "../core/JsonConfigCommandCenter";
 import { SchemaValidator } from "./SchemaValidator";
 import { ITemplateNode } from "./interfaces/ITemplateNode";
+import { NodeFactory } from "./util/NodeFactory";
 
 const defaultGroup = "TwinConfiguration"; 
 
@@ -127,7 +127,7 @@ export class SchemaResolver {
             }
 
             for (const [key, val] of Object.entries(rootSchema)) {
-              const childrenNodes = populateChildren(val as ISchemaNode, true);
+              const childrenNodes = NodeFactory.populateChildren(val as ISchemaNode, true);
               this.rootDataNode[key] = childrenNodes;
             }
 
