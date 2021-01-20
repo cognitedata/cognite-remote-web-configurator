@@ -148,7 +148,6 @@ export class SchemaResolver {
             }
             console.log("Schema YML", rootSchema);
             console.log("Schema Node", this.rootDataNode);
-            console.log("All Nodes", this.allNodes);
             resolve();
           } else {
             JsonConfigCommandCenter.schemaErrors.push(
