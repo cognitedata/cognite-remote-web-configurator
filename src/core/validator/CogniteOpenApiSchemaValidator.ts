@@ -1,5 +1,5 @@
+import { ITemplateNode } from "../../validator/interfaces/ITemplateNode";
 import { AutoCompleteEnumType } from "../enums/AutoCompleteElementType";
-import { TemplateNode } from "../../validator/Validator";
 
 export class CogniteOpenApiSchemaValidator {
     public errors:{ path: string, message: string }[] =  [];
@@ -19,7 +19,7 @@ export class CogniteOpenApiSchemaValidator {
         return Promise.resolve([]);
     }
 
-    public templateOptions(path: string, json: any): TemplateNode[] {
+    public templateOptions(path: string, json: any): ITemplateNode[] {
         return [];
     }
 

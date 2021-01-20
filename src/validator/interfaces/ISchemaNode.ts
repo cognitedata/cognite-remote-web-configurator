@@ -1,6 +1,7 @@
 export interface ISchemaNode {
   description: string;
   properties?: { [key: string]: any };
+  $ref?: string;
 
   // Type Related
   type: string;
