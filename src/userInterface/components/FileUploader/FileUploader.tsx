@@ -41,7 +41,7 @@ export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) 
 
     return (
         <Upload {...settings}>
-            <Button icon='upload'>Click to Upload</Button>
+            <Button icon='upload'>{props.children}</Button>
         </Upload>
     )
 }

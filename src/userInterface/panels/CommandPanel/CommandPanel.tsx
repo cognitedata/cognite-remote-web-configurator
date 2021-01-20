@@ -7,13 +7,14 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
+import { ExclamationCircleTwoTone, SettingTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
 import { JsonConfig, MergeOptions } from '../../util/types';
 import { FileUploader } from '../../components/FileUploader/FileUploader';
 import { UploadFile } from 'antd/lib/upload/interface';
+import { Dropdown, Menu } from 'antd';
 
 const { confirm } = Modal;
 
@@ -241,6 +242,14 @@ export const CommandPanel: React.FC<{
         props.commandEvent(CommandEvent.loadSchema, file);
     }
 
+    const settingsMenu = (
+        <Menu>
+            <Menu.Item>
+                <FileUploader onUpload={onLoadSchema}>load custom</FileUploader>
+            </Menu.Item>
+        </Menu>
+    );
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
@@ -250,6 +259,13 @@ export const CommandPanel: React.FC<{
                         <span> {error}</span>
                     </div>
                 ))}
+            </div>
+            <div className={classes.settingsPanel}>
+                <Dropdown overlay={settingsMenu} placement="bottomRight" trigger={['click']}>
+                    <div className={classes.settingsBtn}>
+                        <SettingTwoTone />
+                    </div>
+                </Dropdown>
             </div>
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
@@ -265,7 +281,6 @@ export const CommandPanel: React.FC<{
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
                 {props.selectedJsonConfigId && <CommandItem className={classes.btn} icon={"delete"} onClick={onDeleteHandler}>Delete</CommandItem>}
             </div>
-            <FileUploader onUpload={onLoadSchema}>load custom</FileUploader>
         </div>
     );
 }

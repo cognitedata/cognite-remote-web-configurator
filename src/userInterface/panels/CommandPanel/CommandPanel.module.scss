@@ -1,9 +1,10 @@
 .commandsContainer {
     display: grid;
     grid-template-columns: 20% 30% auto;
-    grid-template-areas: 
-    'errorPanel errorPanel errorPanel'
-    'leftPanel titlePanel rightPanel';
+    grid-template-areas:
+        "settingsPanel settingsPanel settingsPanel"
+        "errorPanel errorPanel errorPanel"
+        "leftPanel titlePanel rightPanel";
     grid-gap: 10px;
     padding: 8px;
     background-color: #3883fa;
@@ -14,7 +15,17 @@
     grid-area: errorPanel;
 }
 
-.errorItem{
+.settingsPanel {
+    grid-area: settingsPanel;
+    justify-self: end;
+}
+
+.settingsBtn {
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.errorItem {
     font-weight: bold;
     padding: 4px 8px;
     background-color: #ff4d4f;
