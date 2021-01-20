@@ -1,7 +1,7 @@
 import { JsonConfigCommandCenter } from "../../core/JsonConfigCommandCenter";
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { rootDataNode } from "../Validator";
+import { SchemaResolver } from "../SchemaResolver";
 import { StringNode } from "./StringNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
@@ -65,7 +65,7 @@ export class BaseNode {
 
           // Get node for specific type of dicriminator. It is the last section of the schemaPath array
           const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
-          const nodeObjectForType = rootDataNode[stringKeyForType];
+          const nodeObjectForType = SchemaResolver.getRootDataNode()[stringKeyForType];
 
           if(nodeObjectForType && nodeObjectForType._data instanceof Object){
             const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
