@@ -38,21 +38,22 @@ export const SideNavPanel: React.FC<{
     }
 
     const onUpload = (e: any) => {
-        const file = e.originFileObj;
         const reader = new FileReader();
-        reader.readAsText(file);
-
+        const file = e.originFileObj;
         reader.onload = () => {
-              try {
+            try {
                 const yamlObj = yaml.parse(reader.result as string);        
                 props.commandEvent(CommandEvent.loadSchema, yamlObj);
-              } catch (e) {
-                console.log(e);
-              }
-        };
+            } catch (e) {
+                JsonConfigCommandCenter.schemaErrors.push(
+                    "Invalid schema file"
+                );
+            }
+        };        
+        reader.readAsText(file);
     }
 
-    const onRemove = () => {
+    const onRemoveUploadedSchema = () => {
         props.commandEvent(CommandEvent.loadSchema);
     }
 
@@ -65,7 +66,9 @@ export const SideNavPanel: React.FC<{
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
-            <FileUploader onUpload={onUpload} onRemove={onRemove} >load custom</FileUploader>
+            <div className={classes.schemaUpload}>
+                <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema} >Upload Custom Schema</FileUploader>
+            </div>
             <Divider />
             <div className={classes.createNewBtn}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>

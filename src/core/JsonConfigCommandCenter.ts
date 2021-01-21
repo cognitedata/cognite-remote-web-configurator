@@ -20,11 +20,14 @@ export class JsonConfigCommandCenter {
     private static apiInstance: Api;
 
     public static async createEditor(elm: HTMLElement, schema: any): Promise<void> {
+        // Schema errors need to reset before loading new schema
+        this.schemaErrors = [];
+
         await SchemaResolver.parseYAMLFile(schema);
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
         
-        // To forced reload the content innerHTML needs to be changed
+        // To forced reload the content, innerHTML needs to be changed
         elm.innerHTML = '<div/>';
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
