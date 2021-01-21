@@ -4,7 +4,7 @@ import message from 'antd/es/message';
 import Upload from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 
-export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) => void }> = (props) => {
+export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) => void, onRemove: () => void  }> = (props) => {
     const [fileList, setFileList] = useState<UploadFile<any>[] | undefined>(undefined);
     // let fileList: UploadFile<any>[] | undefined = undefined;
 
@@ -29,7 +29,7 @@ export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) 
                 message.error(`${info.file.name} file upload failed.`);
             }
             if (info.file.status === 'removed') {
-                props.onUpload();
+                props.onRemove();
                 //set to default config
             }
 

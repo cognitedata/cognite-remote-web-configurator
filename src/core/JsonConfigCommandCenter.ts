@@ -7,6 +7,8 @@ import { Api } from "./Api";
 import { LOCALIZATION } from "../constants";
 import { JSONEditorMode } from "jsoneditor";
 import { SchemaResolver } from "../validator/SchemaResolver";
+import YAML from "yamljs";
+import ymlFile from "../config/twinconfig.yaml";
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
@@ -17,10 +19,13 @@ export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement): Promise<void> {
-        await SchemaResolver.loadSchema();
+    public static async createEditor(elm: HTMLElement, schema: any): Promise<void> {
+        await SchemaResolver.parseYAMLFile(schema);
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
+        
+        // To forced reload the content innerHTML needs to be changed
+        elm.innerHTML = '<div/>';
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
 
@@ -125,11 +130,17 @@ export class JsonConfigCommandCenter {
         saveAs(blob, fileName);
     }
 
-    public static onLoadSchema = async (elm: HTMLElement | null, schema: any): Promise<void> => {
+    public static onLoadSchema = async (elm: HTMLElement | null, schema?: any): Promise<void> => {
         console.log('asd', schema);
 
         if (elm) {
-            JsonConfigCommandCenter.createEditor(elm, schema.originFileObj.name);
+            if(schema){
+                JsonConfigCommandCenter.createEditor(elm, schema);
+            } else {
+                YAML.load(ymlFile, async (ymlJson: any) => {    
+                    JsonConfigCommandCenter.createEditor(elm, ymlJson);
+                });
+            }
         }
     }
 }

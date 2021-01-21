@@ -10,6 +10,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { LOCALIZATION } from '../../../constants';
+import { FileUploader } from '../../components/FileUploader/FileUploader';
+import yaml from "yamljs";
 
 const { confirm } = Modal;
 
@@ -35,6 +37,25 @@ export const SideNavPanel: React.FC<{
         }
     }
 
+    const onUpload = (e: any) => {
+        const file = e.originFileObj;
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        reader.onload = () => {
+              try {
+                const yamlObj = yaml.parse(reader.result as string);        
+                props.commandEvent(CommandEvent.loadSchema, yamlObj);
+              } catch (e) {
+                console.log(e);
+              }
+        };
+    }
+
+    const onRemove = () => {
+        props.commandEvent(CommandEvent.loadSchema);
+    }
+
     return (
         <>
             <div className={classes.top}>
@@ -43,6 +64,8 @@ export const SideNavPanel: React.FC<{
                 </div>
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
+            <Divider />
+            <FileUploader onUpload={onUpload} onRemove={onRemove} >load custom</FileUploader>
             <Divider />
             <div className={classes.createNewBtn}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>

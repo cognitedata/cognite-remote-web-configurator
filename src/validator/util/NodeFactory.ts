@@ -12,7 +12,7 @@ import { ParseType } from "./Parsers";
 // To store previously populated children to avoid circular cycles
 
 export class NodeFactory {
-  private static addedRefs: any = {};
+  public static addedRefs: any = {};
 
   public static populateChildren(
     schema: ISchemaNode,

@@ -1,5 +1,3 @@
-import YAML from "yamljs";
-import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
@@ -20,7 +18,6 @@ const defaultGroup = "TwinConfiguration";
 
 export class SchemaResolver {
 
-  private static propCount = 0;
   private static allNodes: ITemplateNode[] = [];
   private static rootDataNode: { [key: string]: BaseNode } = {};
 
@@ -103,61 +100,65 @@ export class SchemaResolver {
     return null;
   }
 
-  public static loadSchema(): Promise<void> {
+  public static parseYAMLFile(ymlJson: any) {
+
     return new Promise((resolve, reject) => {
-      YAML.load(ymlFile, (ymlJson: any) => {
-        const unresolvedSchema = ymlJson.components.schemas;
+   
+      let propCount = 0;
+      this.rootDataNode = {};
+      this.allNodes = [];
+      NodeFactory.addedRefs = {};
 
-        SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
-
-        SwaggerParser.validate(ymlJson, (err, api) => {
-          if (api) {
-            const rootSchema = api.components.schemas;
-
-            // Assign a unique identifire for all the property descriptions
-            for (const val of Object.values(rootSchema)) {
-              const schemaNode = val as ISchemaNode;
-              schemaNode.description = `${schemaNode.description}${++this.propCount}`;
-
-              if (schemaNode.properties) {
-                for (const c of Object.values(schemaNode.properties)) {
-                  c.description = `${c.description}${++this.propCount}`;
-                }
+      const unresolvedSchema = ymlJson.components.schemas;
+      SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
+  
+      SwaggerParser.validate(ymlJson, (err, api) => {
+        if (api) {
+          const rootSchema = api.components.schemas;
+  
+          // Assign a unique identifire for all the property descriptions
+          for (const val of Object.values(rootSchema)) {
+            const schemaNode = val as ISchemaNode;
+            schemaNode.description = `${schemaNode.description}${++propCount}`;
+  
+            if (schemaNode.properties) {
+              for (const c of Object.values(schemaNode.properties)) {
+                c.description = `${c.description}${++propCount}`;
               }
             }
-
-            for (const [key, val] of Object.entries(rootSchema)) {
-              const childrenNodes = NodeFactory.populateChildren(val as ISchemaNode, true);
-              this.rootDataNode[key] = childrenNodes;
-            }
-
-            // Populate root nodes
-            for (const [key1, group] of Object.entries(this.rootDataNode)) {
-              if (group.data) {
-                for (const [key2, val2] of Object.entries(group.data)) {
-                  if (group.type === DataType.object) {
-                    this.allNodes.push({
-                      key: key1 + ":" + key2,
-                      node: val2,
-                      data: getJson(group, true)[key2],
-                      sample: this.getSample((group.data as any)[key2]), // Used only for Array, Map
-                    });
-                  }
-                }
-              }
-            }
-            console.log("Schema YML", rootSchema);
-            console.log("Schema Node", this.rootDataNode);
-            resolve();
-          } else {
-            JsonConfigCommandCenter.schemaErrors.push(
-              "Configuration Schema has errors! Validations may not work as expected"
-            );
-            console.error(err);
-            reject();
           }
-        });
+  
+          for (const [key, val] of Object.entries(rootSchema)) {
+            const childrenNodes = NodeFactory.populateChildren(val as ISchemaNode, true);
+            this.rootDataNode[key] = childrenNodes;
+          }
+  
+          // Populate root nodes
+          for (const [key1, group] of Object.entries(this.rootDataNode)) {
+            if (group.data) {
+              for (const [key2, val2] of Object.entries(group.data)) {
+                if (group.type === DataType.object) {
+                  this.allNodes.push({
+                    key: key1 + ":" + key2,
+                    node: val2,
+                    data: getJson(group, true)[key2],
+                    sample: SchemaResolver.getSample((group.data as any)[key2]), // Used only for Array, Map
+                  });
+                }
+              }
+            }
+          }
+          console.log("Schema YML", rootSchema);
+          console.log("Schema Node", this.rootDataNode);
+          resolve(true);
+        } else {
+          JsonConfigCommandCenter.schemaErrors.push(
+            "Configuration Schema has errors! Validations may not work as expected"
+          );
+          console.error(err);
+          reject();
+        }
       });
-    });
+    })
   }
 }

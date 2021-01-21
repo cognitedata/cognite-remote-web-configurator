@@ -12,9 +12,6 @@ import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
 import { JsonConfig, MergeOptions } from '../../util/types';
-import { FileUploader } from '../../components/FileUploader/FileUploader';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { Dropdown, Menu } from 'antd';
 
 const { confirm } = Modal;
 
@@ -238,18 +235,6 @@ export const CommandPanel: React.FC<{
         props.commandEvent(CommandEvent.download);
     }
 
-    const onLoadSchema = (file: UploadFile | undefined) => {
-        props.commandEvent(CommandEvent.loadSchema, file);
-    }
-
-    const settingsMenu = (
-        <Menu>
-            <Menu.Item>
-                <FileUploader onUpload={onLoadSchema}>load custom</FileUploader>
-            </Menu.Item>
-        </Menu>
-    );
-
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
@@ -259,13 +244,6 @@ export const CommandPanel: React.FC<{
                         <span> {error}</span>
                     </div>
                 ))}
-            </div>
-            <div className={classes.settingsPanel}>
-                <Dropdown overlay={settingsMenu} placement="bottomRight" trigger={['click']}>
-                    <div className={classes.settingsBtn}>
-                        <SettingTwoTone />
-                    </div>
-                </Dropdown>
             </div>
             <div className={classes.leftPanel}>
                 <span>Switch Mode:</span>
