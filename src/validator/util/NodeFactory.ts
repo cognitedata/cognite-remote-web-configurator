@@ -12,9 +12,9 @@ import { ParseType } from "./Parsers";
 // To store previously populated children to avoid circular cycles
 
 export class NodeFactory {
-  public static addedRefs: any = {};
+  private addedRefs: any = {};
 
-  public static populateChildren(
+  public populateChildren(
     schema: ISchemaNode,
     isRequired: boolean
   ): BaseNode {
@@ -78,7 +78,7 @@ export class NodeFactory {
     }
   }
 
-  public static getSampleObject(schema: ISchemaNode, isRequired: boolean) {
+  public getSampleObject(schema: ISchemaNode, isRequired: boolean) {
     if (schema.additionalProperties) {
       return new MapNode(schema, {}, isRequired, undefined);
     } else if (schema.items) {

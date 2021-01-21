@@ -107,7 +107,7 @@ export class SchemaResolver {
       let propCount = 0;
       this.rootDataNode = {};
       this.allNodes = [];
-      NodeFactory.addedRefs = {};
+      const nodeFactory = new NodeFactory();
 
       const unresolvedSchema = ymlJson.components.schemas;
       SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
@@ -129,7 +129,7 @@ export class SchemaResolver {
           }
   
           for (const [key, val] of Object.entries(rootSchema)) {
-            const childrenNodes = NodeFactory.populateChildren(val as ISchemaNode, true);
+            const childrenNodes = nodeFactory.populateChildren(val as ISchemaNode, true);
             this.rootDataNode[key] = childrenNodes;
           }
   
