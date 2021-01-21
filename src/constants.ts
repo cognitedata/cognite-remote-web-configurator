@@ -60,6 +60,7 @@ export const LOCALIZATION = {
     FILE_UPLOAD_OK: 'File Uploaded Successfully',
     FILE_UPLOAD_FAILED: 'File Upload Failed',
     SWITCHED_TO_DEFAULT: 'Switched to default Open Api Schema',
+    INVALID_SCHEMA: 'Invalid schema file',
 
     // Validation
     REQUIRED_FIELDS_NOT_AVAIL: "Required fields: $$ not available in object",

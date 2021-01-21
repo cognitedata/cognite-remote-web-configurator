@@ -45,9 +45,7 @@ export const SideNavPanel: React.FC<{
                 const yamlObj = yaml.parse(reader.result as string);        
                 props.commandEvent(CommandEvent.loadSchema, yamlObj);
             } catch (e) {
-                JsonConfigCommandCenter.schemaErrors.push(
-                    "Invalid schema file"
-                );
+                JsonConfigCommandCenter.schemaErrors.push(LOCALIZATION.INVALID_SCHEMA);
             }
         };        
         reader.readAsText(file);

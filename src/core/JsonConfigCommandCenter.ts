@@ -28,7 +28,7 @@ export class JsonConfigCommandCenter {
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
         
-        // To forced reload the content, innerHTML needs to be changed
+        // To force reload the content, innerHTML needs to be changed
         elm.innerHTML = '<div/>';
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
