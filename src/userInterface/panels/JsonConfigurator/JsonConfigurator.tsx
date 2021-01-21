@@ -26,7 +26,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
-    const saveAfterMerge = useRef<boolean>(false);
+    const diffMode = useRef<string>('');
 
     const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
         const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
@@ -81,7 +81,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     const setMergeOptions = (options: MergeOptions) => {
         compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
-        saveAfterMerge.current = options.saveAfterMerge;
+        diffMode.current = options.diffMode;
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
         setShowMerge(true);
@@ -168,7 +168,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                     localJson={compareJsons.current?.currentJson}
                     onMerge={handleOkMerge.current}
                     onCancel={handleCancelMerge.current}
-                    saveAfterMerge={saveAfterMerge.current}
+                    diffMode={diffMode.current}
                 />
             </div>
         </div>

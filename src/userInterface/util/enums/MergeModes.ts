@@ -1,11 +1,24 @@
-export const MergeModes: Map<string, unknown> = new Map([
+export enum MergeModes {
+    diff = 'diff',
+    reload = 'reload',
+    save = 'save'
+}
+
+export interface MergeText {
+    btnLeft: string;
+    btnRight: string;
+    txtLeft: string;
+    txtRight: string;
+}
+
+export const MergeModesMap: Map<string, MergeText> = new Map([
     ['diff', {
         btnLeft: 'Accept Original',
         btnRight: 'Accept Edits',
         txtLeft: 'Original',
         txtRight: 'Edited',
     }],
-    ['refresh', {
+    ['reload', {
         btnLeft: 'Accept Server Version',
         btnRight: 'Accept Local Version',
         txtLeft: 'Server Version',

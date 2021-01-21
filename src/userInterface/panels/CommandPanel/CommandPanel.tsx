@@ -12,6 +12,7 @@ import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
 import { JsonConfig, MergeOptions } from '../../util/types';
+import { MergeModes } from '../../util/enums/MergeModes';
 
 const { confirm } = Modal;
 
@@ -74,13 +75,13 @@ export const CommandPanel: React.FC<{
                         .catch(error => {
                             message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                         }),
-                    saveAfterMerge: false,
+                    diffMode: MergeModes.reload,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
                         message.success(LOCALIZATION.REFRESH_SUCCESS);
                     },
                     onCancel: () => {
-                        message.warning(LOCALIZATION.REFRESH_ERROR);
+                        message.warning(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
                     }
                 });
             }
@@ -148,7 +149,7 @@ export const CommandPanel: React.FC<{
                     .catch(error => {
                         message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                     }),
-                saveAfterMerge: true,
+                diffMode: MergeModes.save,
                 onOk: (mergedJson: any) => {
                     props.commandEvent(CommandEvent.update, mergedJson)
                         .then((response: any) => {
@@ -235,6 +236,23 @@ export const CommandPanel: React.FC<{
         props.commandEvent(CommandEvent.download);
     }
 
+    const onDiffHandler = () => {
+        props.setMergeOptions({
+            // updated version
+            localConfig: JsonConfigCommandCenter.currentJson,
+            // Latest update
+            serverConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
+            diffMode: MergeModes.diff,
+            onOk: (mergedJson: any) => {
+                props.commandEvent(CommandEvent.reload, mergedJson);
+                message.success(LOCALIZATION.DIFF_SUCCESS);
+            },
+            onCancel: () => {
+                message.warning(LOCALIZATION.DIFF_CANCEL);
+            }
+        })
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
@@ -253,6 +271,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{title}</span>
             </div>
             <div className={classes.rightPanel}>
+                {JsonConfigCommandCenter.isEdited() ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
                 <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && JsonConfigCommandCenter.isEdited()) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
