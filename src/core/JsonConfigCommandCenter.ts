@@ -1,12 +1,12 @@
 import { Modes } from "../userInterface/util/enums/Modes";
 import { CogniteJsonEditor } from "./CogniteJsonEditor";
 import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
-import { loadSchema } from "../validator/Validator";
 import { saveAs } from 'file-saver';
 import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
 import { LOCALIZATION } from "../constants";
 import { JSONEditorMode } from "jsoneditor";
+import { SchemaResolver } from "../validator/SchemaResolver";
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
@@ -17,8 +17,8 @@ export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement, schema?: any): Promise<void> {
-        await loadSchema(schema);
+    public static async createEditor(elm: HTMLElement): Promise<void> {
+        await SchemaResolver.loadSchema();
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions();
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
