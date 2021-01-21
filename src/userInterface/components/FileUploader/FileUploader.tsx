@@ -16,6 +16,7 @@ export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) 
 
     const settings = {
         name: 'fileUploader',
+        accept: '.yaml',
         fileList: fileList,
         maxCount: 1,
         onChange(info: UploadChangeParam<UploadFile<any>>) {
