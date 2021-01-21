@@ -101,7 +101,7 @@ export class SchemaResolver {
 
     return new Promise((resolve, reject) => {
    
-      // Initialize static data befor switch the schema
+      // Initialize static data before switch the schema
       this.rootDataNode = {};
       this.allNodes = [];
 
