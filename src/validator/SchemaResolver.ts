@@ -12,10 +12,6 @@ import { ITemplateNode } from "./interfaces/ITemplateNode";
 import { NodeFactory } from "./util/NodeFactory";
 
 const defaultGroup = "TwinConfiguration"; 
-
-// propCount in a counter which is used to make the description is uniquie for all schemaTypes.
-// Otherwise schema types cannot be identified uniquely from templates array
-
 export class SchemaResolver {
 
   private static allNodes: ITemplateNode[] = [];
@@ -91,7 +87,7 @@ export class SchemaResolver {
     return result;
   }
 
-  public static getSample(node: BaseNode) {
+  private static getSample(node: BaseNode) {
     if (node instanceof MapNode || node instanceof ArrayNode) {
       const sample = node.sampleData;
       const js = getJson(sample);
@@ -104,11 +100,16 @@ export class SchemaResolver {
 
     return new Promise((resolve, reject) => {
    
-      let propCount = 0;
+      // Initialize static data befor switch the schema
       this.rootDataNode = {};
       this.allNodes = [];
-      const nodeFactory = new NodeFactory();
 
+      // propUniqueIdentifire is a counter which is used to make the description is unique for all schemaTypes.
+      // Otherwise schema types cannot be identified uniquely from allTemplates array
+      let propUniqueIdentifire = 0;
+
+      const nodeFactory = new NodeFactory();
+    
       const unresolvedSchema = ymlJson.components.schemas;
       SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
   
@@ -119,11 +120,11 @@ export class SchemaResolver {
           // Assign a unique identifire for all the property descriptions
           for (const val of Object.values(rootSchema)) {
             const schemaNode = val as ISchemaNode;
-            schemaNode.description = `${schemaNode.description}${++propCount}`;
+            schemaNode.description = `${schemaNode.description}${++propUniqueIdentifire}`;
   
             if (schemaNode.properties) {
               for (const c of Object.values(schemaNode.properties)) {
-                c.description = `${c.description}${++propCount}`;
+                c.description = `${c.description}${++propUniqueIdentifire}`;
               }
             }
           }

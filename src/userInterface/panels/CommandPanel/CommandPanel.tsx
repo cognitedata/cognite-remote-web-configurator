@@ -7,7 +7,7 @@ import Modal from 'antd/es/modal';
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
-import { ExclamationCircleTwoTone, SettingTwoTone, WarningTwoTone } from '@ant-design/icons';
+import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JSONEditorMode } from "jsoneditor";
