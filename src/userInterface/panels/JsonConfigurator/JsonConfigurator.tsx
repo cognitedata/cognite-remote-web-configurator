@@ -23,7 +23,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
-    const compareJsons = useRef<{ currentJson: string, newJson: string }>();
+    const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
     const diffMode = useRef<string>('');
@@ -80,7 +80,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     const setMergeOptions = (options: MergeOptions) => {
-        compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
+        compareJsons.current = { originalConfig: options.originalConfig, editedConfig: options.editedConfig };
         diffMode.current = options.diffMode;
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
@@ -164,8 +164,8 @@ export const JsonConfigurator: React.FC<any> = () => {
                 <DiffMerge
                     setShowMerge={setShowMerge}
                     showPopup={showMerge}
-                    serverJson={compareJsons.current?.newJson}
-                    localJson={compareJsons.current?.currentJson}
+                    originalConfig={compareJsons.current?.originalConfig}
+                    editedConfig={compareJsons.current?.editedConfig}
                     onMerge={handleOkMerge.current}
                     onCancel={handleCancelMerge.current}
                     diffMode={diffMode.current}

@@ -16,10 +16,10 @@ const getJson = (mergedJsonString: string) => {
     return mergedJson
 }
 
-export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, serverJson: any, localJson: any, diffMode: string, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
+export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, originalConfig: any, editedConfig: any, diffMode: string, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
 
-    const serverJson = JSON.stringify(props.serverJson, null, 2);
-    const localJson = JSON.stringify(props.localJson, null, 2);
+    const originalConfig = JSON.stringify(props.originalConfig, null, 2);
+    const editedConfig = JSON.stringify(props.editedConfig, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
     const text: MergeText | undefined = MergeModesMap.get(props.diffMode);
 
@@ -29,10 +29,10 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
                 const differ = new AceDiff({
                     element: '.acediff',
                     left: {
-                        content: serverJson
+                        content: originalConfig
                     },
                     right: {
-                        content: localJson
+                        content: editedConfig
                     },
                 });
                 differInstance.current = differ;

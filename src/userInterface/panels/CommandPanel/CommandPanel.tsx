@@ -65,8 +65,8 @@ export const CommandPanel: React.FC<{
         if (await isUpdated(props.selectedJsonConfigId)) {
             if (JsonConfigCommandCenter.isEdited()) {
                 props.setMergeOptions({
-                    localConfig: JsonConfigCommandCenter.currentJson,
-                    serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                    editedConfig: JsonConfigCommandCenter.currentJson,
+                    originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
                         .then(response => {
                             if (response) {
                                 return response.get(props.selectedJsonConfigId).data;
@@ -139,8 +139,8 @@ export const CommandPanel: React.FC<{
     const update = async () => {
         if (await isUpdated(props.selectedJsonConfigId)) {
             props.setMergeOptions({
-                localConfig: JsonConfigCommandCenter.currentJson,
-                serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                editedConfig: JsonConfigCommandCenter.currentJson,
+                originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
                     .then(response => {
                         if (response) {
                             return response.get(props.selectedJsonConfigId).data;
@@ -239,9 +239,9 @@ export const CommandPanel: React.FC<{
     const onDiffHandler = () => {
         props.setMergeOptions({
             // updated version
-            localConfig: JsonConfigCommandCenter.currentJson,
+            editedConfig: JsonConfigCommandCenter.currentJson,
             // Latest update
-            serverConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
+            originalConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
             diffMode: MergeModes.diff,
             onOk: (mergedJson: any) => {
                 props.commandEvent(CommandEvent.reload, mergedJson);
