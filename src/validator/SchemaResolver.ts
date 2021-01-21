@@ -10,6 +10,7 @@ import { JsonConfigCommandCenter } from "../core/JsonConfigCommandCenter";
 import { SchemaValidator } from "./SchemaValidator";
 import { ITemplateNode } from "./interfaces/ITemplateNode";
 import { NodeFactory } from "./util/NodeFactory";
+import { IOpenApiSchema } from "./interfaces/IOpenApiSchema";
 
 const defaultGroup = "TwinConfiguration"; 
 export class SchemaResolver {
@@ -96,7 +97,7 @@ export class SchemaResolver {
     return null;
   }
 
-  public static parseYAMLFile(ymlJson: any) {
+  public static parseYAMLFile(ymlJson: IOpenApiSchema) {
 
     return new Promise((resolve, reject) => {
    

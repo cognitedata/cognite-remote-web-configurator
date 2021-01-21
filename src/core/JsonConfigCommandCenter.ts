@@ -9,6 +9,7 @@ import { JSONEditorMode } from "jsoneditor";
 import { SchemaResolver } from "../validator/SchemaResolver";
 import YAML from "yamljs";
 import ymlFile from "../config/twinconfig.yaml";
+import { IOpenApiSchema } from "../validator/interfaces/IOpenApiSchema";
 
 export class JsonConfigCommandCenter {
     public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
@@ -19,7 +20,7 @@ export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement, schema: any): Promise<void> {
+    public static async createEditor(elm: HTMLElement, schema: IOpenApiSchema): Promise<void> {
         // Schema errors need to reset before loading new schema
         this.schemaErrors = [];
 
@@ -133,15 +134,13 @@ export class JsonConfigCommandCenter {
         saveAs(blob, fileName);
     }
 
-    public static onLoadSchema = async (elm: HTMLElement | null, schema?: any): Promise<void> => {
-        console.log('asd', schema);
-
+    public static onLoadSchema = async (elm: HTMLElement | null, schema?: IOpenApiSchema): Promise<void> => {
         if (elm) {
             if(schema){
                 JsonConfigCommandCenter.createEditor(elm, schema);
             } else {
-                YAML.load(ymlFile, async (ymlJson: any) => {    
-                    JsonConfigCommandCenter.createEditor(elm, ymlJson);
+                YAML.load(ymlFile, async (schema: IOpenApiSchema) => {    
+                    JsonConfigCommandCenter.createEditor(elm, schema);
                 });
             }
         }
