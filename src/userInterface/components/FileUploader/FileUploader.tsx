@@ -7,11 +7,11 @@ import { LOCALIZATION } from '../../../constants';
 
 enum FileUploadStatus {
     Uploading = 'uploading',
-    Done= 'done',
+    Done = 'done',
     Error = 'error',
     Removed = 'removed'
 }
-export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) => void, onRemove: () => void  }> = (props) => {
+export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) => void, onRemove: () => void }> = (props) => {
     const [fileList, setFileList] = useState<UploadFile<any>[] | undefined>(undefined);
 
     const settings = {
