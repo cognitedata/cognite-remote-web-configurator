@@ -16,6 +16,9 @@ export const FileUploader: React.FC<{ onUpload: (file?: UploadFile | undefined) 
 
     const settings = {
         name: 'fileUploader',
+        // TODO: Find a way to avoid file upload and use `Upload` component as a file selector
+        // window.location.origin is used here as a tempory fix for failing upload post request
+        action: window.location.origin,
         accept: '.yaml',
         fileList: fileList,
         maxCount: 1,
