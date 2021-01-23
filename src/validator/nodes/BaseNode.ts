@@ -1,7 +1,7 @@
 import { JsonConfigCommandCenter } from "../../core/JsonConfigCommandCenter";
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { rootDataNode } from "../Validator";
+import { SchemaResolver } from "../SchemaResolver";
 import { StringNode } from "./StringNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
@@ -55,38 +55,33 @@ export class BaseNode {
    * correct object type
    */
   public get data(): IData {
-    if (this.discriminator && this.discriminator.mapping ) {
-
+    if (this.discriminator) {
       const result: BaseNodes = {};
-      const keysForDiscriminatorTypes = Object.keys(this.discriminator.mapping);      
+      if (this.discriminator.mapping ) {
+        const keysForDiscriminatorTypes = Object.keys(this.discriminator.mapping);      
 
-      for (const [key, val] of Object.entries(this.discriminator.mapping)) {
-        const schemaPathSections = val.split("/");
+        for (const [key, val] of Object.entries(this.discriminator.mapping)) {
+          const schemaPathSections = val.split("/");
 
-        // Get node for specific type of dicriminator. It is the last section of the schemaPath array
-        const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
-        const nodeObjectForType = rootDataNode[stringKeyForType];
+          // Get node for specific type of dicriminator. It is the last section of the schemaPath array
+          const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
+          const nodeObjectForType = SchemaResolver.getRootDataNode()[stringKeyForType];
 
-        if(nodeObjectForType && nodeObjectForType._data instanceof Object){
-          const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
-         
-          // Change property values which are specific to discriminator type
-          typeIndicatorProperty.data = key;
-          typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
+          if(nodeObjectForType && nodeObjectForType._data instanceof Object){
+            const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
+          
+            // Change property values which are specific to discriminator type
+            typeIndicatorProperty.data = key;
+            typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
 
-          result[key] = nodeObjectForType;
-        } else { 
-          JsonConfigCommandCenter.schemaErrors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
+            result[key] = nodeObjectForType;
+          } else { 
+            JsonConfigCommandCenter.schemaErrors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
+          }
         }
+      } else {
+        JsonConfigCommandCenter.schemaErrors.push(`Discriminator should comes with a mapping: ${this.description}`);
       }
-      /**
-       * Example result:
-       * {
-       *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
-       *    fullAssetHierarchy: { data... }
-       *    noHierarchy: { data... }
-       * }
-       */
       return result;
     } else {
       return this._data;

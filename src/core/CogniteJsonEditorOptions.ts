@@ -13,8 +13,8 @@ import isBoolean from "lodash-es/isBoolean";
 import isString from "lodash-es/isString";
 import isPlainObject from "lodash-es/isPlainObject";
 import isArray from "lodash-es/isArray";
+import { SchemaResolver } from "../validator/SchemaResolver";
 import isNumber from "lodash-es/isNumber";
-import { getAllNodes, getNodeMeta, removeNode } from "../validator/Validator";
 import { ErrorType } from "../validator/interfaces/IValidationResult";
 import { StringNode } from "../validator/nodes/StringNode";
 import { JsonConfigCommandCenter } from "./JsonConfigCommandCenter";
@@ -68,7 +68,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         const allTemplates: any = [];
 
         // Here we handle all the add possibilities for each node
-        getAllNodes().forEach(ele => {
+        SchemaResolver.getAllNodes().forEach(ele => {
             const key = extractField(ele.key);
 
             // Handle: Add as a property of object
@@ -145,7 +145,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             parentPath.pop();
         }
 
-        const removePossibility = removeNode(currentJson, [...path]);
+        const removePossibility = SchemaResolver.removeNode(currentJson, [...path]);
 
         // Creating a new MenuItem array that only contains valid items
         // and replace submenu with valid items
@@ -223,7 +223,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             getOptions: (text: string, path: JSONPath, input: AutoCompleteElementType, editor: JSONEditor) => {
                 return new Promise((resolve, reject) => {
                     const rootJson = JSON.parse(editor.getText());
-                    const { resultNode } = getNodeMeta([...path], rootJson);
+                    const { resultNode } = SchemaResolver.getNodeMeta([...path], rootJson);
 
                     if (resultNode && resultNode.type === DataType.string) {
                         const stringNode = resultNode as StringNode;
@@ -251,7 +251,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     public onValidate = (json: any): ValidationError[] | Promise<ValidationError[]> => {
 
-        const schemaMeta = getNodeMeta([], json).resultNode; // meta of root node from schema
+        const schemaMeta = SchemaResolver.getNodeMeta([], json).resultNode; // meta of root node from schema
         const errors = this.validateFields(json, schemaMeta);
         return errors;
     }
@@ -651,7 +651,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
 
     private createValidInsertMenu(submenu: MenuItem[] | undefined, currentJson: any, parentPath: (string | number)[]): any {
 
-        const { resultNode, error } = getNodeMeta([...parentPath], currentJson);
+        const { resultNode, error } = SchemaResolver.getNodeMeta([...parentPath], currentJson);
 
         if (error) {
             message.error(LOCALIZATION.INCONSISTENT_VALUE);
