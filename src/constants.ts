@@ -65,6 +65,8 @@ export const LOCALIZATION = {
     INVALID_MAX_ARR_ELEMENTS: "Invalid maxElement configuration for $$ !",
     MIN_ARR_ELEMENTS_NOT_FOUND: "Number of array elements cannot be lower than $$ !",
     INVALID_MIN_ARR_ELEMENTS: "Invalid minElement configuration for $$ !",
+    INVALID_MAX_NO_KEY_PAIRS: "Number of key value pairs cannot exceed $$!",
+    INVALID_MIN_NO_KEY_PAIRS: "Number of key value pairs should exceed $$!",
     VAL_NOT_BE_EMPTY: "Value cannot be empty!",
     VAL_NOT_OF_POSSIBLE_VALS: "Value not one of the possible values!",
     VAL_NOT_NUMBER: "Value is not a number!",
