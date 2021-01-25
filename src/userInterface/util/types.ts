@@ -2,12 +2,14 @@ import { JSONEditorOptions } from "jsoneditor";
 
 export interface JsonConfig {
     id: number;
-    data: {
-        assets?: any[];
-        header: {
-            name: string;
-            type: string;
-        }
+    data: JsonPayLoad
+}
+
+export interface JsonPayLoad {
+    assets?: any[];
+    header: {
+        name: string;
+        type: string;
     }
 }
 

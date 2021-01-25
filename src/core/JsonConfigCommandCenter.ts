@@ -4,23 +4,24 @@ import { CogniteJsonEditorOptions } from "./CogniteJsonEditorOptions";
 import { saveAs } from 'file-saver';
 import { DigitalTwinApi } from "./DigitalTwinApi";
 import { Api } from "./Api";
-import { LOCALIZATION } from "../constants";
-import { JSONEditorMode } from "jsoneditor";
 import { SchemaResolver } from "../validator/SchemaResolver";
+import message from "antd/es/message";
+import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from "../constants";
+import localJsonFile from "../config/MauiA.json";
+import { extractErrorMessage } from "../userInterface/panels/JsonConfigurator/JsonConfigurator";
+import { JsonPayLoad } from "../userInterface/util/types";
 
 export class JsonConfigCommandCenter {
-    public static titleUpdateCallback: (text: string, mode: JSONEditorMode) => void;
-    public static getOriginalJsonConfig: () => any;
     public static editorErrors: Map<string, string[]> = new Map();
     public static hasErrors = false;
     public static schemaErrors: string[] = [];
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement): Promise<void> {
+    public static async createEditor(elm: HTMLElement, onChange: (text: string) => void): Promise<void> {
         await SchemaResolver.loadSchema();
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
-        const options = new CogniteJsonEditorOptions();
+        const options = new CogniteJsonEditorOptions(onChange);
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
 
@@ -58,32 +59,40 @@ export class JsonConfigCommandCenter {
         return currentJson?.header?.name;
     }
 
-    // is local file is edited
-    public static isEdited(): boolean {
-        const currentJson = JsonConfigCommandCenter.currentJson;
-        const originalJsonConfig = JsonConfigCommandCenter.getOriginalJsonConfig();
-        if (currentJson) {
-            if (originalJsonConfig === null) {
-                return !!Object.keys(currentJson).length;
-            }
-            else {
-                return !!(JSON.stringify(originalJsonConfig) !== JSON.stringify(currentJson));
-            }
+    public static get editorText(): JsonPayLoad | null {
+        const editor = JsonConfigCommandCenter.editor;
+        if (editor) {
+            return (editor.get() as JsonPayLoad);
         }
-        return false;
+        return null;
     }
 
-    public static updateTitle = (): void => {
-        if (JsonConfigCommandCenter.editor && JsonConfigCommandCenter.titleUpdateCallback && JsonConfigCommandCenter.getOriginalJsonConfig) {
-            const edited = JsonConfigCommandCenter.isEdited();
-            const currentTitle = (edited ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
-            const currentMode = JsonConfigCommandCenter.editor?.getMode();
-            JsonConfigCommandCenter.titleUpdateCallback(currentTitle, currentMode);
+    public static set setEditorText(json: JsonPayLoad | null) {
+        const editor = JsonConfigCommandCenter.editor;
+        if (editor) {
+            editor.set(json);
+        }
+    }
+
+    public static set updateEditorText(json: JsonPayLoad | null) {
+        const editor = JsonConfigCommandCenter.editor;
+        if (editor) {
+            editor.update(json);
         }
     }
 
     public static loadJsonConfigs = async (): Promise<any> => {
-        return await JsonConfigCommandCenter.api.jsonList();
+        let jsonConfigs;
+        try {
+            jsonConfigs = await JsonConfigCommandCenter.api.jsonList();
+
+        } catch(error) {
+            message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+            if (USE_LOCAL_FILES_AND_NO_LOGIN) {
+                jsonConfigs = new Map().set(123, { id: 123, data: localJsonFile });
+            }
+        }
+        return jsonConfigs;
     }
 
     public static onModeChange(mode: Modes): void {

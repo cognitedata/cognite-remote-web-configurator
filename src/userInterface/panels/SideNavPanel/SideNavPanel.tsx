@@ -5,7 +5,6 @@ import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 import { CommandEvent } from '../../util/Interfaces/CommandEvent';
-import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
@@ -14,13 +13,14 @@ import { LOCALIZATION } from '../../../constants';
 const { confirm } = Modal;
 
 export const SideNavPanel: React.FC<{
+    isEdited: boolean,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     jsonConfigMap: Map<number, unknown> | null,
     selectedJsonConfigId: number | null
 }> = (props: any) => {
 
     const onJsonConfigSelectHandler = (id: number | null) => {
-        if (JsonConfigCommandCenter.isEdited()) {
+        if (props.isEdited) {
             confirm({
                 title: LOCALIZATION.SWITCH_TITLE,
                 icon: <ExclamationCircleOutlined />,

@@ -1,25 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import "./JsonEditorContainer.scss";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
+import { JsonPayLoad } from "../../util/types";
 
-export function JsonEditorContainer(props: { json: any }): JSX.Element {
+export function JsonEditorContainer(props: { onUpdateJson: (text: JsonPayLoad) => void }): JSX.Element {
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
+    const onChange = () => {
+        const editor = JsonConfigCommandCenter.editor;
+        if (editor) {
+            props.onUpdateJson(editor.get() as JsonPayLoad);
+        }
+    };
 
     useEffect(() => {
         if (jsonEditorElm.current !== null) {
             // create the editor
-            JsonConfigCommandCenter.createEditor(jsonEditorElm.current);
+            JsonConfigCommandCenter.createEditor(jsonEditorElm.current, onChange);
         }
     }, []);
-
-    useEffect(() => {
-        const editor = JsonConfigCommandCenter.editor;
-        if (editor) {
-            editor.set(props.json);
-            JsonConfigCommandCenter.updateTitle();
-        }
-    }, [props.json]);
-
 
     return (<div className="json-editor-container" ref={jsonEditorElm} />);
 }
