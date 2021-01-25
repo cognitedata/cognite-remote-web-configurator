@@ -5,9 +5,9 @@ import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
-import { EditorPanel } from '../EditorPanel/EditorPanel';
-import message from 'antd/es/message';
+import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
+import message from 'antd/es/message';
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
 import localJsonFile from '../../../config/MauiA.json';
 
@@ -62,7 +62,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfig(selectedJsonConfig as JsonConfig);
                 setOriginalJsonConfig((selectedJsonConfig as JsonConfig).data);
             }
-            // overide if it has resolved version
+            // override if it has resolved version
             if (resolvedJson) {
                 setJsonConfig({
                     data: resolvedJson
@@ -117,7 +117,9 @@ export const JsonConfigurator: React.FC<any> = () => {
                 return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
             }
             case CommandEvent.delete: {
-                return await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
+                await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
+                setSelectedJsonConfig(0);
+                break;
             }
             case CommandEvent.download: {
                 JsonConfigCommandCenter.onDownload();
@@ -162,7 +164,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                     />
-                    <EditorPanel jsonEditorElm={jsonEditorElm} jsonConfig={jsonConfig} />
+                    <JsonEditorContainer json={jsonConfig?.data} jsonEditorElm={jsonEditorElm} />
                 </div>
             </div>
             <div>
