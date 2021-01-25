@@ -1,16 +1,17 @@
 import React from 'react';
 import classes from './SideNavPanel.module.scss';
 import logo from "../../../assets/cognite.png";
-import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
 import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
-import { CommandEvent } from '../../util/Interfaces/CommandEvent';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
-import { CommandItem } from '../../components/CommandItem/CommandItem';
-import { LOCALIZATION } from '../../../constants';
-import { FileUploader } from '../../components/FileUploader/FileUploader';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import yaml from "yamljs";
+import { CommandEvent } from '../../util/Interfaces/CommandEvent';
+import { CommandItem } from '../../components/CommandItem/CommandItem';
+import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
+import { FileUploader } from '../../components/FileUploader/FileUploader';
+import { LOCALIZATION } from '../../../constants';
+import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 
 const { confirm } = Modal;
 

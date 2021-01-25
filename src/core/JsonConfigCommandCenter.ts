@@ -144,13 +144,13 @@ export class JsonConfigCommandCenter {
         saveAs(blob, fileName);
     }
 
-    public static onLoadSchema = async (elm: HTMLElement | null, schema?: IOpenApiSchema): Promise<void> => {
+    public static onLoadSchema = async (elm: HTMLElement | null, onChange: (text: string) => void, schema?: IOpenApiSchema): Promise<void> => {
         if (elm) {
             if(schema){
-                JsonConfigCommandCenter.createEditor(elm, schema);
+                await JsonConfigCommandCenter.createEditor(elm, schema, onChange);
             } else {
                 YAML.load(ymlFile, async (schema: IOpenApiSchema) => {
-                    JsonConfigCommandCenter.createEditor(elm, schema);
+                    await JsonConfigCommandCenter.createEditor(elm, schema, onChange);
                 });
             }
         }
