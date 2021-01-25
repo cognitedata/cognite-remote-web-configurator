@@ -122,6 +122,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
+            case CommandEvent.diff: {
+                setJsonConfig({ data: args[0] } as JsonConfig);
+                break;
+            }
             default:
                 break;
         }

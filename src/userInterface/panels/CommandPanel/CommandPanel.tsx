@@ -244,7 +244,7 @@ export const CommandPanel: React.FC<{
             originalConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
             diffMode: MergeModes.diff,
             onOk: (mergedJson: any) => {
-                props.commandEvent(CommandEvent.reload, mergedJson);
+                props.commandEvent(CommandEvent.diff, mergedJson);
                 message.success(LOCALIZATION.DIFF_SUCCESS);
             },
             onCancel: () => {
