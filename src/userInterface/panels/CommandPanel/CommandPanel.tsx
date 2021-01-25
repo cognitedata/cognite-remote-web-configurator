@@ -107,7 +107,21 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (JsonConfigCommandCenter.hasErrors) {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            console.log('asd', JsonConfigCommandCenter.currentFileName);
+            confirm({
+                title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.SAVE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    save();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
+        else if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
