@@ -195,6 +195,20 @@ export const CommandPanel: React.FC<{
     }
 
     const onUpdateHandler = () => {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            console.log('asd', JsonConfigCommandCenter.currentFileName);
+            confirm({
+                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.UPDATE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    update();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,

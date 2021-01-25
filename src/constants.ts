@@ -32,6 +32,8 @@ export const LOCALIZATION = {
 
     UPLOAD_WITH_ERRORS_TITLE: 'Update Configuration',
     UPLOAD_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
+    UPDATE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to update this configuration without a name?',
+
 
     // Delete command
     DELETE_TITLE: 'Delete Configuration',
