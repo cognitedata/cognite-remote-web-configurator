@@ -61,7 +61,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 return !!Object.keys(currentConfig?.data).length;
             }
             else {
-                return (JSON.stringify(originalConfig) !== JSON.stringify(currentConfig));
+                return (JSON.stringify(originalConfig?.data) !== JSON.stringify(currentConfig?.data));
             }
         }
         return false;
@@ -138,9 +138,9 @@ export const JsonConfigurator: React.FC<any> = () => {
         });
     }, []);
 
-    const onUpdateJson = (json: JsonPayLoad) => {
+    const onUpdateJson = (json: JsonPayLoad, id: number | null) => {
         setJsonConfig({
-            id: selectedJsonConfigId || 0,
+            id: id || 0,
             data: json
         });
     }
@@ -154,9 +154,13 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             // set new json config and Original
             if (selectedJsonConfig) {
+                if(originalJsonConfig?.id === selectedJsonConfigId) {
+                    JsonConfigCommandCenter.updateEditorText = selectedJsonConfig?.data;
+                } else {
+                    JsonConfigCommandCenter.setEditorText = selectedJsonConfig?.data;
+                }
                 setJsonConfig(selectedJsonConfig);
                 setOriginalJsonConfig(selectedJsonConfig);
-                JsonConfigCommandCenter.setEditorText = selectedJsonConfig?.data;
             } else {
                 console.error("JSON config not found in map!,", selectedJsonConfigId)
             }
@@ -205,7 +209,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         selectedJsonConfigId={selectedJsonConfigId}
                         originalJsonConfig={originalJsonConfig}
                     />
-                    <JsonEditorContainer onUpdateJson={onUpdateJson} jsonEditorElm={jsonEditorElm} />
+                    <JsonEditorContainer onUpdateJson={json => { onUpdateJson(json, selectedJsonConfigId) }} jsonEditorElm={jsonEditorElm} />
                 </div>
             </div>
             <div>
