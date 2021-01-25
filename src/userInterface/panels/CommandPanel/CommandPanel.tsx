@@ -198,40 +198,40 @@ export const CommandPanel: React.FC<{
         if (!JsonConfigCommandCenter.currentFileName) {
             console.log('asd', JsonConfigCommandCenter.currentFileName);
             confirm({
-                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
                 content: LOCALIZATION.UPDATE_WITHOUT_NAME_CONTENT,
                 onOk() {
                     update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
-                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
-                content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
+                content: LOCALIZATION.UPDATE_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
         else {
             confirm({
-                title: LOCALIZATION.UPLOAD_TITLE,
+                title: LOCALIZATION.UPDATE_TITLE,
                 icon: <ExclamationCircleTwoTone />,
-                content: LOCALIZATION.UPLOAD_CONTENT,
+                content: LOCALIZATION.UPDATE_CONTENT,
                 async onOk() {
                     update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }

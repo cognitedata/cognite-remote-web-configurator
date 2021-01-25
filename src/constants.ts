@@ -23,15 +23,15 @@ export const LOCALIZATION = {
     SAVE_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to save this configuration?',
     SAVE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to save this configuration without a name?',
 
-    // Upload command
-    UPLOAD_TITLE: 'Update Configuration',
-    UPLOAD_CONTENT: 'Do you want to update the configuration with new changes?',
-    UPLOAD_SUCCESS: 'Configuration updated successfully!',
-    UPLOAD_ERROR: 'Update Cancelled! {{error}}',
-    UPLOAD_INVALID_FILE: 'Update failed!',
+    // Update command
+    UPDATE_TITLE: 'Update Configuration',
+    UPDATE_CONTENT: 'Do you want to update the configuration with new changes?',
+    UPDATE_SUCCESS: 'Configuration updated successfully!',
+    UPDATE_ERROR: 'Update Cancelled! {{error}}',
+    UPDATE_INVALID_FILE: 'Update failed!',
 
-    UPLOAD_WITH_ERRORS_TITLE: 'Update Configuration',
-    UPLOAD_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
+    UPDATE_WITH_ERRORS_TITLE: 'Update Configuration',
+    UPDATE_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
     UPDATE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to update this configuration without a name?',
 
 
