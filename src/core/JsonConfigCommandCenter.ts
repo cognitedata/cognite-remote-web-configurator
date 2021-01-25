@@ -10,6 +10,9 @@ import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from "../constants";
 import localJsonFile from "../config/MauiA.json";
 import { extractErrorMessage } from "../userInterface/panels/JsonConfigurator/JsonConfigurator";
 import { JsonPayLoad } from "../userInterface/util/types";
+import YAML from "yamljs";
+import ymlFile from "../config/twinconfig.yaml";
+import { IOpenApiSchema } from "../validator/interfaces/IOpenApiSchema";
 
 export class JsonConfigCommandCenter {
     public static editorErrors: Map<string, string[]> = new Map();
@@ -18,10 +21,17 @@ export class JsonConfigCommandCenter {
     private static editorInstance: CogniteJsonEditor;
     private static apiInstance: Api;
 
-    public static async createEditor(elm: HTMLElement, onChange: (text: string) => void): Promise<void> {
-        await SchemaResolver.loadSchema();
+    public static async createEditor(elm: HTMLElement, schema: IOpenApiSchema, onChange: (text: string) => void): Promise<void> {
+        // Schema errors need to reset before loading new schema
+        this.schemaErrors = [];
+
+        await SchemaResolver.parseYAMLFile(schema);
         JsonConfigCommandCenter.apiInstance = new DigitalTwinApi();
         const options = new CogniteJsonEditorOptions(onChange);
+
+        // To force reload the content, innerHTML needs to be changed
+        elm.innerHTML = '<div/>';
+
         JsonConfigCommandCenter.editorInstance = new CogniteJsonEditor(elm, options);
     }
 
@@ -132,5 +142,17 @@ export class JsonConfigCommandCenter {
         }
         const blob = new Blob([currentJson], { type: 'application/json;charset=utf-8' });
         saveAs(blob, fileName);
+    }
+
+    public static onLoadSchema = async (elm: HTMLElement | null, schema?: IOpenApiSchema): Promise<void> => {
+        if (elm) {
+            if(schema){
+                JsonConfigCommandCenter.createEditor(elm, schema);
+            } else {
+                YAML.load(ymlFile, async (schema: IOpenApiSchema) => {
+                    JsonConfigCommandCenter.createEditor(elm, schema);
+                });
+            }
+        }
     }
 }

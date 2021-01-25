@@ -26,6 +26,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [mode, setMode] = useState('tree');
 
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -118,6 +119,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onDownload();
                 break;
             }
+            case CommandEvent.loadSchema: {
+                JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
+                break;
+            }
             default:
                 break;
         }
@@ -200,7 +205,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         selectedJsonConfigId={selectedJsonConfigId}
                         originalJsonConfig={originalJsonConfig}
                     />
-                    <JsonEditorContainer onUpdateJson={onUpdateJson}/>
+                    <JsonEditorContainer onUpdateJson={onUpdateJson} jsonEditorElm={jsonEditorElm} />
                 </div>
             </div>
             <div>

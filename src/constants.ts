@@ -56,6 +56,12 @@ export const LOCALIZATION = {
     REMOVE_MANDATORY: 'Cannot Remove. This field is mandatory',
     REMOVE_MINIMUM_LENGTH: 'Cannot Remove. Array has a minimum length',
 
+    // File uploader
+    FILE_UPLOAD_OK: 'File Uploaded Successfully',
+    FILE_UPLOAD_FAILED: 'File Upload Failed',
+    SWITCHED_TO_DEFAULT: 'Switched to default Open Api Schema',
+    INVALID_SCHEMA: 'Invalid schema file',
+
     // Validation
     REQUIRED_FIELDS_NOT_AVAIL: "Required fields: $$ not available in object",
     REQUIRED_FIELD_NOT_AVAIL: "Required field: $$ not available!",
