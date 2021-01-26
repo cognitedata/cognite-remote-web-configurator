@@ -250,7 +250,7 @@ export const CommandPanel: React.FC<{
             // updated version
             editedConfig: JsonConfigCommandCenter.currentJson,
             // Latest update
-            originalConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
+            originalConfig: props.originalJsonConfig,
             diffMode: MergeModes.diff,
             onOk: (mergedJson: any) => {
                 props.commandEvent(CommandEvent.diff, mergedJson);
@@ -280,7 +280,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{props.title}</span>
             </div>
             <div className={classes.rightPanel}>
-                {JsonConfigCommandCenter.isEdited() ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
+                {props.isEdited ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
                 <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && props.isEdited) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
