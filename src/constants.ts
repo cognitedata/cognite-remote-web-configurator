@@ -1,3 +1,5 @@
+import { IMergeText } from "./userInterface/util/Interfaces/MergeText";
+
 export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";
@@ -86,3 +88,24 @@ export const LOCALIZATION = {
     STRING_VIOLATES_PATTERN: "String does not provide a match for pattern: $$!",
     ARR_ELEMENT_VIOLATES_UNIQUENESS: "item: $$ violates array uniqueness constraint!"
 }
+
+export const MergeModesMap: Map<string, IMergeText> = new Map([
+    ['diff', {
+        btnLeft: 'Accept Original',
+        btnRight: 'Accept Edits',
+        txtLeft: 'Original',
+        txtRight: 'Edited',
+    }],
+    ['reload', {
+        btnLeft: 'Accept Server Version',
+        btnRight: 'Accept Local Version',
+        txtLeft: 'Server Version',
+        txtRight: 'Local Version',
+    }],
+    ['save', {
+        btnLeft: 'Accept Server Version and Save',
+        btnRight: 'Accept Local Version and Save',
+        txtLeft: 'Server Version',
+        txtRight: 'Local Version',
+    }]
+])

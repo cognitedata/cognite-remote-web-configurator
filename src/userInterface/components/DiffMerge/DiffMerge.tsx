@@ -4,7 +4,8 @@ import classes from "../../panels/JsonConfigurator/JsonConfigurator.module.scss"
 import { Modal } from "antd";
 import AceDiff from "ace-diff";
 import styles from "./DiffMerge.module.scss";
-import { MergeModesMap, MergeText } from "../../util/enums/MergeModes";
+import { MergeModesMap } from "../../../constants";
+import { IMergeText } from "../../util/Interfaces/MergeText";
 
 const getJson = (mergedJsonString: string) => {
     let mergedJson;
@@ -21,7 +22,7 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
     const originalConfig = JSON.stringify(props.originalConfig, null, 2);
     const editedConfig = JSON.stringify(props.editedConfig, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
-    const text: MergeText | undefined = MergeModesMap.get(props.diffMode);
+    const text: IMergeText | undefined = MergeModesMap.get(props.diffMode);
 
     useEffect(() => {
         if (props.showPopup) {
