@@ -108,7 +108,20 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (JsonConfigCommandCenter.hasErrors) {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            confirm({
+                title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.SAVE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    save();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
+        else if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
@@ -156,14 +169,14 @@ export const CommandPanel: React.FC<{
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
                             JsonConfigCommandCenter.updateTitle();
-                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                            message.success(LOCALIZATION.UPDATE_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 },
                 onCancel: () => {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -173,38 +186,51 @@ export const CommandPanel: React.FC<{
                     const createdId = response.data.data.items[0].id;
                     props.reloadJsonConfigs(createdId);
                     JsonConfigCommandCenter.updateTitle();
-                    message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                    message.success(LOCALIZATION.UPDATE_SUCCESS);
                 })
                 .catch((error: any) => {
-                    message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                 });
         }
     }
 
     const onUpdateHandler = () => {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            confirm({
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.UPDATE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    update();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
-                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
-                content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
+                content: LOCALIZATION.UPDATE_WITH_ERRORS_CONTENT,
                 async onOk() {
                     update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
         else {
             confirm({
-                title: LOCALIZATION.UPLOAD_TITLE,
+                title: LOCALIZATION.UPDATE_TITLE,
                 icon: <ExclamationCircleTwoTone />,
-                content: LOCALIZATION.UPLOAD_CONTENT,
+                content: LOCALIZATION.UPDATE_CONTENT,
                 async onOk() {
                     update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
