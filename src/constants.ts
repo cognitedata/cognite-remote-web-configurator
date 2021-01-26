@@ -19,18 +19,21 @@ export const LOCALIZATION = {
     SAVE_ERROR: 'Save Cancelled! {{error}}',
     SAVE_INVALID_FILE: 'Save Cancelled! Please add header -> name field',
 
-    SAVE_WITH_ERRORS_TITLE:'Create New Configuration',
-    SAVE_WITH_ERRORS_CONTENT:'Configuration contains errors! Are you sure you want to save this configuration?',
+    SAVE_WITH_ERRORS_TITLE: 'Create New Configuration',
+    SAVE_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to save this configuration?',
+    SAVE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to save this configuration without a name?',
 
-    // Upload command
-    UPLOAD_TITLE: 'Update Configuration',
-    UPLOAD_CONTENT: 'Do you want to update the configuration with new changes?',
-    UPLOAD_SUCCESS: 'Configuration updated successfully!',
-    UPLOAD_ERROR: 'Update Cancelled! {{error}}',
-    UPLOAD_INVALID_FILE: 'Update failed!',
+    // Update command
+    UPDATE_TITLE: 'Update Configuration',
+    UPDATE_CONTENT: 'Do you want to update the configuration with new changes?',
+    UPDATE_SUCCESS: 'Configuration updated successfully!',
+    UPDATE_ERROR: 'Update Cancelled! {{error}}',
+    UPDATE_INVALID_FILE: 'Update failed!',
 
-    UPLOAD_WITH_ERRORS_TITLE:'Update Configuration',
-    UPLOAD_WITH_ERRORS_CONTENT:'Configuration contains errors! Are you sure you want to update with new changes?',
+    UPDATE_WITH_ERRORS_TITLE: 'Update Configuration',
+    UPDATE_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
+    UPDATE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to update this configuration without a name?',
+
 
     // Delete command
     DELETE_TITLE: 'Delete Configuration',
@@ -46,8 +49,8 @@ export const LOCALIZATION = {
     REFRESH_ERROR: 'Refresh Cancelled! {{error}}',
 
     // switch config
-    SWITCH_TITLE:'Switch Config?',
-    SWITCH_CONTENT:'You have some unsaved changes. Are you sure you want to switch without saving?',
+    SWITCH_TITLE: 'Switch Config?',
+    SWITCH_CONTENT: 'You have some unsaved changes. Are you sure you want to switch without saving?',
 
     // Remove item menu option
     REMOVE_ENABLED: 'Remove this field',
