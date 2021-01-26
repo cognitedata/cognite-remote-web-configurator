@@ -10,6 +10,7 @@ import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 import message from 'antd/es/message';
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
 import localJsonFile from '../../../config/MauiA.json';
+import { MergeModes } from '../../util/enums/MergeModes';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -24,10 +25,10 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
-    const compareJsons = useRef<{ currentJson: string, newJson: string }>();
+    const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
-    const saveAfterMerge = useRef<boolean>(false);
+    const diffMode = useRef<MergeModes>();
 
     const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
         const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
@@ -81,8 +82,8 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     const setMergeOptions = (options: MergeOptions) => {
-        compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
-        saveAfterMerge.current = options.saveAfterMerge;
+        compareJsons.current = { originalConfig: options.originalConfig, editedConfig: options.editedConfig };
+        diffMode.current = options.diffMode;
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
         setShowMerge(true);
@@ -123,6 +124,10 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.download: {
                 JsonConfigCommandCenter.onDownload();
+                break;
+            }
+            case CommandEvent.diff: {
+                setJsonConfig({ data: args[0] } as JsonConfig);
                 break;
             }
             case CommandEvent.loadSchema: {
@@ -168,15 +173,17 @@ export const JsonConfigurator: React.FC<any> = () => {
                 </div>
             </div>
             <div>
-                <DiffMerge
-                    setShowMerge={setShowMerge}
-                    showPopup={showMerge}
-                    serverJson={compareJsons.current?.newJson}
-                    localJson={compareJsons.current?.currentJson}
-                    onMerge={handleOkMerge.current}
-                    onCancel={handleCancelMerge.current}
-                    saveAfterMerge={saveAfterMerge.current}
-                />
+                {diffMode.current &&
+                    <DiffMerge
+                        setShowMerge={setShowMerge}
+                        showPopup={showMerge}
+                        originalConfig={compareJsons.current?.originalConfig}
+                        editedConfig={compareJsons.current?.editedConfig}
+                        onMerge={handleOkMerge.current}
+                        onCancel={handleCancelMerge.current}
+                        diffMode={diffMode.current}
+                    />
+                }
             </div>
         </div>
     );

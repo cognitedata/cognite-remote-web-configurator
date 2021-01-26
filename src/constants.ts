@@ -1,3 +1,6 @@
+import { MergeModes } from "./userInterface/util/enums/MergeModes";
+import { IMergeText } from "./userInterface/util/Interfaces/MergeText";
+
 export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";
@@ -11,6 +14,10 @@ export const LOCALIZATION = {
     RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve configurations! {{error}}',
     UNTITLED: "Untitled",
     INCONSISTENT_VALUE: 'Inconsistent value. Remove and insert it again to fill missing fields',
+
+    // Diff command
+    DIFF_SUCCESS: 'Changes Accepted',
+    DIFF_CANCEL: 'Cancelled',
 
     // Save command
     SAVE_TITLE: 'Create New Configuration',
@@ -34,6 +41,8 @@ export const LOCALIZATION = {
     UPDATE_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
     UPDATE_WITHOUT_NAME_CONTENT: 'Configuration doesn\'t contains a name! Are you sure you want to update this configuration without a name?',
 
+    UPLOAD_WITH_ERRORS_TITLE: 'Update Configuration',
+    UPLOAD_WITH_ERRORS_CONTENT: 'Configuration contains errors! Are you sure you want to update with new changes?',
 
     // Delete command
     DELETE_TITLE: 'Delete Configuration',
@@ -92,4 +101,25 @@ export const LOCALIZATION = {
     STRING_LENGTH_EXCEEDED: "String length cannot exceed $$ characters!",
     STRING_VIOLATES_PATTERN: "String does not provide a match for pattern: $$!",
     ARR_ELEMENT_VIOLATES_UNIQUENESS: "item: $$ violates array uniqueness constraint!"
+}
+
+export const MergeText = {
+    [MergeModes.diff]: {
+        btnLeft: 'Accept Original',
+        btnRight: 'Accept Edits',
+        txtLeft: 'Original',
+        txtRight: 'Edited',
+    },
+    [MergeModes.reload]: {
+        btnLeft: 'Accept Server Version',
+        btnRight: 'Accept Local Version',
+        txtLeft: 'Server Version',
+        txtRight: 'Local Version',
+    },
+    [MergeModes.save]: {
+        btnLeft: 'Accept Server Version and Save',
+        btnRight: 'Accept Local Version and Save',
+        txtLeft: 'Server Version',
+        txtRight: 'Local Version',
+    }
 }
