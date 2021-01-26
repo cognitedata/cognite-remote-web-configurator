@@ -108,7 +108,6 @@ export const CommandPanel: React.FC<{
 
     const onSaveHandler = () => {
         if (!JsonConfigCommandCenter.currentFileName) {
-            console.log('asd', JsonConfigCommandCenter.currentFileName);
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
@@ -169,14 +168,14 @@ export const CommandPanel: React.FC<{
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
                             JsonConfigCommandCenter.updateTitle();
-                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                            message.success(LOCALIZATION.UPDATE_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 },
                 onCancel: () => {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -186,17 +185,16 @@ export const CommandPanel: React.FC<{
                     const createdId = response.data.data.items[0].id;
                     props.reloadJsonConfigs(createdId);
                     JsonConfigCommandCenter.updateTitle();
-                    message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                    message.success(LOCALIZATION.UPDATE_SUCCESS);
                 })
                 .catch((error: any) => {
-                    message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                 });
         }
     }
 
     const onUpdateHandler = () => {
         if (!JsonConfigCommandCenter.currentFileName) {
-            console.log('asd', JsonConfigCommandCenter.currentFileName);
             confirm({
                 title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
