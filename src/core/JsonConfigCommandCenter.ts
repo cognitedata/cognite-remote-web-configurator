@@ -69,22 +69,14 @@ export class JsonConfigCommandCenter {
         return currentJson?.header?.name;
     }
 
-    public static get editorText(): JsonPayLoad | null {
-        const editor = JsonConfigCommandCenter.editor;
-        if (editor) {
-            return (editor.get() as JsonPayLoad);
-        }
-        return null;
-    }
-
-    public static set setEditorText(json: JsonPayLoad | null) {
+    public static setEditorText(json: JsonPayLoad | null) {
         const editor = JsonConfigCommandCenter.editor;
         if (editor) {
             editor.set(json);
         }
     }
 
-    public static set updateEditorText(json: JsonPayLoad | null) {
+    public static updateEditorText(json: JsonPayLoad | null) {
         const editor = JsonConfigCommandCenter.editor;
         if (editor) {
             editor.update(json);
@@ -111,9 +103,17 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onSaveAs = async (): Promise<any> => {
+    public static onSaveAs = async (): Promise<number | null> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
-        return await JsonConfigCommandCenter.api.saveJson(currentJson);
+        return await JsonConfigCommandCenter.api.saveJson(currentJson)
+            .then((id: number) => {
+                message.success(LOCALIZATION.SAVE_SUCCESS);
+                return id;
+            })
+            .catch((error: any) => {
+                message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                return null;
+            });
     }
 
     public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {

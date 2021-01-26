@@ -38,7 +38,7 @@ export const CommandPanel: React.FC<{
                 })
                 .catch(error => {
                     message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                });
+                })
             return (JSON.stringify(props.originalJsonConfig) !== JSON.stringify(updatedJsonConfig));
         }
         return false;
@@ -82,20 +82,13 @@ export const CommandPanel: React.FC<{
             }
         }
         else {
-            props.commandEvent(CommandEvent.reload);
+            // reload with current text
+            props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
         }
     }
 
     const save = () => {
-        props.commandEvent(CommandEvent.saveAs)
-            .then((response: any) => {
-                const createdId = response.data.data.items[0].id;
-                props.reloadJsonConfigs(createdId);
-                message.success(LOCALIZATION.SAVE_SUCCESS);
-            })
-            .catch((error: any) => {
-                message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-            });
+        props.commandEvent(CommandEvent.saveAs);
     }
 
     const onSaveHandler = () => {

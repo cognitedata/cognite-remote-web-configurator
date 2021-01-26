@@ -1,7 +1,7 @@
 import { JSONEditorOptions } from "jsoneditor";
 
 export interface JsonConfig {
-    id: number;
+    id: number | null;
     data: JsonPayLoad
 }
 

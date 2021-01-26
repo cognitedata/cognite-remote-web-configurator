@@ -8,6 +8,7 @@ import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 import { LOCALIZATION } from '../../../constants';
+import { isEqual } from "lodash-es";
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -28,7 +29,9 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [showMerge, setShowMerge] = useState<boolean>(false);
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const compareJsons = useRef<{ currentJson: string, newJson: string }>();
-    const handleOkMerge = useRef<any>(() => { console.log('not set'); });
+    const handleOkMerge = useRef<any>(() => {
+        console.log('not set');
+    });
     const handleCancelMerge = useRef<any>(() => null);
     const saveAfterMerge = useRef<boolean>(false);
 
@@ -55,13 +58,16 @@ export const JsonConfigurator: React.FC<any> = () => {
         setSelectedJsonConfigId(jsonConfigId);
     }
 
+    const isEqualConfigs = (configA: JsonConfig | null, configB: JsonConfig | null) => {
+        return isEqual(configA?.data, configB?.data)
+    };
+
     const checkEditStatus = (currentConfig: JsonConfig | null, originalConfig: JsonConfig | null) => {
         if (currentConfig) {
             if (originalConfig === null) {
                 return !!Object.keys(currentConfig?.data).length;
-            }
-            else {
-                return (JSON.stringify(originalConfig?.data) !== JSON.stringify(currentConfig?.data));
+            } else {
+                return !isEqualConfigs(originalConfig, currentConfig);
             }
         }
         return false;
@@ -81,7 +87,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     const setMergeOptions = (options: MergeOptions) => {
-        compareJsons.current = { currentJson: options.localConfig, newJson: options.serverConfig };
+        compareJsons.current = {currentJson: options.localConfig, newJson: options.serverConfig};
         saveAfterMerge.current = options.saveAfterMerge;
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
@@ -96,16 +102,18 @@ export const JsonConfigurator: React.FC<any> = () => {
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
-            case CommandEvent.reload: {
-                await reloadJsonConfigs(selectedJsonConfigId, args[0]);
-                break;
-            }
             case CommandEvent.switchConfig: {
                 setSelectedJsonConfigId(args[0]);
                 break;
             }
             case CommandEvent.saveAs: {
-                return await JsonConfigCommandCenter.onSaveAs();
+                const newId = await JsonConfigCommandCenter.onSaveAs();
+                if (newId && jsonConfig?.id === null) {
+                    setJsonConfig({data: jsonConfig?.data, id: newId});
+                    setSelectedJsonConfigId(newId);
+                    await reloadJsonConfigs(newId);
+                }
+                break;
             }
             case CommandEvent.update: {
                 return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
@@ -121,6 +129,10 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.loadSchema: {
                 JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
+                break;
+            }
+            case CommandEvent.reload: {
+                await reloadJsonConfigs(selectedJsonConfigId, args[0]);
                 break;
             }
             default:
@@ -140,24 +152,22 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     const onUpdateJson = (json: JsonPayLoad, id: number | null) => {
         setJsonConfig({
-            id: id || 0,
+            id: id || null,
             data: json
         });
     }
 
-    // set current json and original json
+    // on select new config from panel or selecting new config
+
     useEffect(() => {
-        if(selectedJsonConfigId) {
+        if (selectedJsonConfigId) {
             let selectedJsonConfig;
             if (jsonConfigMap && jsonConfigMap.size > 0) {
                 selectedJsonConfig = jsonConfigMap.get(selectedJsonConfigId);
             }
-            // set new json config and Original
             if (selectedJsonConfig) {
-                if(originalJsonConfig?.id === selectedJsonConfigId) {
-                    JsonConfigCommandCenter.updateEditorText = selectedJsonConfig?.data;
-                } else {
-                    JsonConfigCommandCenter.setEditorText = selectedJsonConfig?.data;
+                if (!isEqualConfigs(selectedJsonConfig, jsonConfig)) {
+                    JsonConfigCommandCenter.setEditorText(selectedJsonConfig?.data);
                 }
                 setJsonConfig(selectedJsonConfig);
                 setOriginalJsonConfig(selectedJsonConfig);
@@ -169,16 +179,18 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfig({
                     data: resolvedJsonRef.current
                 } as JsonConfig);
-                JsonConfigCommandCenter.updateEditorText = resolvedJsonRef.current;
+                JsonConfigCommandCenter.updateEditorText(resolvedJsonRef.current);
             }
             resolvedJsonRef.current = null;
+
         } else {
             const blankConfig = {} as JsonPayLoad;
             setJsonConfig({
-                data: blankConfig
+                data: blankConfig,
+                id: null
             } as JsonConfig);
             setOriginalJsonConfig(null);
-            JsonConfigCommandCenter.setEditorText = blankConfig;
+            JsonConfigCommandCenter.setEditorText(blankConfig);
         }
     }, [selectedJsonConfigId, jsonConfigMap]);
 
@@ -186,7 +198,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     useEffect(() => {
         updateTitle(jsonConfig, originalJsonConfig);
-    },[jsonConfig, originalJsonConfig, jsonConfigMap]);
+    }, [jsonConfig, originalJsonConfig, jsonConfigMap]);
 
     return (
         <div className={classes.configurator}>
@@ -195,7 +207,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                     isEdited={isEdited}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId} />
+                    selectedJsonConfigId={selectedJsonConfigId}/>
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
@@ -209,7 +221,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                         selectedJsonConfigId={selectedJsonConfigId}
                         originalJsonConfig={originalJsonConfig}
                     />
-                    <JsonEditorContainer onUpdateJson={json => { onUpdateJson(json, selectedJsonConfigId) }} jsonEditorElm={jsonEditorElm} />
+                    <JsonEditorContainer
+                        onUpdateJson={json => { onUpdateJson(json, selectedJsonConfigId)}}
+                        jsonEditorElm={jsonEditorElm}
+                    />
                 </div>
             </div>
             <div>
