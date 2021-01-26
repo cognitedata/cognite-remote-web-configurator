@@ -177,8 +177,9 @@ export const JsonConfigurator: React.FC<any> = () => {
 
             if (resolvedJsonRef.current) {
                 setJsonConfig({
+                    id: selectedJsonConfigId,
                     data: resolvedJsonRef.current
-                } as JsonConfig);
+                });
                 JsonConfigCommandCenter.updateEditorText(resolvedJsonRef.current);
             }
             resolvedJsonRef.current = null;
