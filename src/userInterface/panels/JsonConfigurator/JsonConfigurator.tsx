@@ -10,6 +10,7 @@ import message from 'antd/es/message';
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
 import localJsonFile from '../../../config/MauiA.json';
+import { MergeModes } from '../../util/enums/MergeModes';
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -26,7 +27,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
-    const diffMode = useRef<string>('');
+    const diffMode = useRef<MergeModes>();
 
     const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
         const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
@@ -165,15 +166,17 @@ export const JsonConfigurator: React.FC<any> = () => {
                 </div>
             </div>
             <div>
-                <DiffMerge
-                    setShowMerge={setShowMerge}
-                    showPopup={showMerge}
-                    originalConfig={compareJsons.current?.originalConfig}
-                    editedConfig={compareJsons.current?.editedConfig}
-                    onMerge={handleOkMerge.current}
-                    onCancel={handleCancelMerge.current}
-                    diffMode={diffMode.current}
-                />
+                {diffMode.current &&
+                    <DiffMerge
+                        setShowMerge={setShowMerge}
+                        showPopup={showMerge}
+                        originalConfig={compareJsons.current?.originalConfig}
+                        editedConfig={compareJsons.current?.editedConfig}
+                        onMerge={handleOkMerge.current}
+                        onCancel={handleCancelMerge.current}
+                        diffMode={diffMode.current}
+                    />
+                }
             </div>
         </div>
     );

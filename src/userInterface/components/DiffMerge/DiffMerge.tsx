@@ -4,8 +4,9 @@ import classes from "../../panels/JsonConfigurator/JsonConfigurator.module.scss"
 import { Modal } from "antd";
 import AceDiff from "ace-diff";
 import styles from "./DiffMerge.module.scss";
-import { MergeModesMap } from "../../../constants";
+import { MergeText } from "../../../constants";
 import { IMergeText } from "../../util/Interfaces/MergeText";
+import { MergeModes } from "../../util/enums/MergeModes";
 
 const getJson = (mergedJsonString: string) => {
     let mergedJson;
@@ -17,12 +18,12 @@ const getJson = (mergedJsonString: string) => {
     return mergedJson
 }
 
-export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, originalConfig: any, editedConfig: any, diffMode: string, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
+export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, originalConfig: any, editedConfig: any, diffMode: MergeModes, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
 
     const originalConfig = JSON.stringify(props.originalConfig, null, 2);
     const editedConfig = JSON.stringify(props.editedConfig, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
-    const text: IMergeText | undefined = MergeModesMap.get(props.diffMode);
+    const mergeText: IMergeText = MergeText[props.diffMode];
 
     useEffect(() => {
         if (props.showPopup) {
@@ -75,14 +76,14 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
             width={1050}
             footer={
                 [
-                    <Button key="left" onClick={handleLeftMerge}>{text?.btnLeft}</Button>,
-                    <Button key="your" onClick={handleRightMerge}>{text?.btnRight}</Button>
+                    <Button key="left" onClick={handleLeftMerge}>{mergeText.btnLeft}</Button>,
+                    <Button key="your" onClick={handleRightMerge}>{mergeText.btnRight}</Button>
                 ]
             }
         >
             <div className={styles.editorLblContainer}>
-                <span className="editor-lbl">{text?.txtLeft}</span>
-                <span className="editor-lbl">{text?.txtRight}</span>
+                <span className="editor-lbl">{mergeText.txtLeft}</span>
+                <span className="editor-lbl">{mergeText.txtRight}</span>
             </div>
             <div className={`${classes.mergePrompt} acediff`}></div>
         </Modal>

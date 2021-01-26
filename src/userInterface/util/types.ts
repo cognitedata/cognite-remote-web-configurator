@@ -1,4 +1,5 @@
 import { JSONEditorOptions } from "jsoneditor";
+import { MergeModes } from "./enums/MergeModes";
 
 export interface JsonConfig {
     id: number;
@@ -14,7 +15,7 @@ export interface JsonConfig {
 export interface MergeOptions {
     originalConfig: any;
     editedConfig: any;
-    diffMode: string;
+    diffMode: MergeModes;
     onOk: (mergedJson: any) => void;
     onCancel: () => void;
 }

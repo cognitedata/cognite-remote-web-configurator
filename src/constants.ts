@@ -1,3 +1,4 @@
+import { MergeModes } from "./userInterface/util/enums/MergeModes";
 import { IMergeText } from "./userInterface/util/Interfaces/MergeText";
 
 export const APP_NAME = "Cognite Remote Configurator";
@@ -89,23 +90,23 @@ export const LOCALIZATION = {
     ARR_ELEMENT_VIOLATES_UNIQUENESS: "item: $$ violates array uniqueness constraint!"
 }
 
-export const MergeModesMap: Map<string, IMergeText> = new Map([
-    ['diff', {
+export const MergeText = {
+    [MergeModes.diff]: {
         btnLeft: 'Accept Original',
         btnRight: 'Accept Edits',
         txtLeft: 'Original',
         txtRight: 'Edited',
-    }],
-    ['reload', {
+    },
+    [MergeModes.reload]: {
         btnLeft: 'Accept Server Version',
         btnRight: 'Accept Local Version',
         txtLeft: 'Server Version',
         txtRight: 'Local Version',
-    }],
-    ['save', {
+    },
+    [MergeModes.save]: {
         btnLeft: 'Accept Server Version and Save',
         btnRight: 'Accept Local Version and Save',
         txtLeft: 'Server Version',
         txtRight: 'Local Version',
-    }]
-])
+    }
+}
