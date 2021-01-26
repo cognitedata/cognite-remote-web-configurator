@@ -5,7 +5,7 @@ import Divider from "antd/es/divider";
 import Text from "antd/es/typography/Text";
 import Modal from 'antd/es/modal';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import yaml from "yamljs";
+import * as yaml from "js-yaml";
 import { CommandEvent } from '../../util/Interfaces/CommandEvent';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { ConfigSelector } from '../../components/ConfigSelector/ConfigSelector';
@@ -43,7 +43,7 @@ export const SideNavPanel: React.FC<{
         const file = e.originFileObj;
         reader.onload = () => {
             try {
-                const yamlObj = yaml.parse(reader.result as string);        
+                const yamlObj = yaml.load(reader.result as string);
                 props.commandEvent(CommandEvent.loadSchema, yamlObj);
             } catch (e) {
                 JsonConfigCommandCenter.schemaErrors.push(LOCALIZATION.INVALID_SCHEMA);

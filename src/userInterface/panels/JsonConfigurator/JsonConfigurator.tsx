@@ -9,6 +9,7 @@ import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEd
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
 import { LOCALIZATION } from '../../../constants';
 import { isEqual } from "lodash-es";
+import { IOpenApiSchema } from "../../../validator/interfaces/IOpenApiSchema";
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
@@ -22,6 +23,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<JsonConfig | null>(null);
+    const [customSchema, setCustomSchema] = useState<IOpenApiSchema | null>(null);
 
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
     const [mode, setMode] = useState('tree');
@@ -128,7 +130,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.loadSchema: {
-                JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
+                setCustomSchema(args[0] || null);
                 break;
             }
             case CommandEvent.reload: {
@@ -225,6 +227,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                     <JsonEditorContainer
                         onUpdateJson={json => { onUpdateJson(json, selectedJsonConfigId)}}
                         jsonEditorElm={jsonEditorElm}
+                        customSchema={customSchema}
                     />
                 </div>
             </div>

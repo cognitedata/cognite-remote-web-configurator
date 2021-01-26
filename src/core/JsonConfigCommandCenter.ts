@@ -10,7 +10,8 @@ import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from "../constants";
 import localJsonFile from "../config/MauiA.json";
 import { extractErrorMessage } from "../userInterface/panels/JsonConfigurator/JsonConfigurator";
 import { JsonPayLoad } from "../userInterface/util/types";
-import YAML from "yamljs";
+import * as YAML from "js-yaml";
+import * as fs from "fs";
 import ymlFile from "../config/twinconfig.yaml";
 import { IOpenApiSchema } from "../validator/interfaces/IOpenApiSchema";
 
@@ -39,7 +40,7 @@ export class JsonConfigCommandCenter {
         if (JsonConfigCommandCenter.editorInstance) {
             return JsonConfigCommandCenter.editorInstance;
         } else {
-            console.error("Cannot retrieve editor before instantiation!");
+            console.warn("Editor not instantiated!");
             return null;
         }
     }
@@ -144,14 +145,14 @@ export class JsonConfigCommandCenter {
         saveAs(blob, fileName);
     }
 
-    public static onLoadSchema = async (elm: HTMLElement | null, onChange: (text: string) => void, schema?: IOpenApiSchema): Promise<void> => {
+    public static onLoadSchema = async (elm: HTMLElement | null, onChange: (text: string) => void, schema: IOpenApiSchema | null): Promise<void> => {
         if (elm) {
             if(schema){
                 await JsonConfigCommandCenter.createEditor(elm, schema, onChange);
             } else {
-                YAML.load(ymlFile, async (schema: IOpenApiSchema) => {
-                    await JsonConfigCommandCenter.createEditor(elm, schema, onChange);
-                });
+                const configFile = await fetch(ymlFile).then(response => response.text());
+                const schema = YAML.load(configFile) as IOpenApiSchema;
+                await JsonConfigCommandCenter.createEditor(elm, schema, onChange);
             }
         }
     }
