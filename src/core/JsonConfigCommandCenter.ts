@@ -9,7 +9,7 @@ import message from "antd/es/message";
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from "../constants";
 import localJsonFile from "../config/MauiA.json";
 import { extractErrorMessage } from "../userInterface/panels/JsonConfigurator/JsonConfigurator";
-import { JsonPayLoad } from "../userInterface/util/types";
+import { JsonConfig, JsonPayLoad } from "../userInterface/util/types";
 import * as YAML from "js-yaml";
 import ymlFile from "../config/twinconfig.yaml";
 import { IOpenApiSchema } from "../validator/interfaces/IOpenApiSchema";
@@ -103,12 +103,12 @@ export class JsonConfigCommandCenter {
         }
     }
 
-    public static onSaveAs = async (): Promise<number | null> => {
+    public static onSaveAs = async (): Promise<JsonConfig | null> => {
         const currentJson = JsonConfigCommandCenter.currentJson;
         return await JsonConfigCommandCenter.api.saveJson(currentJson)
-            .then((id: number) => {
+            .then((response) => {
                 message.success(LOCALIZATION.SAVE_SUCCESS);
-                return id;
+                return response;
             })
             .catch((error: any) => {
                 message.error(LOCALIZATION.SAVE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));

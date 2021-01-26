@@ -34,7 +34,7 @@ export class DigitalTwinApi implements Api {
         return await cogniteClient.post(`${cogniteClient.getBaseUrl()}/api/playground/projects/${cogniteClient.project}/twins`, options)
             .then( response => {
                 console.log("Saved Digital Twin List successfully!");
-                return response.data.data.items[0].id;
+                return response.data.data.items[0];
             })
     }
 
