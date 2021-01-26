@@ -7,5 +7,6 @@ export enum CommandEvent {
     delete = "delete",
     download = "download",
     refresh = "refresh",
-    diff = "diff"
+    diff = "diff",
+    loadSchema = "loadSchema"
 }

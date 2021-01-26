@@ -10,6 +10,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Modal from 'antd/es/modal';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import { LOCALIZATION } from '../../../constants';
+import { FileUploader } from '../../components/FileUploader/FileUploader';
+import yaml from "yamljs";
 
 const { confirm } = Modal;
 
@@ -35,6 +37,24 @@ export const SideNavPanel: React.FC<{
         }
     }
 
+    const onUpload = (e: any) => {
+        const reader = new FileReader();
+        const file = e.originFileObj;
+        reader.onload = () => {
+            try {
+                const yamlObj = yaml.parse(reader.result as string);        
+                props.commandEvent(CommandEvent.loadSchema, yamlObj);
+            } catch (e) {
+                JsonConfigCommandCenter.schemaErrors.push(LOCALIZATION.INVALID_SCHEMA);
+            }
+        };        
+        reader.readAsText(file);
+    }
+
+    const onRemoveUploadedSchema = () => {
+        props.commandEvent(CommandEvent.loadSchema);
+    }
+
     return (
         <>
             <div className={classes.top}>
@@ -42,6 +62,10 @@ export const SideNavPanel: React.FC<{
                     <img alt="cognite-logo" src={logo} className={classes.logo} />
                 </div>
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
+            </div>
+            <Divider />
+            <div className={classes.schemaUpload}>
+                <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema} >Upload Custom Schema</FileUploader>
             </div>
             <Divider />
             <div className={classes.createNewBtn}>

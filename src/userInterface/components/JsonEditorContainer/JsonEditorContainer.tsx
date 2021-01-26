@@ -1,16 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import "./JsonEditorContainer.scss";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 
-export function JsonEditorContainer(props: { json: any }): JSX.Element {
-    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
+export function JsonEditorContainer(props: { jsonEditorElm: any, json: any }): JSX.Element {
 
     useEffect(() => {
-        if (jsonEditorElm.current !== null) {
-            // create the editor
-            JsonConfigCommandCenter.createEditor(jsonEditorElm.current);
+        if (props.jsonEditorElm.current !== null) {
+            JsonConfigCommandCenter.onLoadSchema(props.jsonEditorElm.current);
         }
-    }, []);
+    }, [props.jsonEditorElm.current]);
 
     useEffect(() => {
         const editor = JsonConfigCommandCenter.editor;
@@ -21,5 +19,5 @@ export function JsonEditorContainer(props: { json: any }): JSX.Element {
     }, [props.json]);
 
 
-    return (<div className="json-editor-container" ref={jsonEditorElm} />);
+    return (<div className="json-editor-container" ref={props.jsonEditorElm} />);
 }

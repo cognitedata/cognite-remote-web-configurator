@@ -63,6 +63,12 @@ export const LOCALIZATION = {
     REMOVE_MANDATORY: 'Cannot Remove. This field is mandatory',
     REMOVE_MINIMUM_LENGTH: 'Cannot Remove. Array has a minimum length',
 
+    // File uploader
+    FILE_UPLOAD_OK: 'File Uploaded Successfully',
+    FILE_UPLOAD_FAILED: 'File Upload Failed',
+    SWITCHED_TO_DEFAULT: 'Switched to default Open Api Schema',
+    INVALID_SCHEMA: 'Invalid schema file',
+
     // Validation
     REQUIRED_FIELDS_NOT_AVAIL: "Required fields: $$ not available in object",
     REQUIRED_FIELD_NOT_AVAIL: "Required field: $$ not available!",
@@ -72,6 +78,8 @@ export const LOCALIZATION = {
     INVALID_MAX_ARR_ELEMENTS: "Invalid maxElement configuration for $$ !",
     MIN_ARR_ELEMENTS_NOT_FOUND: "Number of array elements cannot be lower than $$ !",
     INVALID_MIN_ARR_ELEMENTS: "Invalid minElement configuration for $$ !",
+    INVALID_MAX_NO_KEY_PAIRS: "Number of key value pairs cannot exceed $$!",
+    INVALID_MIN_NO_KEY_PAIRS: "Number of key value pairs should exceed $$!",
     VAL_NOT_BE_EMPTY: "Value cannot be empty!",
     VAL_NOT_OF_POSSIBLE_VALS: "Value not one of the possible values!",
     VAL_NOT_NUMBER: "Value is not a number!",

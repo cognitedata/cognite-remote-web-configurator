@@ -5,9 +5,9 @@ import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
-import { EditorPanel } from '../EditorPanel/EditorPanel';
-import message from 'antd/es/message';
+import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
+import message from 'antd/es/message';
 import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
 import localJsonFile from '../../../config/MauiA.json';
 import { MergeModes } from '../../util/enums/MergeModes';
@@ -24,6 +24,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -62,7 +63,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 setJsonConfig(selectedJsonConfig as JsonConfig);
                 setOriginalJsonConfig((selectedJsonConfig as JsonConfig).data);
             }
-            // overide if it has resolved version
+            // override if it has resolved version
             if (resolvedJson) {
                 setJsonConfig({
                     data: resolvedJson
@@ -117,7 +118,9 @@ export const JsonConfigurator: React.FC<any> = () => {
                 return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
             }
             case CommandEvent.delete: {
-                return await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
+                await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
+                setSelectedJsonConfig(0);
+                break;
             }
             case CommandEvent.download: {
                 JsonConfigCommandCenter.onDownload();
@@ -125,6 +128,10 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.diff: {
                 setJsonConfig({ data: args[0] } as JsonConfig);
+                break;
+            }
+            case CommandEvent.loadSchema: {
+                JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
                 break;
             }
             default:
@@ -162,7 +169,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                     />
-                    <EditorPanel jsonConfig={jsonConfig} />
+                    <JsonEditorContainer json={jsonConfig?.data} jsonEditorElm={jsonEditorElm} />
                 </div>
             </div>
             <div>
