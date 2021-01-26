@@ -11,7 +11,6 @@ import localJsonFile from "../config/MauiA.json";
 import { extractErrorMessage } from "../userInterface/panels/JsonConfigurator/JsonConfigurator";
 import { JsonPayLoad } from "../userInterface/util/types";
 import * as YAML from "js-yaml";
-import * as fs from "fs";
 import ymlFile from "../config/twinconfig.yaml";
 import { IOpenApiSchema } from "../validator/interfaces/IOpenApiSchema";
 
