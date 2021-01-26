@@ -7,6 +7,7 @@ import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
+import { MergeModes } from '../../util/enums/MergeModes';
 import { LOCALIZATION } from '../../../constants';
 import { isEqual } from "lodash-es";
 import { IOpenApiSchema } from "../../../validator/interfaces/IOpenApiSchema";
@@ -24,21 +25,18 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<JsonConfig | null>(null);
     const [customSchema, setCustomSchema] = useState<IOpenApiSchema | null>(null);
+    const resolvedJsonRef = useRef<JsonPayLoad | null>(null);
 
+    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
     const [mode, setMode] = useState('tree');
+    const [isEdited, setIsEdited] = useState(false);
 
     const [showMerge, setShowMerge] = useState<boolean>(false);
-    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
-    const compareJsons = useRef<{ currentJson: string, newJson: string }>();
-    const handleOkMerge = useRef<any>(() => {
-        console.log('not set');
-    });
+    const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
+    const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
-    const saveAfterMerge = useRef<boolean>(false);
-
-    const resolvedJsonRef = useRef<JsonPayLoad | null>(null);
-    const [isEdited, setIsEdited] = useState(false);
+    const diffMode = useRef<MergeModes>();
 
     const loadJsonConfigs = async () => {
         const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
@@ -89,8 +87,8 @@ export const JsonConfigurator: React.FC<any> = () => {
     }
 
     const setMergeOptions = (options: MergeOptions) => {
-        compareJsons.current = {currentJson: options.localConfig, newJson: options.serverConfig};
-        saveAfterMerge.current = options.saveAfterMerge;
+        compareJsons.current = { originalConfig: options.originalConfig, editedConfig: options.editedConfig };
+        diffMode.current = options.diffMode;
         handleOkMerge.current = options.onOk;
         handleCancelMerge.current = options.onCancel;
         setShowMerge(true);
@@ -127,6 +125,10 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.download: {
                 JsonConfigCommandCenter.onDownload();
+                break;
+            }
+            case CommandEvent.diff: {
+                setJsonConfig({ data: args[0] } as JsonConfig);
                 break;
             }
             case CommandEvent.loadSchema: {
@@ -232,15 +234,17 @@ export const JsonConfigurator: React.FC<any> = () => {
                 </div>
             </div>
             <div>
-                <DiffMerge
-                    setShowMerge={setShowMerge}
-                    showPopup={showMerge}
-                    serverJson={compareJsons.current?.newJson}
-                    localJson={compareJsons.current?.currentJson}
-                    onMerge={handleOkMerge.current}
-                    onCancel={handleCancelMerge.current}
-                    saveAfterMerge={saveAfterMerge.current}
-                />
+                {diffMode.current &&
+                    <DiffMerge
+                        setShowMerge={setShowMerge}
+                        showPopup={showMerge}
+                        originalConfig={compareJsons.current?.originalConfig}
+                        editedConfig={compareJsons.current?.editedConfig}
+                        onMerge={handleOkMerge.current}
+                        onCancel={handleCancelMerge.current}
+                        diffMode={diffMode.current}
+                    />
+                }
             </div>
         </div>
     );

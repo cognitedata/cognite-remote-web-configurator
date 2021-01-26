@@ -11,6 +11,7 @@ import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
 import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JsonConfig, MergeOptions } from '../../util/types';
+import { MergeModes } from '../../util/enums/MergeModes';
 
 const { confirm } = Modal;
 
@@ -57,8 +58,8 @@ export const CommandPanel: React.FC<{
         if (await isUpdated()) {
             if (props.isEdited) {
                 props.setMergeOptions({
-                    localConfig: JsonConfigCommandCenter.currentJson,
-                    serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                    editedConfig: JsonConfigCommandCenter.currentJson,
+                    originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
                         .then(response => {
                             if (response) {
                                 return response.get(props.selectedJsonConfigId).data;
@@ -67,13 +68,13 @@ export const CommandPanel: React.FC<{
                         .catch(error => {
                             message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                         }),
-                    saveAfterMerge: false,
+                    diffMode: MergeModes.reload,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
                         message.success(LOCALIZATION.REFRESH_SUCCESS);
                     },
                     onCancel: () => {
-                        message.warning(LOCALIZATION.REFRESH_ERROR);
+                        message.warning(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
                     }
                 });
             }
@@ -92,7 +93,20 @@ export const CommandPanel: React.FC<{
     }
 
     const onSaveHandler = () => {
-        if (JsonConfigCommandCenter.hasErrors) {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            confirm({
+                title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.SAVE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    save();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.SAVE_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
+        else if (JsonConfigCommandCenter.hasErrors) {
             confirm({
                 title: LOCALIZATION.SAVE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
@@ -123,8 +137,8 @@ export const CommandPanel: React.FC<{
     const update = async () => {
         if (await isUpdated()) {
             props.setMergeOptions({
-                localConfig: JsonConfigCommandCenter.currentJson,
-                serverConfig: await JsonConfigCommandCenter.loadJsonConfigs()
+                editedConfig: JsonConfigCommandCenter.currentJson,
+                originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
                     .then(response => {
                         if (response) {
                             return response.get(props.selectedJsonConfigId).data;
@@ -133,20 +147,20 @@ export const CommandPanel: React.FC<{
                     .catch(error => {
                         message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
                     }),
-                saveAfterMerge: true,
+                diffMode: MergeModes.save,
                 onOk: (mergedJson: any) => {
                     props.commandEvent(CommandEvent.update, mergedJson)
                         .then((response: any) => {
                             const createdId = response.data.data.items[0].id;
                             props.reloadJsonConfigs(createdId);
-                            message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                            message.success(LOCALIZATION.UPDATE_SUCCESS);
                         })
                         .catch((error: any) => {
-                            message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                            message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                         });
                 },
                 onCancel: () => {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -155,38 +169,51 @@ export const CommandPanel: React.FC<{
                 .then((response: any) => {
                     const createdId = response.data.data.items[0].id;
                     props.reloadJsonConfigs(createdId);
-                    message.success(LOCALIZATION.UPLOAD_SUCCESS);
+                    message.success(LOCALIZATION.UPDATE_SUCCESS);
                 })
                 .catch((error: any) => {
-                    message.error(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
                 });
         }
     }
 
     const onUpdateHandler = () => {
+        if (!JsonConfigCommandCenter.currentFileName) {
+            confirm({
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
+                icon: <WarningTwoTone twoToneColor="#faad14" />,
+                content: LOCALIZATION.UPDATE_WITHOUT_NAME_CONTENT,
+                onOk() {
+                    update();
+                },
+                onCancel() {
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
+                }
+            });
+        }
         if (JsonConfigCommandCenter.hasErrors) {
             confirm({
-                title: LOCALIZATION.UPLOAD_WITH_ERRORS_TITLE,
+                title: LOCALIZATION.UPDATE_WITH_ERRORS_TITLE,
                 icon: <WarningTwoTone twoToneColor="#faad14" />,
-                content: LOCALIZATION.UPLOAD_WITH_ERRORS_CONTENT,
+                content: LOCALIZATION.UPDATE_WITH_ERRORS_CONTENT,
                 async onOk() {
                     await update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
         else {
             confirm({
-                title: LOCALIZATION.UPLOAD_TITLE,
+                title: LOCALIZATION.UPDATE_TITLE,
                 icon: <ExclamationCircleTwoTone />,
-                content: LOCALIZATION.UPLOAD_CONTENT,
+                content: LOCALIZATION.UPDATE_CONTENT,
                 async onOk() {
                     await update();
                 },
                 onCancel() {
-                    message.warning(LOCALIZATION.UPLOAD_ERROR.replace('{{error}}', ''));
+                    message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
                 }
             });
         }
@@ -218,6 +245,23 @@ export const CommandPanel: React.FC<{
         props.commandEvent(CommandEvent.download);
     }
 
+    const onDiffHandler = () => {
+        props.setMergeOptions({
+            // updated version
+            editedConfig: JsonConfigCommandCenter.currentJson,
+            // Latest update
+            originalConfig: JsonConfigCommandCenter.getOriginalJsonConfig(),
+            diffMode: MergeModes.diff,
+            onOk: (mergedJson: any) => {
+                props.commandEvent(CommandEvent.diff, mergedJson);
+                message.success(LOCALIZATION.DIFF_SUCCESS);
+            },
+            onCancel: () => {
+                message.warning(LOCALIZATION.DIFF_CANCEL);
+            }
+        })
+    }
+
     return (
         <div className={classes.commandsContainer}>
             <div className={classes.errorPanel}>
@@ -236,6 +280,7 @@ export const CommandPanel: React.FC<{
                 <span className={classes.titleText}>{props.title}</span>
             </div>
             <div className={classes.rightPanel}>
+                {JsonConfigCommandCenter.isEdited() ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
                 <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && props.isEdited) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
