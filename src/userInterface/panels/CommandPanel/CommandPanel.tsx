@@ -250,7 +250,7 @@ export const CommandPanel: React.FC<{
             // updated version
             editedConfig: JsonConfigCommandCenter.currentJson,
             // Latest update
-            originalConfig: props.originalJsonConfig,
+            originalConfig: props.originalJsonConfig.data,
             diffMode: MergeModes.diff,
             onOk: (mergedJson: any) => {
                 props.commandEvent(CommandEvent.diff, mergedJson);
