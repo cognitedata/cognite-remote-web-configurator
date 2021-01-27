@@ -4,6 +4,9 @@ import classes from "../../panels/JsonConfigurator/JsonConfigurator.module.scss"
 import { Modal } from "antd";
 import AceDiff from "ace-diff";
 import styles from "./DiffMerge.module.scss";
+import { MergeText } from "../../../constants";
+import { IMergeText } from "../../util/Interfaces/MergeText";
+import { MergeModes } from "../../util/enums/MergeModes";
 
 const getJson = (mergedJsonString: string) => {
     let mergedJson;
@@ -15,11 +18,12 @@ const getJson = (mergedJsonString: string) => {
     return mergedJson
 }
 
-export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, serverJson: any, localJson: any, saveAfterMerge: boolean, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
+export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showPopup: boolean, originalConfig: any, editedConfig: any, diffMode: MergeModes, onMerge: (mergedJsonString: string) => void, onCancel: () => void }) {
 
-    const serverJson = JSON.stringify(props.serverJson, null, 2);
-    const localJson = JSON.stringify(props.localJson, null, 2);
+    const originalConfig = JSON.stringify(props.originalConfig, null, 2);
+    const editedConfig = JSON.stringify(props.editedConfig, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
+    const mergeText: IMergeText = MergeText[props.diffMode];
 
     useEffect(() => {
         if (props.showPopup) {
@@ -27,10 +31,10 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
                 const differ = new AceDiff({
                     element: '.acediff',
                     left: {
-                        content: serverJson
+                        content: originalConfig
                     },
                     right: {
-                        content: localJson
+                        content: editedConfig
                     },
                 });
                 differInstance.current = differ;
@@ -72,16 +76,15 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
             width={1050}
             footer={
                 [
-                    <Button key="left" onClick={handleLeftMerge}>Accept Server Version {props.saveAfterMerge ? 'and Save' : ''}</Button>,
-                    <Button key="your" onClick={handleRightMerge}>Accept Local Version {props.saveAfterMerge ? 'and Save' : ''}</Button>
+                    <Button key="left" onClick={handleLeftMerge}>{mergeText.btnLeft}</Button>,
+                    <Button key="your" onClick={handleRightMerge}>{mergeText.btnRight}</Button>
                 ]
             }
         >
             <div className={styles.editorLblContainer}>
-                <span className="editor-lbl"> Server Version</span>
-                <span className="editor-lbl"> Local Version</span>
+                <span className="editor-lbl">{mergeText.txtLeft}</span>
+                <span className="editor-lbl">{mergeText.txtRight}</span>
             </div>
             <div className={`${classes.mergePrompt} acediff`}></div>
-        </Modal>
-    );
+        </Modal>);
 }

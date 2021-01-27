@@ -1,5 +1,3 @@
-import YAML from "yamljs";
-import ymlFile from "../config/twinconfig.yaml";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { ISchemaNode } from "./interfaces/ISchemaNode";
 import { ErrorType, IValidationResult } from "./interfaces/IValidationResult";
@@ -12,16 +10,12 @@ import { JsonConfigCommandCenter } from "../core/JsonConfigCommandCenter";
 import { SchemaValidator } from "./SchemaValidator";
 import { ITemplateNode } from "./interfaces/ITemplateNode";
 import { NodeFactory } from "./util/NodeFactory";
+import { IOpenApiSchema } from "./interfaces/IOpenApiSchema";
 
 const defaultGroup = "TwinConfiguration"; 
-
-// propCount in a counter which is used to make the description is uniquie for all schemaTypes.
-// Otherwise schema types cannot be identified uniquely from templates array
-
 export class SchemaResolver {
 
   public static idSeparator = '#####';
-  private static propCount = 0;
   private static allNodes: ITemplateNode[] = [];
   private static rootDataNode: { [key: string]: BaseNode } = {};
 
@@ -95,7 +89,7 @@ export class SchemaResolver {
     return result;
   }
 
-  public static getSample(node: BaseNode) {
+  private static getSample(node: BaseNode) {
     if (node instanceof MapNode || node instanceof ArrayNode) {
       const sample = node.sampleData;
       const js = getJson(sample);
@@ -104,61 +98,70 @@ export class SchemaResolver {
     return null;
   }
 
-  public static loadSchema(): Promise<void> {
+  public static parseYAMLFile(ymlJson: IOpenApiSchema) {
+
     return new Promise((resolve, reject) => {
-      YAML.load(ymlFile, (ymlJson: any) => {
-        const unresolvedSchema = ymlJson.components.schemas;
+   
+      // Initialize static data before switch the schema
+      this.rootDataNode = {};
+      this.allNodes = [];
 
-        SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
+      // propUniqueIdentifire is a counter which is used to make the description is unique for all schemaTypes.
+      // Otherwise schema types cannot be identified uniquely from allTemplates array
+      let propUniqueIdentifire = 0;
 
-        SwaggerParser.validate(ymlJson, (err, api) => {
-          if (api) {
-            const rootSchema = api.components.schemas;
-
-            // Assign a unique identifire for all the property descriptions
-            for (const val of Object.values(rootSchema)) {
-              const schemaNode = val as ISchemaNode;
-              schemaNode.description = `${schemaNode.description}${this.idSeparator}${++this.propCount}`;
-
-              if (schemaNode.properties) {
-                for (const c of Object.values(schemaNode.properties)) {
-                  c.description = `${c.description}${this.idSeparator}${++this.propCount}`;
-                }
+      const nodeFactory = new NodeFactory();
+    
+      const unresolvedSchema = ymlJson.components.schemas;
+      SchemaValidator.validateUnresolvedSchema(unresolvedSchema);
+  
+      SwaggerParser.validate(ymlJson, (err, api) => {
+        if (api) {
+          const rootSchema = api.components.schemas;
+  
+          // Assign a unique identifire for all the property descriptions
+          for (const val of Object.values(rootSchema)) {
+            const schemaNode = val as ISchemaNode;
+            schemaNode.description = `${schemaNode.description}${this.idSeparator}${++propUniqueIdentifire}`;
+  
+            if (schemaNode.properties) {
+              for (const c of Object.values(schemaNode.properties)) {
+                c.description = `${c.description}${this.idSeparator}${++propUniqueIdentifire}`;
               }
             }
-
-            for (const [key, val] of Object.entries(rootSchema)) {
-              const childrenNodes = NodeFactory.populateChildren(val as ISchemaNode, true);
-              this.rootDataNode[key] = childrenNodes;
-            }
-
-            // Populate root nodes
-            for (const [key1, group] of Object.entries(this.rootDataNode)) {
-              if (group.data) {
-                for (const [key2, val2] of Object.entries(group.data)) {
-                  if (group.type === DataType.object) {
-                    this.allNodes.push({
-                      key: key1 + ":" + key2,
-                      node: val2,
-                      data: getJson(group, true)[key2],
-                      sample: this.getSample((group.data as any)[key2]), // Used only for Array, Map
-                    });
-                  }
-                }
-              }
-            }
-            console.log("Schema YML", rootSchema);
-            console.log("Schema Node", this.rootDataNode);
-            resolve();
-          } else {
-            JsonConfigCommandCenter.schemaErrors.push(
-              "Configuration Schema has errors! Validations may not work as expected"
-            );
-            console.error(err);
-            reject();
           }
-        });
+  
+          for (const [key, val] of Object.entries(rootSchema)) {
+            const childrenNodes = nodeFactory.populateChildren(val as ISchemaNode, true);
+            this.rootDataNode[key] = childrenNodes;
+          }
+  
+          // Populate root nodes
+          for (const [key1, group] of Object.entries(this.rootDataNode)) {
+            if (group.data) {
+              for (const [key2, val2] of Object.entries(group.data)) {
+                if (group.type === DataType.object) {
+                  this.allNodes.push({
+                    key: key1 + ":" + key2,
+                    node: val2,
+                    data: getJson(group, true)[key2],
+                    sample: SchemaResolver.getSample((group.data as any)[key2]), // Used only for Array, Map
+                  });
+                }
+              }
+            }
+          }
+          console.log("Schema YML", rootSchema);
+          // console.log("Schema Node", this.rootDataNode);
+          resolve(true);
+        } else {
+          JsonConfigCommandCenter.schemaErrors.push(
+            "Configuration Schema has errors! Validations may not work as expected"
+          );
+          console.error(err);
+          reject();
+        }
       });
-    });
+    })
   }
 }

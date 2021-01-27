@@ -1,10 +1,12 @@
 export enum CommandEvent {
     mode = "mode",
-    reload='reload',
+    reload = 'reload',
     switchConfig = "switchConfig",
     saveAs = "saveAs",
     update = "update",
     delete = "delete",
     download = "download",
-    refresh = "refresh"
+    refresh = "refresh",
+    diff = "diff",
+    loadSchema = "loadSchema"
 }
