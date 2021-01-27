@@ -89,7 +89,7 @@ export const CommandPanel: React.FC<{
             // reload with current text
             props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
         }
-        setTimeout(()=>setRefreshing(false), 3000);
+        setRefreshing(false);
     }
 
     const save = () => {
