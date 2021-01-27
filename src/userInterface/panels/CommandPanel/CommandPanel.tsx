@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import Switch from 'antd/es/switch';
@@ -25,6 +25,8 @@ export const CommandPanel: React.FC<{
     selectedJsonConfigId: number | null,
     originalJsonConfig: JsonConfig | null,
 }> = (props: any) => {
+
+    const [refreshing, setRefreshing] = useState(false);
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
@@ -281,7 +283,7 @@ export const CommandPanel: React.FC<{
             </div>
             <div className={classes.rightPanel}>
                 {props.isEdited ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
-                <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
+                <CommandItem className={classes.btn} icon={"reload"} loading={refreshing} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && props.isEdited) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
