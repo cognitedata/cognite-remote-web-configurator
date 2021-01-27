@@ -26,7 +26,7 @@ export const CommandPanel: React.FC<{
     originalJsonConfig: JsonConfig | null,
 }> = (props: any) => {
 
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
@@ -57,6 +57,7 @@ export const CommandPanel: React.FC<{
     }
 
     const onReloadHandler = async () => {
+        setRefreshing(true);
         if (await isUpdated()) {
             if (props.isEdited) {
                 props.setMergeOptions({
@@ -88,6 +89,7 @@ export const CommandPanel: React.FC<{
             // reload with current text
             props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
         }
+        setTimeout(()=>setRefreshing(false), 3000);
     }
 
     const save = () => {
