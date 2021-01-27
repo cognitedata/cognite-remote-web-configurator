@@ -130,7 +130,13 @@ export class JsonConfigCommandCenter {
 
     public static onDelete = async (selectedJsonConfigId: number | null): Promise<any> => {
         if (selectedJsonConfigId) {
-            return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId);
+            return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId)
+                .then(() => {
+                    message.success(LOCALIZATION.DELETE_SUCCESS);
+                })
+                .catch((error: any) => {
+                    message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                });
         }
     }
 
