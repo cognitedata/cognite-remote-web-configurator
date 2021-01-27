@@ -1,6 +1,4 @@
 import { MergeModes } from "./userInterface/util/enums/MergeModes";
-import { IMergeText } from "./userInterface/util/Interfaces/MergeText";
-
 export const APP_NAME = "Cognite Remote Configurator";
 export const LOGIN_HEADER = "Enter Your Project Name";
 export const LOGIN_CDF_ENVIRONMENT_OPT_TEXT = "cdfEnvironment";

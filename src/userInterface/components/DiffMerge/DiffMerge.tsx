@@ -86,6 +86,5 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
                 <span className="editor-lbl">{mergeText.txtRight}</span>
             </div>
             <div className={`${classes.mergePrompt} acediff`}></div>
-        </Modal>
-    );
+        </Modal>);
 }

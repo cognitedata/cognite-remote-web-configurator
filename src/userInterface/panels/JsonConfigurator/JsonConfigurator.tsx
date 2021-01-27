@@ -1,85 +1,66 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classes from './JsonConfigurator.module.scss'
-import { JsonConfig, MergeOptions } from "../../util/types";
+import { JsonConfig, JsonPayLoad, MergeOptions } from "../../util/types";
 import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
 import { CommandPanel } from "../CommandPanel/CommandPanel";
 import { SideNavPanel } from '../SideNavPanel/SideNavPanel';
 import { JsonEditorContainer } from "../../components/JsonEditorContainer/JsonEditorContainer";
 import { DiffMerge } from "../../components/DiffMerge/DiffMerge";
-import message from 'antd/es/message';
-import { LOCALIZATION, USE_LOCAL_FILES_AND_NO_LOGIN } from '../../../constants';
-import localJsonFile from '../../../config/MauiA.json';
 import { MergeModes } from '../../util/enums/MergeModes';
+import { LOCALIZATION } from '../../../constants';
+import { isEqual } from "lodash-es";
+import { IOpenApiSchema } from "../../../validator/interfaces/IOpenApiSchema";
 
 export const extractErrorMessage = (error: string): string => {
     const errorMsg = `${error}`.split(" | ")[0].split(": ")[1];
-    console.error(error);
+    console.error("Extracted Error message:", error);
     return errorMsg;
 }
 
 export const JsonConfigurator: React.FC<any> = () => {
-    const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, unknown> | null>(null);
+
+    const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, JsonConfig> | null>(null);
     const [selectedJsonConfigId, setSelectedJsonConfigId] = useState<number | null>(null);
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
-    const [originalJsonConfig, setOriginalJsonConfig] = useState<any | null>(null);
-    const [showMerge, setShowMerge] = useState<boolean>(false);
+    const [originalJsonConfig, setOriginalJsonConfig] = useState<JsonConfig | null>(null);
+    const [customSchema, setCustomSchema] = useState<IOpenApiSchema | null>(null);
+    const resolvedJsonRef = useRef<JsonPayLoad | null>(null);
+
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
+    const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
+    const [mode, setMode] = useState('tree');
+    const [isEdited, setIsEdited] = useState(false);
+
+    const [showMerge, setShowMerge] = useState<boolean>(false);
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
     const diffMode = useRef<MergeModes>();
 
-    const loadJsonConfigs = async (jsonConfigId?: number | null, resolvedJson?: any) => {
-        const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs()
-            .then(response => response)
-            .catch(error => {
-                message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                if (USE_LOCAL_FILES_AND_NO_LOGIN) {
-                    const map = new Map().set(123, { id: 123, data: localJsonFile });
-                    setJsonConfigMap(map);
-                }
-            });
+    const loadJsonConfigs = async () => {
+        const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
         setJsonConfigMap(jsonConfigs);
-
-        if (jsonConfigId) {
-            setSelectedJsonConfig(jsonConfigId, jsonConfigs, resolvedJson);
-        }
     }
 
-    // call with undefind values to create new json config
-    const setSelectedJsonConfig = (jsonConfigId: number | null, jsonConfigs?: Map<number, unknown> | null, resolvedJson?: any) => {
-        if (jsonConfigId) {
-            let selectedJsonConfig;
-            if (jsonConfigs) {
-                selectedJsonConfig = jsonConfigs.get(jsonConfigId);
-            }
-            else if (jsonConfigMap && jsonConfigMap.size > 0) {
-                selectedJsonConfig = jsonConfigMap.get(jsonConfigId);
-            }
+    useEffect(() => {
+        loadJsonConfigs();
+    }, []);
 
-            // set new json config and Original
-            if (selectedJsonConfig) {
-                setJsonConfig(selectedJsonConfig as JsonConfig);
-                setOriginalJsonConfig((selectedJsonConfig as JsonConfig).data);
-            }
-            // override if it has resolved version
-            if (resolvedJson) {
-                setJsonConfig({
-                    data: resolvedJson
-                } as JsonConfig);
-            }
-            setSelectedJsonConfigId(jsonConfigId);
+
+    const reloadJsonConfigs = async (jsonConfigId: number | null, resolvedJson?: any) => {
+        await loadJsonConfigs();
+        if (resolvedJson) {
+            resolvedJsonRef.current = resolvedJson;
+        } else {
+            resolvedJsonRef.current = null;
         }
-        else {
-            setJsonConfig({
-                data: {}
-            } as JsonConfig);
-            setSelectedJsonConfigId(null);
-            setOriginalJsonConfig(null);
-        }
-        JsonConfigCommandCenter.updateTitle();
+        setSelectedJsonConfigId(jsonConfigId);
     }
+
+    const isEqualConfigs = (configA: JsonConfig | null, configB: JsonConfig | null) => {
+        return isEqual(configA?.data, configB?.data)
+    };
 
     const setMergeOptions = (options: MergeOptions) => {
         compareJsons.current = { originalConfig: options.originalConfig, editedConfig: options.editedConfig };
@@ -89,37 +70,33 @@ export const JsonConfigurator: React.FC<any> = () => {
         setShowMerge(true);
     }
 
-    const reloadJsonConfigs = (jsonConfigId: number | null) => {
-        loadJsonConfigs(jsonConfigId);
-    }
-
-    JsonConfigCommandCenter.getOriginalJsonConfig = () => {
-        return originalJsonConfig;
-    };
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
         switch (command) {
             case CommandEvent.mode: {
+                setMode(args[0]);
                 JsonConfigCommandCenter.onModeChange(args[0]);
                 break;
             }
-            case CommandEvent.reload: {
-                loadJsonConfigs(selectedJsonConfigId, args[0]);
-                break;
-            }
             case CommandEvent.switchConfig: {
-                setSelectedJsonConfig(args[0]);
+                setSelectedJsonConfigId(args[0]);
                 break;
             }
             case CommandEvent.saveAs: {
-                return await JsonConfigCommandCenter.onSaveAs();
+                const newJson = await JsonConfigCommandCenter.onSaveAs();
+                if (newJson) {
+                    setJsonConfig(newJson);
+                    setSelectedJsonConfigId(newJson.id);
+                    await reloadJsonConfigs(newJson.id);
+                }
+                break;
             }
             case CommandEvent.update: {
                 return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
             }
             case CommandEvent.delete: {
                 await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
-                setSelectedJsonConfig(0);
+                setSelectedJsonConfigId(null);
                 break;
             }
             case CommandEvent.download: {
@@ -131,7 +108,11 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.loadSchema: {
-                JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, args[0]);
+                setCustomSchema(args[0] || null);
+                break;
+            }
+            case CommandEvent.reload: {
+                await reloadJsonConfigs(selectedJsonConfigId, args[0]);
                 break;
             }
             default:
@@ -141,7 +122,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
     useEffect(() => {
         window.addEventListener("beforeunload", function (e) {
-            if (JsonConfigCommandCenter.isEdited()) {
+            if (isEdited) {
                 (e || window.event).returnValue = true; //Gecko + IE
                 return true; //Gecko + Webkit, Safari, Chrome etc.
             }
@@ -149,27 +130,108 @@ export const JsonConfigurator: React.FC<any> = () => {
         });
     }, []);
 
+    // on select new config from panel or selecting new config
+
     useEffect(() => {
-        loadJsonConfigs();
-    }, []);
+        if (selectedJsonConfigId) {
+            let selectedJsonConfig;
+            if (jsonConfigMap && jsonConfigMap.size > 0) {
+                selectedJsonConfig = jsonConfigMap.get(selectedJsonConfigId);
+            }
+            if (selectedJsonConfig) {
+                if (!isEqualConfigs(selectedJsonConfig, jsonConfig)) {
+                    JsonConfigCommandCenter.setEditorText(selectedJsonConfig?.data);
+                }
+                setJsonConfig(selectedJsonConfig);
+                setOriginalJsonConfig(selectedJsonConfig);
+            } else {
+                console.error("JSON config not found in map!,", selectedJsonConfigId)
+            }
+
+            if (resolvedJsonRef.current) {
+                setJsonConfig({
+                    id: selectedJsonConfigId,
+                    data: resolvedJsonRef.current
+                });
+                JsonConfigCommandCenter.updateEditorText(resolvedJsonRef.current);
+            }
+            resolvedJsonRef.current = null;
+
+        } else {
+            const blankConfig = {} as JsonPayLoad;
+            setJsonConfig({
+                data: blankConfig,
+                id: null
+            } as JsonConfig);
+            setOriginalJsonConfig(null);
+            JsonConfigCommandCenter.setEditorText(blankConfig);
+        }
+    }, [selectedJsonConfigId, jsonConfigMap]);
+
+    // set title
+
+    useEffect(() => {
+        const checkEditStatus = (currentConfig: JsonConfig | null, originalConfig: JsonConfig | null) => {
+            if (currentConfig) {
+                if (originalConfig === null) {
+                    return !!Object.keys(currentConfig?.data).length;
+                } else {
+                    return !isEqualConfigs(originalConfig, currentConfig);
+                }
+            }
+            return false;
+        };
+
+        const updateTitle = (currentConfig: JsonConfig | null, originalConfig: JsonConfig | null): void => {
+            const editStatus = checkEditStatus(currentConfig, originalConfig);
+
+            if (JsonConfigCommandCenter.editor) {
+                const currentTitle = (editStatus ? '*' : '') + (JsonConfigCommandCenter.currentFileName || LOCALIZATION.UNTITLED);
+                const currentMode = JsonConfigCommandCenter.editor?.getMode();
+
+                setTitle(currentTitle);
+                setMode(currentMode);
+            }
+            setIsEdited(editStatus);
+        }
+
+
+        updateTitle(jsonConfig, originalJsonConfig);
+    }, [jsonConfig, originalJsonConfig, jsonConfigMap]);
+
+    const onUpdateJson = (json: JsonPayLoad) => {
+        setJsonConfig({
+            id: selectedJsonConfigId || null,
+            data: json
+        });
+    }
 
     return (
         <div className={classes.configurator}>
             <div className={classes.sideNavPanel}>
                 <SideNavPanel
+                    isEdited={isEdited}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId} />
+                    selectedJsonConfigId={selectedJsonConfigId}/>
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
                     <CommandPanel
+                        title={title}
+                        mode={mode}
                         commandEvent={onCommand}
+                        isEdited={isEdited}
                         reloadJsonConfigs={reloadJsonConfigs}
                         setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
+                        originalJsonConfig={originalJsonConfig}
                     />
-                    <JsonEditorContainer json={jsonConfig?.data} jsonEditorElm={jsonEditorElm} />
+                    <JsonEditorContainer
+                        onUpdateJson={onUpdateJson}
+                        jsonEditorElm={jsonEditorElm}
+                        customSchema={customSchema}
+                    />
                 </div>
             </div>
             <div>

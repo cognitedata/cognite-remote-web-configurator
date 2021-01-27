@@ -32,6 +32,11 @@ const extractField = (key: string) => {
 }
 
 export class CogniteJsonEditorOptions implements JSONEditorOptions {
+    public onChangeText: (text: string)=> void;
+
+    constructor(onchange: (text: string) => void) {
+        this.onChangeText = onchange;
+    }
 
     public get options(): JsonEditorOptions {
         return {
@@ -47,7 +52,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                 return this.onCreateMenu(menuItems, node);
             }),
             onValidate: this.onValidate,
-            onChange: this.onChange,
             onError: this.onError,
             onValidationError: this.onValidationError,
             onChangeText: this.onChangeText,
@@ -238,10 +242,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         };
     }
 
-    public onChange = (): void => {
-        JsonConfigCommandCenter.updateTitle();
-    }
-
     public onError = (err: any): void => {
         if (err) {
             message.error(err.message);
@@ -283,10 +283,6 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
         JsonConfigCommandCenter.editorErrors = errorMap;
 
         JsonConfigCommandCenter.hasErrors = !!errors.length;
-    }
-
-    public onChangeText = (): void => {
-        JsonConfigCommandCenter.updateTitle();
     }
 
     /**
