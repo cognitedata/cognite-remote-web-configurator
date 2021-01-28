@@ -57,27 +57,61 @@ export const SideNavPanel: React.FC<{
     }
 
     return (
+
+
         <div className={classes.container}>
-            <div className={classes.top}>
-                <img alt="cognite-logo" src={logo} className={classes.logo} />
-                <Text strong className={classes.title}>Cognite Remote Configurator</Text>
+            <div>
+                <div className={classes.top}>
+                    <img alt="cognite-logo" src={logo} className={classes.logo} />
+                    <Text strong className={classes.title}>Cognite Remote Configurator</Text>
+                </div>
+                <Divider />
+                <div className={classes.schemaUpload}>
+                    <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema}>Upload Custom Schema</FileUploader>
+                </div>
+                <Divider />
+                <div className={classes.createNewBtn}>
+                    <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
+                </div>
+                <Text strong>Configurations</Text>
             </div>
-            <Divider />
-            <div className={classes.schemaUpload}>
-                <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema} >Upload Custom Schema</FileUploader>
-            </div>
-            <Divider />
-            <div className={classes.createNewBtn}>
-                <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
-            </div>
-            <Text strong>Configurations</Text>
-            <div className={classes.jsonConfigContainer}>
-                <ConfigSelector
-                    onJsonConfigSelectHandler={onJsonConfigSelectHandler}
-                    jsonConfigMap={props.jsonConfigMap}
-                    selectedJsonConfigId={props.selectedJsonConfigId}
-                />
+            <div>
+                <div className={classes.jsonConfigContainer}>
+                    <ConfigSelector
+                        onJsonConfigSelectHandler={onJsonConfigSelectHandler}
+                        jsonConfigMap={props.jsonConfigMap}
+                        selectedJsonConfigId={props.selectedJsonConfigId}
+                    />
+                </div>
             </div>
         </div>
+
+
+
+
+
+
+        // <div className={classes.container}>
+        //     <div className={classes.top}>
+        //         <img alt="cognite-logo" src={logo} className={classes.logo} />
+        //         <Text strong className={classes.title}>Cognite Remote Configurator</Text>
+        //     </div>
+        //     <Divider />
+        //     <div className={classes.schemaUpload}>
+        //         <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema} >Upload Custom Schema</FileUploader>
+        //     </div>
+        //     <Divider />
+        //     <div className={classes.createNewBtn}>
+        //         <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
+        //     </div>
+        // <Text strong>Configurations</Text>
+        // <div className={classes.jsonConfigContainer}>
+        //     <ConfigSelector
+        //         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
+        //         jsonConfigMap={props.jsonConfigMap}
+        //         selectedJsonConfigId={props.selectedJsonConfigId}
+        //     />
+        // </div>
+        // </div>
     );
 }

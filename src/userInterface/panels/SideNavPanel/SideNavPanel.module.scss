@@ -1,8 +1,10 @@
+:root {
+    --header: 320px;
+}
+
 .container {
     display: grid;
-    grid-template-columns: "auto";
-    grid-template-rows: "100px 400px 100px";
-    grid-template-areas: "top" "schemaUpload" "createNewBtn" "jsonConfigContainer";
+    grid-template-rows: var(--header) calc(100vh - var(--header));
 }
 
 .top {
@@ -23,9 +25,8 @@
 }
 
 .jsonConfigContainer {
-    margin: 10px 0;
     height: 100%;
-    overflow-y:hidden;
+    overflow-y: scroll;
 }
 
 .logo {
