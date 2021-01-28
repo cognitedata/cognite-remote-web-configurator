@@ -48,7 +48,7 @@ export const SideNavPanel: React.FC<{
             } catch (e) {
                 JsonConfigCommandCenter.schemaErrors.push(LOCALIZATION.INVALID_SCHEMA);
             }
-        };        
+        };
         reader.readAsText(file);
     }
 
@@ -57,11 +57,9 @@ export const SideNavPanel: React.FC<{
     }
 
     return (
-        <>
+        <div className={classes.container}>
             <div className={classes.top}>
-                <div>
-                    <img alt="cognite-logo" src={logo} className={classes.logo} />
-                </div>
+                <img alt="cognite-logo" src={logo} className={classes.logo} />
                 <Text strong className={classes.title}>Cognite Remote Configurator</Text>
             </div>
             <Divider />
@@ -72,16 +70,14 @@ export const SideNavPanel: React.FC<{
             <div className={classes.createNewBtn}>
                 <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
             </div>
-            <div>
-                <Text strong>Configurations</Text>
-                <div className={classes.jsonConfigContainer}>
-                    <ConfigSelector
-                        onJsonConfigSelectHandler={onJsonConfigSelectHandler}
-                        jsonConfigMap={props.jsonConfigMap}
-                        selectedJsonConfigId={props.selectedJsonConfigId}
-                    />
-                </div>
+            <Text strong>Configurations</Text>
+            <div className={classes.jsonConfigContainer}>
+                <ConfigSelector
+                    onJsonConfigSelectHandler={onJsonConfigSelectHandler}
+                    jsonConfigMap={props.jsonConfigMap}
+                    selectedJsonConfigId={props.selectedJsonConfigId}
+                />
             </div>
-        </>
+        </div>
     );
 }
