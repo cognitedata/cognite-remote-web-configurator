@@ -19,6 +19,7 @@ export const CommandPanel: React.FC<{
     title: string,
     mode: string,
     isEdited: boolean,
+    refreshing: boolean,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     reloadJsonConfigs: (jsonConfigId: number | null) => void,
     setMergeOptions: (options: MergeOptions) => void
@@ -26,7 +27,7 @@ export const CommandPanel: React.FC<{
     originalJsonConfig: JsonConfig | null,
 }> = (props: any) => {
 
-    const [refreshing, setRefreshing] = useState<boolean>(false);
+    // const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
@@ -57,7 +58,6 @@ export const CommandPanel: React.FC<{
     }
 
     const onReloadHandler = async () => {
-        setRefreshing(true);
         if (await isUpdated()) {
             if (props.isEdited) {
                 props.setMergeOptions({
@@ -89,7 +89,6 @@ export const CommandPanel: React.FC<{
             // reload with current text
             props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
         }
-        setRefreshing(false);
     }
 
     const save = () => {
@@ -285,7 +284,7 @@ export const CommandPanel: React.FC<{
             </div>
             <div className={classes.rightPanel}>
                 {props.isEdited ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
-                <CommandItem className={classes.btn} icon={"reload"} loading={refreshing} onClick={onReloadHandler}>Reload</CommandItem>
+                <CommandItem className={classes.btn} icon={"reload"} loading={props.refreshing} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && props.isEdited) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>

@@ -33,6 +33,8 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [isEdited, setIsEdited] = useState(false);
 
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -112,7 +114,9 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
+                setRefreshing(true);
                 await reloadJsonConfigs(selectedJsonConfigId, args[0]);
+                setRefreshing(false);
                 break;
             }
             default:
@@ -213,13 +217,14 @@ export const JsonConfigurator: React.FC<any> = () => {
                     isEdited={isEdited}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId}/>
+                    selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
                     <CommandPanel
                         title={title}
                         mode={mode}
+                        refreshing={refreshing}
                         commandEvent={onCommand}
                         isEdited={isEdited}
                         reloadJsonConfigs={reloadJsonConfigs}

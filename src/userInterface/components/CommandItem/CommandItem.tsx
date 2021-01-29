@@ -10,7 +10,7 @@ export const CommandItem: React.FC<{ className?: string, onClick?: () => void, i
             className={`${styles.commandBtn} ${props.className}`}
             size="large"
             icon={props.loading ? '' : props.icon}
-            onClick={props.onClick}
+            onClick={props.loading ? () => { console.log('asd') } : props.onClick}
             disabled={props.loading}
         >
             {props.loading ? <Spin size="small" /> : props.children}
