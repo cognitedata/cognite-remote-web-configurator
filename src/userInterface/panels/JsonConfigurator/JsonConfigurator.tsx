@@ -33,6 +33,8 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [isEdited, setIsEdited] = useState(false);
 
     const [showMerge, setShowMerge] = useState<boolean>(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
     const handleOkMerge = useRef<any>(() => { console.log('not set'); });
     const handleCancelMerge = useRef<any>(() => null);
@@ -122,11 +124,12 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
+                setRefreshing(true);
                 let currentId = selectedJsonConfigId;
                 const resolvedJson = args[0];
                 const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
                 setJsonConfigMap(jsonConfigs);
-                if(!jsonConfigs.get(selectedJsonConfigId)) {
+                if (!jsonConfigs.get(selectedJsonConfigId)) {
                     currentId = null;
                 }
                 if (resolvedJson) {
@@ -135,6 +138,9 @@ export const JsonConfigurator: React.FC<any> = () => {
                     resolvedJsonRef.current = null;
                 }
                 setSelectedJsonConfigId(currentId);
+                setTimeout(() => {
+                    setRefreshing(false);
+                }, 1000);
                 break;
             }
             default:
@@ -181,7 +187,7 @@ export const JsonConfigurator: React.FC<any> = () => {
 
         } else {
             let newConfig = {} as JsonPayLoad;
-            if(resolvedJsonRef.current) {
+            if (resolvedJsonRef.current) {
                 newConfig = resolvedJsonRef.current;
                 setJsonConfig({
                     data: newConfig,
@@ -245,13 +251,14 @@ export const JsonConfigurator: React.FC<any> = () => {
                     isEdited={isEdited}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId}/>
+                    selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
                     <CommandPanel
                         title={title}
                         mode={mode}
+                        refreshing={refreshing}
                         commandEvent={onCommand}
                         isEdited={isEdited}
                         reloadJsonConfigs={reloadJsonConfigs}
