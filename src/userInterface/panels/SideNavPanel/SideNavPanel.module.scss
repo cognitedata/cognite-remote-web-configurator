@@ -1,8 +1,9 @@
-$header: 320px;
+$header: 340px;
+$subtitle: 30px;
 
 .container {
     display: grid;
-    grid-template-rows: #{$header} calc(100vh - #{$header});
+    grid-template-rows: auto calc(100vh - #{$header});
 }
 
 .top {
@@ -22,8 +23,17 @@ $header: 320px;
     margin-bottom: 20px;
 }
 
-.jsonConfigContainer {
-    height: 100%;
+.subtitle {
+    height: #{$subtitle};
+    padding: 0px 10px;
+}
+
+.jsonConfigContainer{
+    padding-bottom: 10px;
+}
+
+.jsonConfigs {
+    height: calc(100% - #{$subtitle});
     overflow-y: auto;
 }
 
