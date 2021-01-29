@@ -1,27 +1,27 @@
 {
   "files": {
-    "main.css": "/cognite-remote-web-configurator/static/css/main.cce54de0.chunk.css",
-    "main.js": "/cognite-remote-web-configurator/static/js/main.a060e75d.chunk.js",
-    "main.js.map": "/cognite-remote-web-configurator/static/js/main.a060e75d.chunk.js.map",
-    "runtime-main.js": "/cognite-remote-web-configurator/static/js/runtime-main.23358efa.js",
-    "runtime-main.js.map": "/cognite-remote-web-configurator/static/js/runtime-main.23358efa.js.map",
+    "main.css": "/cognite-remote-web-configurator/static/css/main.d0554b1c.chunk.css",
+    "main.js": "/cognite-remote-web-configurator/static/js/main.27ccbb43.chunk.js",
+    "main.js.map": "/cognite-remote-web-configurator/static/js/main.27ccbb43.chunk.js.map",
+    "runtime-main.js": "/cognite-remote-web-configurator/static/js/runtime-main.932e98af.js",
+    "runtime-main.js.map": "/cognite-remote-web-configurator/static/js/runtime-main.932e98af.js.map",
     "static/css/2.5d5f40f8.chunk.css": "/cognite-remote-web-configurator/static/css/2.5d5f40f8.chunk.css",
-    "static/js/2.42bd99f9.chunk.js": "/cognite-remote-web-configurator/static/js/2.42bd99f9.chunk.js",
-    "static/js/2.42bd99f9.chunk.js.map": "/cognite-remote-web-configurator/static/js/2.42bd99f9.chunk.js.map",
-    "static/js/3.b7f27835.chunk.js": "/cognite-remote-web-configurator/static/js/3.b7f27835.chunk.js",
-    "static/js/3.b7f27835.chunk.js.map": "/cognite-remote-web-configurator/static/js/3.b7f27835.chunk.js.map",
+    "static/js/2.8f78c2f0.chunk.js": "/cognite-remote-web-configurator/static/js/2.8f78c2f0.chunk.js",
+    "static/js/2.8f78c2f0.chunk.js.map": "/cognite-remote-web-configurator/static/js/2.8f78c2f0.chunk.js.map",
+    "static/js/3.4150e423.chunk.js": "/cognite-remote-web-configurator/static/js/3.4150e423.chunk.js",
+    "static/js/3.4150e423.chunk.js.map": "/cognite-remote-web-configurator/static/js/3.4150e423.chunk.js.map",
     "index.html": "/cognite-remote-web-configurator/index.html",
     "static/css/2.5d5f40f8.chunk.css.map": "/cognite-remote-web-configurator/static/css/2.5d5f40f8.chunk.css.map",
-    "static/css/main.cce54de0.chunk.css.map": "/cognite-remote-web-configurator/static/css/main.cce54de0.chunk.css.map",
-    "static/js/2.42bd99f9.chunk.js.LICENSE.txt": "/cognite-remote-web-configurator/static/js/2.42bd99f9.chunk.js.LICENSE.txt",
+    "static/css/main.d0554b1c.chunk.css.map": "/cognite-remote-web-configurator/static/css/main.d0554b1c.chunk.css.map",
+    "static/js/2.8f78c2f0.chunk.js.LICENSE.txt": "/cognite-remote-web-configurator/static/js/2.8f78c2f0.chunk.js.LICENSE.txt",
     "static/media/JsonEditorContainer.scss": "/cognite-remote-web-configurator/static/media/jsoneditor-icons.15f2789d.svg",
     "static/media/twinconfig.69952d13.yaml": "/cognite-remote-web-configurator/static/media/twinconfig.69952d13.yaml"
   },
   "entrypoints": [
-    "static/js/runtime-main.23358efa.js",
+    "static/js/runtime-main.932e98af.js",
     "static/css/2.5d5f40f8.chunk.css",
-    "static/js/2.42bd99f9.chunk.js",
-    "static/css/main.cce54de0.chunk.css",
-    "static/js/main.a060e75d.chunk.js"
+    "static/js/2.8f78c2f0.chunk.js",
+    "static/css/main.d0554b1c.chunk.css",
+    "static/js/main.27ccbb43.chunk.js"
   ]
 }
