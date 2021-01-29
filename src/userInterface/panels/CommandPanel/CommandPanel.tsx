@@ -15,6 +15,26 @@ import { MergeModes } from '../../util/enums/MergeModes';
 
 const { confirm } = Modal;
 
+export async function getLatestConfiguration(configurationId: number): Promise<JsonConfig | null> {
+    return await JsonConfigCommandCenter.loadJsonConfigs()
+        .then(response => {
+            if (response) {
+                const selectedJsonConfig: JsonConfig = response.get(configurationId);
+                if (selectedJsonConfig) {
+                    return selectedJsonConfig;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        })
+        .catch(error => {
+            message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
+            return null;
+        })
+}
+
 export const CommandPanel: React.FC<{
     title: string,
     mode: string,
@@ -31,19 +51,8 @@ export const CommandPanel: React.FC<{
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
-            const updatedJsonConfig = await JsonConfigCommandCenter.loadJsonConfigs()
-                .then(response => {
-                    if (response) {
-                        const selectedJsonConfig: JsonConfig = response.get(props.selectedJsonConfigId);
-                        if (selectedJsonConfig) {
-                            return selectedJsonConfig;
-                        }
-                    }
-                })
-                .catch(error => {
-                    message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                })
-            return (JSON.stringify(props.originalJsonConfig) !== JSON.stringify(updatedJsonConfig));
+            const latestJsonConfig = await getLatestConfiguration(props.selectedJsonConfigId);
+            return (JSON.stringify(props.originalJsonConfig) !== JSON.stringify(latestJsonConfig));
         }
         return false;
     }
@@ -60,17 +69,10 @@ export const CommandPanel: React.FC<{
     const onReloadHandler = async () => {
         if (await isUpdated()) {
             if (props.isEdited) {
+                const latestJsonConfig = await getLatestConfiguration(props.selectedJsonConfigId);
                 props.setMergeOptions({
                     editedConfig: JsonConfigCommandCenter.currentJson,
-                    originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
-                        .then(response => {
-                            if (response) {
-                                return response.get(props.selectedJsonConfigId).data;
-                            }
-                        })
-                        .catch(error => {
-                            message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                        }),
+                    originalConfig: latestJsonConfig?.data,
                     diffMode: MergeModes.reload,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
@@ -139,17 +141,10 @@ export const CommandPanel: React.FC<{
 
     const update = async () => {
         if (await isUpdated()) {
+            const latestJsonConfig = await getLatestConfiguration(props.selectedJsonConfigId);
             props.setMergeOptions({
                 editedConfig: JsonConfigCommandCenter.currentJson,
-                originalConfig: await JsonConfigCommandCenter.loadJsonConfigs()
-                    .then(response => {
-                        if (response) {
-                            return response.get(props.selectedJsonConfigId).data;
-                        }
-                    })
-                    .catch(error => {
-                        message.error(LOCALIZATION.RETRIEVE_CONFIGS_FAIL.replace('{{error}}', `${extractErrorMessage(error)}`));
-                    }),
+                originalConfig: latestJsonConfig?.data,
                 diffMode: MergeModes.save,
                 onOk: (mergedJson: any) => {
                     props.commandEvent(CommandEvent.update, mergedJson)
@@ -228,14 +223,7 @@ export const CommandPanel: React.FC<{
             icon: <WarningTwoTone twoToneColor="#ff4d4f" />,
             content: LOCALIZATION.DELETE_CONTENT,
             onOk() {
-                props.commandEvent(CommandEvent.delete)
-                    .then(() => {
-                        props.reloadJsonConfigs(null);
-                        message.success(LOCALIZATION.DELETE_SUCCESS);
-                    })
-                    .catch((error: any) => {
-                        message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                    });
+                props.commandEvent(CommandEvent.delete);
             },
             onCancel() {
                 message.warn(LOCALIZATION.DELETE_ERROR.replace('{{error}}', ''));
@@ -253,14 +241,14 @@ export const CommandPanel: React.FC<{
             // updated version
             editedConfig: JsonConfigCommandCenter.currentJson,
             // Latest update
-            originalConfig: props.originalJsonConfig.data,
+            originalConfig: props.originalJsonConfig?.data,
             diffMode: MergeModes.diff,
             onOk: (mergedJson: any) => {
                 props.commandEvent(CommandEvent.diff, mergedJson);
                 message.success(LOCALIZATION.DIFF_SUCCESS);
             },
             onCancel: () => {
-                message.warning(LOCALIZATION.DIFF_CANCEL);
+                // message.warning(LOCALIZATION.DIFF_CANCEL);
             }
         })
     }

@@ -81,7 +81,17 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.switchConfig: {
-                setSelectedJsonConfigId(args[0]);
+                const configId = args[0];
+                setSelectedJsonConfigId(configId);
+                if (configId === null) { // new config
+                    const newConfig = {} as JsonPayLoad;
+                    setJsonConfig({
+                        data: newConfig,
+                        id: null
+                    } as JsonConfig);
+                    JsonConfigCommandCenter.setEditorText(newConfig);
+                    setOriginalJsonConfig(null);
+                }
                 break;
             }
             case CommandEvent.saveAs: {
@@ -98,7 +108,7 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.delete: {
                 await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
-                setSelectedJsonConfigId(null);
+                await reloadJsonConfigs(null);
                 break;
             }
             case CommandEvent.download: {
@@ -115,8 +125,22 @@ export const JsonConfigurator: React.FC<any> = () => {
             }
             case CommandEvent.reload: {
                 setRefreshing(true);
-                await reloadJsonConfigs(selectedJsonConfigId, args[0]);
-                setRefreshing(false);
+                let currentId = selectedJsonConfigId;
+                const resolvedJson = args[0];
+                const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
+                setJsonConfigMap(jsonConfigs);
+                if (!jsonConfigs.get(selectedJsonConfigId)) {
+                    currentId = null;
+                }
+                if (resolvedJson) {
+                    resolvedJsonRef.current = resolvedJson;
+                } else {
+                    resolvedJsonRef.current = null;
+                }
+                setSelectedJsonConfigId(currentId);
+                setTimeout(() => {
+                    setRefreshing(false);
+                }, 1000);
                 break;
             }
             default:
@@ -162,13 +186,23 @@ export const JsonConfigurator: React.FC<any> = () => {
             resolvedJsonRef.current = null;
 
         } else {
-            const blankConfig = {} as JsonPayLoad;
-            setJsonConfig({
-                data: blankConfig,
-                id: null
-            } as JsonConfig);
+            let newConfig = {} as JsonPayLoad;
+            if (resolvedJsonRef.current) {
+                newConfig = resolvedJsonRef.current;
+                setJsonConfig({
+                    data: newConfig,
+                    id: null
+                } as JsonConfig);
+                JsonConfigCommandCenter.updateEditorText(newConfig);
+                resolvedJsonRef.current = null;
+            } else {
+                setJsonConfig({
+                    data: newConfig,
+                    id: null
+                } as JsonConfig);
+                JsonConfigCommandCenter.setEditorText(newConfig);
+            }
             setOriginalJsonConfig(null);
-            JsonConfigCommandCenter.setEditorText(blankConfig);
         }
     }, [selectedJsonConfigId, jsonConfigMap]);
 
