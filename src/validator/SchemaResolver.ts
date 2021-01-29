@@ -15,6 +15,7 @@ import { IOpenApiSchema } from "./interfaces/IOpenApiSchema";
 const defaultGroup = "TwinConfiguration"; 
 export class SchemaResolver {
 
+  public static idSeparator = '#####';
   private static allNodes: ITemplateNode[] = [];
   private static rootDataNode: { [key: string]: BaseNode } = {};
 
@@ -121,11 +122,11 @@ export class SchemaResolver {
           // Assign a unique identifire for all the property descriptions
           for (const val of Object.values(rootSchema)) {
             const schemaNode = val as ISchemaNode;
-            schemaNode.description = `${schemaNode.description}${++propUniqueIdentifire}`;
+            schemaNode.description = `${schemaNode.description}${this.idSeparator}${++propUniqueIdentifire}`;
   
             if (schemaNode.properties) {
               for (const c of Object.values(schemaNode.properties)) {
-                c.description = `${c.description}${++propUniqueIdentifire}`;
+                c.description = `${c.description}${this.idSeparator}${++propUniqueIdentifire}`;
               }
             }
           }
@@ -151,7 +152,7 @@ export class SchemaResolver {
             }
           }
           console.log("Schema YML", rootSchema);
-          console.log("Schema Node", this.rootDataNode);
+          // console.log("Schema Node", this.rootDataNode);
           resolve(true);
         } else {
           JsonConfigCommandCenter.schemaErrors.push(

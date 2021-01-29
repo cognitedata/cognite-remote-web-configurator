@@ -56,6 +56,7 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
             onValidationError: this.onValidationError,
             onChangeText: this.onChangeText,
             limitDragging: this.limitDragging,
+            timestampTag: false
         }
     }
 
@@ -672,6 +673,10 @@ export class CogniteJsonEditorOptions implements JSONEditorOptions {
                         // For discriminator types, if any key is added with base type, it needs to be filtered out.
                         && !existingKeys.includes(key)
                         && !existingKeys.includes(key.split('-')[0])) {
+
+                        // Remove unique id from the title
+                        subItem.title = subItem.title.split(SchemaResolver.idSeparator)[0];
+
                         validMenuItems.push(subItem);
                         existingKeys.push(key);
                     }
