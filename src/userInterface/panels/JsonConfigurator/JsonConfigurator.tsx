@@ -224,9 +224,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                     setOriginalJsonConfig(null);
                 }
 
-                setTimeout(() => {
-                    setRefreshing(false);
-                }, 1000);
+                setRefreshing(false);
                 break;
             }
             default:
@@ -297,6 +295,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         title={title}
                         mode={mode}
                         refreshing={refreshing}
+                        setRefreshing={setRefreshing}
                         commandEvent={onCommand}
                         isEdited={isEdited}
                         setMergeOptions={setMergeOptions}

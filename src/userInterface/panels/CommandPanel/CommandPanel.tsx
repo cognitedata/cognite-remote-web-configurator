@@ -44,6 +44,7 @@ export const CommandPanel: React.FC<{
     originalJsonConfig: JsonConfig | null,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     setMergeOptions: (options: MergeOptions) => void
+    setRefreshing: (refreshing: boolean) => void,
 }> = (props: any) => {
 
     const isUpdated = async (): Promise<boolean> => {
@@ -64,6 +65,7 @@ export const CommandPanel: React.FC<{
     }
 
     const onReloadHandler = async () => {
+        props.setRefreshing(true);
         if (await isUpdated()) {
             if (props.isEdited) {
                 const latestJsonConfig = await getLatestConfiguration(props.selectedJsonConfigId);

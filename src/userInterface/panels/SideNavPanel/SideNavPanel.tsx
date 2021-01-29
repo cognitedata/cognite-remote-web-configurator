@@ -73,10 +73,13 @@ export const SideNavPanel: React.FC<{
                 <div className={classes.createNewBtn}>
                     <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>{LOCALIZATION.SIDENAV_CREATENEW}</CommandItem>
                 </div>
-                <Text strong>{LOCALIZATION.SIDENAV_SUBTITLE}</Text>
+                <Divider />
             </div>
-            <div>
-                <div className={classes.jsonConfigContainer}>
+            <div className={classes.jsonConfigContainer}>
+                <div className={classes.subtitle}>
+                    <Text strong>{LOCALIZATION.SIDENAV_SUBTITLE}</Text>
+                </div>
+                <div className={classes.jsonConfigs}>
                     <ConfigSelector
                         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
                         jsonConfigMap={props.jsonConfigMap}
