@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from "antd/es/button";
 import styles from "./CommandItem.module.scss";
-import Spin from 'antd/es/spin';
 
 export const CommandItem: React.FC<{ className?: string, onClick?: () => void, icon?: string, loading?: boolean }> = (props) => {
     return (
@@ -11,9 +10,9 @@ export const CommandItem: React.FC<{ className?: string, onClick?: () => void, i
             size="large"
             icon={props.loading ? '' : props.icon}
             onClick={props.onClick}
-            disabled={props.loading}
+            loading={props.loading}
         >
-            {props.loading ? <Spin size="small" /> : props.children}
+            {props.children}
         </Button>
     );
 }
