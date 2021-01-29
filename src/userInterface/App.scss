@@ -6,3 +6,13 @@
     height: 100%;
     width: 100%;
 }
+
+// deleted notification text in diff view after a merge
+
+.original-deleted .acediff__left .ace_active-line {
+    background-color: #f1d0d0;
+    border-top: 1px solid #9d1010;
+    border-bottom: 1px solid #9d1010;
+    color: white;
+}
+

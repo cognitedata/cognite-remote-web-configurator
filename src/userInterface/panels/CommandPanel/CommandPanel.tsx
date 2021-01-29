@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import Switch from 'antd/es/switch';
@@ -40,12 +40,11 @@ export const CommandPanel: React.FC<{
     mode: string,
     isEdited: boolean,
     refreshing: boolean,
-    commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
-    reloadJsonConfigs: (jsonConfigId: number | null) => void,
-    setMergeOptions: (options: MergeOptions) => void,
-    setRefreshing: (refreshing: boolean) => void,
     selectedJsonConfigId: number | null,
     originalJsonConfig: JsonConfig | null,
+    commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
+    setMergeOptions: (options: MergeOptions) => void
+    setRefreshing: (refreshing: boolean) => void,
 }> = (props: any) => {
 
     const isUpdated = async (): Promise<boolean> => {
@@ -73,7 +72,7 @@ export const CommandPanel: React.FC<{
                 props.setMergeOptions({
                     editedConfig: JsonConfigCommandCenter.currentJson,
                     originalConfig: latestJsonConfig?.data,
-                    diffMode: MergeModes.reload,
+                    diffMode: latestJsonConfig ? MergeModes.reload : MergeModes.reloadServerDeleted,
                     onOk: (mergedJson: any) => {
                         props.commandEvent(CommandEvent.reload, mergedJson);
                         message.success(LOCALIZATION.REFRESH_SUCCESS);
@@ -89,7 +88,7 @@ export const CommandPanel: React.FC<{
         }
         else {
             // reload with current text
-            props.commandEvent(CommandEvent.reload, JsonConfigCommandCenter.currentJson);
+            props.commandEvent(CommandEvent.reload);
         }
     }
 
@@ -145,17 +144,15 @@ export const CommandPanel: React.FC<{
             props.setMergeOptions({
                 editedConfig: JsonConfigCommandCenter.currentJson,
                 originalConfig: latestJsonConfig?.data,
-                diffMode: MergeModes.save,
+                diffMode: latestJsonConfig ? MergeModes.save : MergeModes.saveServerDeleted,
                 onOk: (mergedJson: any) => {
-                    props.commandEvent(CommandEvent.update, mergedJson)
-                        .then((response: any) => {
-                            const createdId = response.data.data.items[0].id;
-                            props.reloadJsonConfigs(createdId);
-                            message.success(LOCALIZATION.UPDATE_SUCCESS);
-                        })
-                        .catch((error: any) => {
-                            message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                        });
+
+                    if (latestJsonConfig) {
+                        props.commandEvent(CommandEvent.update, mergedJson)
+                    } else {
+                        // if file is deleted on the server save as new
+                        props.commandEvent(CommandEvent.saveAs, mergedJson);
+                    }
                 },
                 onCancel: () => {
                     message.warning(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', ''));
@@ -163,15 +160,7 @@ export const CommandPanel: React.FC<{
             });
         }
         else {
-            props.commandEvent(CommandEvent.update)
-                .then((response: any) => {
-                    const createdId = response.data.data.items[0].id;
-                    props.reloadJsonConfigs(createdId);
-                    message.success(LOCALIZATION.UPDATE_SUCCESS);
-                })
-                .catch((error: any) => {
-                    message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
-                });
+            props.commandEvent(CommandEvent.update);
         }
     }
 
