@@ -72,6 +72,11 @@ export const LOCALIZATION = {
     SWITCHED_TO_DEFAULT: 'Switched to default Open Api Schema',
     INVALID_SCHEMA: 'Invalid schema file',
 
+    // Diff View
+    FILE_DELETED_IN_SERVER: 'File Was Deleted In the Server!',
+    SERVER_VERSION: 'Server Version',
+    LOCAL_VERSION: 'Local Version',
+
     // Validation
     REQUIRED_FIELDS_NOT_AVAIL: "Required fields: $$ not available in object",
     REQUIRED_FIELD_NOT_AVAIL: "Required field: $$ not available!",
@@ -111,13 +116,25 @@ export const MergeText = {
     [MergeModes.reload]: {
         btnLeft: 'Accept Server Version',
         btnRight: 'Accept Local Version',
-        txtLeft: 'Server Version',
-        txtRight: 'Local Version',
+        txtLeft: LOCALIZATION.SERVER_VERSION,
+        txtRight: LOCALIZATION.LOCAL_VERSION,
+    },
+    [MergeModes.reloadServerDeleted]: {
+        btnLeft: '',
+        btnRight: 'Keep Local Changes',
+        txtLeft: LOCALIZATION.SERVER_VERSION,
+        txtRight: LOCALIZATION.LOCAL_VERSION,
     },
     [MergeModes.save]: {
         btnLeft: 'Accept Server Version and Save',
         btnRight: 'Accept Local Version and Save',
-        txtLeft: 'Server Version',
-        txtRight: 'Local Version',
+        txtLeft: LOCALIZATION.SERVER_VERSION,
+        txtRight: LOCALIZATION.LOCAL_VERSION,
+    },
+    [MergeModes.saveServerDeleted]: {
+        btnLeft: '',
+        btnRight: 'Accept Local Changes and Save as New',
+        txtLeft: LOCALIZATION.SERVER_VERSION,
+        txtRight: LOCALIZATION.LOCAL_VERSION,
     }
 }

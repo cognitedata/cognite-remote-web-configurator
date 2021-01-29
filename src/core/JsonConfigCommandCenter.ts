@@ -116,27 +116,44 @@ export class JsonConfigCommandCenter {
             });
     }
 
-    public static onUpdate = async (selectedJsonConfigId: number | null, args: any): Promise<any> => {
+    public static onUpdate = async (selectedJsonConfigId: number | null, json?: JsonPayLoad): Promise<JsonConfig | null> => {
         let currentJson = JsonConfigCommandCenter.currentJson;
-        // override currentJson with resolved one
-        if (args) {
-            currentJson = args;
+
+        if (json) {
+            currentJson = json;
         }
 
         if (selectedJsonConfigId) {
-            return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson);
+            return await JsonConfigCommandCenter.api.updateJson(selectedJsonConfigId, currentJson)
+                .then((response: any) => {
+                    const updatedConfig = response.data.data.items[0];
+                    message.success(LOCALIZATION.UPDATE_SUCCESS);
+                    return updatedConfig;
+                })
+                .catch((error: any) => {
+                    message.error(LOCALIZATION.UPDATE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    return null;
+                });
+        } else {
+            console.error("Cannot Update: Selected Json Config id is Null!");
+            return null;
         }
     }
 
-    public static onDelete = async (selectedJsonConfigId: number | null): Promise<any> => {
+    public static onDelete = async (selectedJsonConfigId: number | null): Promise<boolean> => {
         if (selectedJsonConfigId) {
             return await JsonConfigCommandCenter.api.deleteJson(selectedJsonConfigId)
                 .then(() => {
                     message.success(LOCALIZATION.DELETE_SUCCESS);
+                    return true;
                 })
                 .catch((error: any) => {
                     message.error(LOCALIZATION.DELETE_ERROR.replace('{{error}}', `${extractErrorMessage(error)}`));
+                    return false;
                 });
+        } else {
+            console.error("Cannot Delete: Selected Json Config id is Null!");
+            return false;
         }
     }
 

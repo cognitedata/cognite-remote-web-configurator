@@ -1,5 +1,7 @@
 export enum MergeModes {
     diff = 'diff',
     reload = 'reload',
-    save = 'save'
+    save = 'save',
+    reloadServerDeleted = 'reloadServerDeleted',
+    saveServerDeleted = 'saveServerDeleted'
 }

@@ -18,6 +18,10 @@ export const extractErrorMessage = (error: string): string => {
     return errorMsg;
 }
 
+export const isEqualConfigs = (configA: JsonConfig | null, configB: JsonConfig | null) => {
+    return isEqual(configA?.data, configB?.data)
+};
+
 export const JsonConfigurator: React.FC<any> = () => {
 
     const [jsonConfigMap, setJsonConfigMap] = useState<Map<number, JsonConfig> | null>(null);
@@ -25,7 +29,6 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [jsonConfig, setJsonConfig] = useState<JsonConfig | null>(null);
     const [originalJsonConfig, setOriginalJsonConfig] = useState<JsonConfig | null>(null);
     const [customSchema, setCustomSchema] = useState<IOpenApiSchema | null>(null);
-    const resolvedJsonRef = useRef<JsonPayLoad | null>(null);
 
     const jsonEditorElm = useRef<HTMLDivElement | null>(null);
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
@@ -47,21 +50,6 @@ export const JsonConfigurator: React.FC<any> = () => {
         loadJsonConfigs();
     }, []);
 
-
-    const reloadJsonConfigs = async (jsonConfigId: number | null, resolvedJson?: any) => {
-        await loadJsonConfigs();
-        if (resolvedJson) {
-            resolvedJsonRef.current = resolvedJson;
-        } else {
-            resolvedJsonRef.current = null;
-        }
-        setSelectedJsonConfigId(jsonConfigId);
-    }
-
-    const isEqualConfigs = (configA: JsonConfig | null, configB: JsonConfig | null) => {
-        return isEqual(configA?.data, configB?.data)
-    };
-
     const setMergeOptions = (options: MergeOptions) => {
         compareJsons.current = { originalConfig: options.originalConfig, editedConfig: options.editedConfig };
         diffMode.current = options.diffMode;
@@ -72,6 +60,17 @@ export const JsonConfigurator: React.FC<any> = () => {
 
 
     const onCommand = async (command: CommandEvent, ...args: any[]): Promise<any> => {
+
+        const loadJsonConfigsAndReturnLatest = async (id: number | null): Promise<[Map<number, JsonConfig>, JsonConfig | null]> => {
+            const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
+
+            let selectedJsonConfig = null;
+            if (id !== null && jsonConfigs && jsonConfigs.size > 0) {
+                selectedJsonConfig = jsonConfigs.get(id);
+            }
+            return [jsonConfigs, selectedJsonConfig];
+        }
+
         switch (command) {
             case CommandEvent.mode: {
                 setMode(args[0]);
@@ -89,24 +88,86 @@ export const JsonConfigurator: React.FC<any> = () => {
                     } as JsonConfig);
                     JsonConfigCommandCenter.setEditorText(newConfig);
                     setOriginalJsonConfig(null);
+                } else {
+                    let selectedJsonConfig;
+                    if (jsonConfigMap && jsonConfigMap.size > 0) {
+                        selectedJsonConfig = jsonConfigMap.get(configId);
+                    }
+                    if (selectedJsonConfig) {
+                        JsonConfigCommandCenter.setEditorText(selectedJsonConfig?.data);
+                        setJsonConfig(selectedJsonConfig);
+                        setOriginalJsonConfig(selectedJsonConfig);
+                    } else {
+                        console.error("JSON config not found in map!,", selectedJsonConfigId)
+                    }
                 }
                 break;
             }
             case CommandEvent.saveAs: {
+                const mergeResult = args[0]; // local changes if server version was deleted in the server on save
+                if (mergeResult) { //
+                    JsonConfigCommandCenter.updateEditorText(mergeResult);
+                }
                 const newJson = await JsonConfigCommandCenter.onSaveAs();
                 if (newJson) {
-                    setJsonConfig(newJson);
-                    setSelectedJsonConfigId(newJson.id);
-                    await reloadJsonConfigs(newJson.id);
+                    const configId = newJson.id;
+                    const [jsonConfigs, latestConfig] = await loadJsonConfigsAndReturnLatest(configId);
+
+                    setJsonConfigMap(jsonConfigs);
+                    setSelectedJsonConfigId(configId);
+
+                    if (latestConfig) {
+                        if (!isEqualConfigs(latestConfig, jsonConfig)) {
+                            JsonConfigCommandCenter.updateEditorText(latestConfig?.data);
+                        }
+                        setJsonConfig(latestConfig);
+                        setOriginalJsonConfig(latestConfig);
+                        return latestConfig;
+                    } else {
+                        console.error("JSON config not found in map!,", selectedJsonConfigId)
+                        return null;
+                    }
                 }
                 break;
             }
             case CommandEvent.update: {
-                return await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, args[0]);
+                const currentJson = args[0];
+                const updatedConfig =  await JsonConfigCommandCenter.onUpdate(selectedJsonConfigId, currentJson);
+                if (updatedConfig) {
+                    const configId = updatedConfig.id;
+                    const [jsonConfigs, latestConfig] = await loadJsonConfigsAndReturnLatest(configId);
+
+                    setJsonConfigMap(jsonConfigs);
+                    setSelectedJsonConfigId(configId);
+
+                    if (latestConfig) {
+                        if (!isEqualConfigs(latestConfig, jsonConfig)) {
+                            JsonConfigCommandCenter.updateEditorText(latestConfig?.data);
+                        }
+                        setJsonConfig(latestConfig);
+                        setOriginalJsonConfig(latestConfig);
+                    } else {
+                        console.error("JSON config not found in map!,", selectedJsonConfigId)
+                    }
+                }
+                break;
             }
             case CommandEvent.delete: {
-                await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
-                await reloadJsonConfigs(null);
+                const status = await JsonConfigCommandCenter.onDelete(selectedJsonConfigId);
+                if (status) {
+                    const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
+                    setJsonConfigMap(jsonConfigs);
+                    setSelectedJsonConfigId(null);
+
+                    // switch to blank
+                    const newConfig = {} as JsonPayLoad;
+                    setJsonConfig({
+                        data: newConfig,
+                        id: null
+                    } as JsonConfig);
+                    JsonConfigCommandCenter.setEditorText(newConfig);
+                    setOriginalJsonConfig(null);
+                }
                 break;
             }
             case CommandEvent.download: {
@@ -122,19 +183,38 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
-                let currentId = selectedJsonConfigId;
-                const resolvedJson = args[0];
-                const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
+                const currentJson = args[0] || jsonConfig?.data; // local changes if server version was deleted in the server on save
+
+                const [jsonConfigs, latestConfig] = await loadJsonConfigsAndReturnLatest(selectedJsonConfigId);
+
                 setJsonConfigMap(jsonConfigs);
-                if(!jsonConfigs.get(selectedJsonConfigId)) {
-                    currentId = null;
-                }
-                if (resolvedJson) {
-                    resolvedJsonRef.current = resolvedJson;
+
+                if (latestConfig) {
+
+                    JsonConfigCommandCenter.updateEditorText(currentJson);
+                    setJsonConfig({ id: selectedJsonConfigId, data: currentJson});
+
+                    if(!isEdited) {
+                        JsonConfigCommandCenter.setEditorText(latestConfig?.data);
+                        setJsonConfig(latestConfig);
+                    }
+                    setOriginalJsonConfig(latestConfig);
                 } else {
-                    resolvedJsonRef.current = null;
+                    // if currently selected config is deleted
+                    if (!isEdited) { // if view not edited reset
+                        const newConfig = {} as JsonPayLoad;
+                        setJsonConfig({
+                            data: newConfig,
+                            id: null
+                        } as JsonConfig);
+                        JsonConfigCommandCenter.setEditorText(newConfig);
+                    } else {
+                        JsonConfigCommandCenter.updateEditorText(currentJson);
+                    }
+
+                    setSelectedJsonConfigId(null);
+                    setOriginalJsonConfig(null);
                 }
-                setSelectedJsonConfigId(currentId);
                 break;
             }
             default:
@@ -151,54 +231,6 @@ export const JsonConfigurator: React.FC<any> = () => {
             return false;
         });
     }, []);
-
-    // on select new config from panel or selecting new config
-
-    useEffect(() => {
-        if (selectedJsonConfigId) {
-            let selectedJsonConfig;
-            if (jsonConfigMap && jsonConfigMap.size > 0) {
-                selectedJsonConfig = jsonConfigMap.get(selectedJsonConfigId);
-            }
-            if (selectedJsonConfig) {
-                if (!isEqualConfigs(selectedJsonConfig, jsonConfig)) {
-                    JsonConfigCommandCenter.setEditorText(selectedJsonConfig?.data);
-                }
-                setJsonConfig(selectedJsonConfig);
-                setOriginalJsonConfig(selectedJsonConfig);
-            } else {
-                console.error("JSON config not found in map!,", selectedJsonConfigId)
-            }
-
-            if (resolvedJsonRef.current) {
-                setJsonConfig({
-                    id: selectedJsonConfigId,
-                    data: resolvedJsonRef.current
-                });
-                JsonConfigCommandCenter.updateEditorText(resolvedJsonRef.current);
-            }
-            resolvedJsonRef.current = null;
-
-        } else {
-            let newConfig = {} as JsonPayLoad;
-            if(resolvedJsonRef.current) {
-                newConfig = resolvedJsonRef.current;
-                setJsonConfig({
-                    data: newConfig,
-                    id: null
-                } as JsonConfig);
-                JsonConfigCommandCenter.updateEditorText(newConfig);
-                resolvedJsonRef.current = null;
-            } else {
-                setJsonConfig({
-                    data: newConfig,
-                    id: null
-                } as JsonConfig);
-                JsonConfigCommandCenter.setEditorText(newConfig);
-            }
-            setOriginalJsonConfig(null);
-        }
-    }, [selectedJsonConfigId, jsonConfigMap]);
 
     // set title
 
@@ -254,7 +286,6 @@ export const JsonConfigurator: React.FC<any> = () => {
                         mode={mode}
                         commandEvent={onCommand}
                         isEdited={isEdited}
-                        reloadJsonConfigs={reloadJsonConfigs}
                         setMergeOptions={setMergeOptions}
                         selectedJsonConfigId={selectedJsonConfigId}
                         originalJsonConfig={originalJsonConfig}

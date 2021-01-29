@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from "react";
 import Button from "antd/es/button";
 import classes from "../../panels/JsonConfigurator/JsonConfigurator.module.scss";
 import { Modal } from "antd";
-import AceDiff from "ace-diff";
+import AceDiff, { AceDiffConstructorOpts } from "ace-diff";
 import styles from "./DiffMerge.module.scss";
-import { MergeText } from "../../../constants";
-import { IMergeText } from "../../util/Interfaces/MergeText";
+import { LOCALIZATION, MergeText } from "../../../constants";
 import { MergeModes } from "../../util/enums/MergeModes";
 
 const getJson = (mergedJsonString: string) => {
@@ -23,20 +22,13 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
     const originalConfig = JSON.stringify(props.originalConfig, null, 2);
     const editedConfig = JSON.stringify(props.editedConfig, null, 2);
     const differInstance = useRef<AceDiff | null>(null);
-    const mergeText: IMergeText = MergeText[props.diffMode];
+    const originalDeleted = (props.diffMode === MergeModes.reloadServerDeleted || props.diffMode === MergeModes.saveServerDeleted);
+    const mergeText = MergeText[props.diffMode];
 
     useEffect(() => {
         if (props.showPopup) {
             setTimeout(() => {
-                const differ = new AceDiff({
-                    element: '.acediff',
-                    left: {
-                        content: originalConfig
-                    },
-                    right: {
-                        content: editedConfig
-                    },
-                });
+                const differ = new AceDiff(getAceDiffOptions(editedConfig, originalConfig));
                 differInstance.current = differ;
             }, 350);
         }
@@ -76,7 +68,7 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
             width={1050}
             footer={
                 [
-                    <Button key="left" onClick={handleLeftMerge}>{mergeText.btnLeft}</Button>,
+                    <Button key="left" onClick={handleLeftMerge} hidden={originalDeleted}>{mergeText.btnLeft}</Button>,
                     <Button key="your" onClick={handleRightMerge}>{mergeText.btnRight}</Button>
                 ]
             }
@@ -85,6 +77,38 @@ export function DiffMerge(props: { setShowMerge: (state: boolean) => void, showP
                 <span className="editor-lbl">{mergeText.txtLeft}</span>
                 <span className="editor-lbl">{mergeText.txtRight}</span>
             </div>
-            <div className={`${classes.mergePrompt} acediff`}></div>
+            <div className={`${classes.mergePrompt} acediff ${originalDeleted && 'original-deleted'}`}></div>
         </Modal>);
+}
+
+export function getAceDiffOptions(currentJson: string, serverJson?: string) : AceDiffConstructorOpts {
+    let options: AceDiffConstructorOpts;
+
+    if(!serverJson) {
+        options =  {
+            element: '.acediff',
+            showDiffs: false,
+            showConnectors: false,
+            left: {
+                content: LOCALIZATION.FILE_DELETED_IN_SERVER,
+                copyLinkEnabled: false,
+                editable: false
+            },
+            right: {
+                content: currentJson,
+                copyLinkEnabled: false,
+            }
+        }
+    } else {
+        options =  {
+            element: '.acediff',
+            left: {
+                content: serverJson
+            },
+            right: {
+                content: currentJson
+            },
+        }
+    }
+    return options;
 }
