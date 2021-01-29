@@ -139,7 +139,7 @@ export const MergeText = {
     },
     [MergeModes.saveServerDeleted]: {
         btnLeft: '',
-        btnRight: 'Accept Local Changes and Save as New',
+        btnRight: 'Save As New Configuration',
         txtLeft: LOCALIZATION.SERVER_VERSION,
         txtRight: LOCALIZATION.LOCAL_VERSION,
     }

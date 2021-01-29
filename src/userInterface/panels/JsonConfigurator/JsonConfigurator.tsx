@@ -176,7 +176,12 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.diff: {
-                setJsonConfig({ data: args[0] } as JsonConfig);
+                const mergedConfig = args[0];
+                const newConfigJson = { id: selectedJsonConfigId, data: mergedConfig };
+                if (!isEqualConfigs(newConfigJson, jsonConfig)) {
+                    JsonConfigCommandCenter.updateEditorText(mergedConfig);
+                    setJsonConfig(newConfigJson);
+                }
                 break;
             }
             case CommandEvent.loadSchema: {

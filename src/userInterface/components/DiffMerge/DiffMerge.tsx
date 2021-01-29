@@ -89,6 +89,7 @@ export function getAceDiffOptions(currentJson: string, serverJson?: string) : Ac
             element: '.acediff',
             showDiffs: false,
             showConnectors: false,
+            diffGranularity: 'specific',
             left: {
                 content: LOCALIZATION.FILE_DELETED_IN_SERVER,
                 copyLinkEnabled: false,
@@ -102,6 +103,7 @@ export function getAceDiffOptions(currentJson: string, serverJson?: string) : Ac
     } else {
         options =  {
             element: '.acediff',
+            diffGranularity: 'specific',
             left: {
                 content: serverJson
             },
