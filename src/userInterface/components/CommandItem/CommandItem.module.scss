@@ -6,3 +6,10 @@
   border: unset;
   box-shadow: unset;
 }
+
+.commandBtn:disabled,
+.commandBtn[disabled]:hover{
+  background-color: #74a8fc;
+  border: unset;
+  box-shadow: unset;
+}
