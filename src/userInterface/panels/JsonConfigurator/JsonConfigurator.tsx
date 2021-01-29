@@ -34,6 +34,7 @@ export const JsonConfigurator: React.FC<any> = () => {
     const [title, setTitle] = useState(LOCALIZATION.UNTITLED);
     const [mode, setMode] = useState('tree');
     const [isEdited, setIsEdited] = useState(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const [showMerge, setShowMerge] = useState<boolean>(false);
     const compareJsons = useRef<{ originalConfig: string, editedConfig: string }>();
@@ -183,6 +184,8 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
+                setRefreshing(true);
+
                 const currentJson = args[0] || jsonConfig?.data; // local changes if server version was deleted in the server on save
 
                 const [jsonConfigs, latestConfig] = await loadJsonConfigsAndReturnLatest(selectedJsonConfigId);
@@ -215,6 +218,10 @@ export const JsonConfigurator: React.FC<any> = () => {
                     setSelectedJsonConfigId(null);
                     setOriginalJsonConfig(null);
                 }
+
+                setTimeout(() => {
+                    setRefreshing(false);
+                }, 1000);
                 break;
             }
             default:
@@ -277,13 +284,14 @@ export const JsonConfigurator: React.FC<any> = () => {
                     isEdited={isEdited}
                     commandEvent={onCommand}
                     jsonConfigMap={jsonConfigMap}
-                    selectedJsonConfigId={selectedJsonConfigId}/>
+                    selectedJsonConfigId={selectedJsonConfigId} />
             </div>
             <div className={classes.fullEditor}>
                 <div className={classes.editorCommandContainer}>
                     <CommandPanel
                         title={title}
                         mode={mode}
+                        refreshing={refreshing}
                         commandEvent={onCommand}
                         isEdited={isEdited}
                         setMergeOptions={setMergeOptions}

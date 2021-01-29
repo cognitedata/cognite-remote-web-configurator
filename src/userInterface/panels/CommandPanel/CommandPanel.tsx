@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import Switch from 'antd/es/switch';
@@ -8,7 +8,7 @@ import { CommandEvent } from "../../util/Interfaces/CommandEvent";
 import { Modes } from "../../util/enums/Modes";
 import { JsonConfigCommandCenter } from '../../../core/JsonConfigCommandCenter';
 import { ExclamationCircleTwoTone, WarningTwoTone } from '@ant-design/icons';
-import { extractErrorMessage, isEqualConfigs } from '../JsonConfigurator/JsonConfigurator';
+import { extractErrorMessage } from '../JsonConfigurator/JsonConfigurator';
 import { LOCALIZATION } from '../../../constants';
 import { JsonConfig, MergeOptions } from '../../util/types';
 import { MergeModes } from '../../util/enums/MergeModes';
@@ -39,11 +39,14 @@ export const CommandPanel: React.FC<{
     title: string,
     mode: string,
     isEdited: boolean,
+    refreshing: boolean,
     selectedJsonConfigId: number | null,
     originalJsonConfig: JsonConfig | null,
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     setMergeOptions: (options: MergeOptions) => void
 }> = (props: any) => {
+
+    // const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
@@ -258,7 +261,7 @@ export const CommandPanel: React.FC<{
             </div>
             <div className={classes.rightPanel}>
                 {props.isEdited ? <CommandItem className={classes.btn} icon={"diff"} onClick={onDiffHandler}>Diff</CommandItem> : null}
-                <CommandItem className={classes.btn} icon={"reload"} onClick={onReloadHandler}>Reload</CommandItem>
+                <CommandItem className={classes.btn} icon={"reload"} loading={props.refreshing} onClick={onReloadHandler}>Reload</CommandItem>
                 {(props.selectedJsonConfigId && props.isEdited) && <CommandItem className={classes.btn} icon={"save"} onClick={onUpdateHandler}>Save</CommandItem>}
                 <CommandItem className={classes.btn} icon={"upload"} onClick={onSaveHandler}>Save As New</CommandItem>
                 <CommandItem className={classes.btn} icon={"download"} onClick={onDownloadHandler}>Download</CommandItem>
