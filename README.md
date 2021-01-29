@@ -2,9 +2,9 @@
 
 ## Available Scripts
 
-### `yarn start`
+Before running commands follow `Creating certificates` to create https certificates
 
-Follow `Creating certificates` and create https certificates
+### `yarn start`
 Runs the app in the development mode.
 Open [https://localhost:3000](https://localhost:3000) to view it in the browser.
 
