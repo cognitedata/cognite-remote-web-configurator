@@ -28,9 +28,12 @@ $subtitle: 30px;
     padding: 0px 10px;
 }
 
-.jsonConfigContainer {
+.jsonConfigContainer{
+    padding-bottom: 10px;
+}
+
+.jsonConfigs {
     height: calc(100% - #{$subtitle});
-    padding: 5px 0px;
     overflow-y: auto;
 }
 

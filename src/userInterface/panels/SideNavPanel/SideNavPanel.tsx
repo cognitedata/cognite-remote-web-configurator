@@ -75,11 +75,11 @@ export const SideNavPanel: React.FC<{
                 </div>
                 <Divider />
             </div>
-            <div>
+            <div className={classes.jsonConfigContainer}>
                 <div className={classes.subtitle}>
                     <Text strong>{LOCALIZATION.SIDENAV_SUBTITLE}</Text>
                 </div>
-                <div className={classes.jsonConfigContainer}>
+                <div className={classes.jsonConfigs}>
                     <ConfigSelector
                         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
                         jsonConfigMap={props.jsonConfigMap}
