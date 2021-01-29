@@ -1,10 +1,8 @@
-:root {
-    --header: 320px;
-}
+$header: 320px;
 
 .container {
     display: grid;
-    grid-template-rows: var(--header) calc(100vh - var(--header));
+    grid-template-rows: #{$header} calc(100vh - #{$header});
 }
 
 .top {
