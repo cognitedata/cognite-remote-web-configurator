@@ -189,8 +189,6 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
-                setRefreshing(true);
-
                 const currentJson = args[0] || jsonConfig?.data; // local changes if server version was deleted in the server on save
 
                 const [jsonConfigs, latestConfig] = await loadJsonConfigsAndReturnLatest(selectedJsonConfigId);

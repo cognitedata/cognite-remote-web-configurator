@@ -79,6 +79,7 @@ export const CommandPanel: React.FC<{
                     },
                     onCancel: () => {
                         message.warning(LOCALIZATION.REFRESH_ERROR.replace('{{error}}', ''));
+                        props.setRefreshing(false);
                     }
                 });
             }
