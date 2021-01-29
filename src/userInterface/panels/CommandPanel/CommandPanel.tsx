@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classes from './CommandPanel.module.scss';
 import { CommandItem } from '../../components/CommandItem/CommandItem';
 import Switch from 'antd/es/switch';
@@ -45,8 +45,6 @@ export const CommandPanel: React.FC<{
     commandEvent: (commandEvent: CommandEvent, ...args: any[]) => void,
     setMergeOptions: (options: MergeOptions) => void
 }> = (props: any) => {
-
-    // const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const isUpdated = async (): Promise<boolean> => {
         if (props.selectedJsonConfigId) {
