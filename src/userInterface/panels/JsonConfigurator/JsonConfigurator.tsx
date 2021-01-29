@@ -311,7 +311,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                 </div>
             </div>
             <div>
-                {diffMode.current &&
+                {diffMode.current && showMerge &&
                     <DiffMerge
                         setShowMerge={setShowMerge}
                         showPopup={showMerge}
