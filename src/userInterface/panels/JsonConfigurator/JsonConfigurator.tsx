@@ -124,7 +124,6 @@ export const JsonConfigurator: React.FC<any> = () => {
                 break;
             }
             case CommandEvent.reload: {
-                setRefreshing(true);
                 let currentId = selectedJsonConfigId;
                 const resolvedJson = args[0];
                 const jsonConfigs = await JsonConfigCommandCenter.loadJsonConfigs();
@@ -257,6 +256,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                         title={title}
                         mode={mode}
                         refreshing={refreshing}
+                        setRefreshing={setRefreshing}
                         commandEvent={onCommand}
                         isEdited={isEdited}
                         reloadJsonConfigs={reloadJsonConfigs}
