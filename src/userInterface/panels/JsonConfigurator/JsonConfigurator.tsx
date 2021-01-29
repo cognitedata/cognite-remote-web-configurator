@@ -138,9 +138,7 @@ export const JsonConfigurator: React.FC<any> = () => {
                     resolvedJsonRef.current = null;
                 }
                 setSelectedJsonConfigId(currentId);
-                setTimeout(() => {
-                    setRefreshing(false);
-                }, 1000);
+                setRefreshing(false);
                 break;
             }
             default:
