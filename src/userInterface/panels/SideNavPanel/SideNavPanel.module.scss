@@ -1,12 +1,9 @@
-.jsonConfigContainer {
-    margin: 10px 0;
-}
+$header: 340px;
+$subtitle: 30px;
 
-.title {
-    text-align: left;
-    margin: 0 10px;
-    padding: 5px;
-    font-size: 1rem;
+.container {
+    display: grid;
+    grid-template-rows: auto calc(100vh - #{$header});
 }
 
 .top {
@@ -16,12 +13,38 @@
     align-items: center;
 }
 
-.logo {
-    height: 80px;
-    width: 80px;
+.schemaUpload {
+    display: grid;
+    place-items: center;
 }
 
 .createNewBtn {
     display: grid;
     margin-bottom: 20px;
+}
+
+.subtitle {
+    height: #{$subtitle};
+    padding: 0px 10px;
+}
+
+.jsonConfigContainer{
+    padding-bottom: 10px;
+}
+
+.jsonConfigs {
+    height: calc(100% - #{$subtitle});
+    overflow-y: auto;
+}
+
+.logo {
+    height: 80px;
+    width: 80px;
+}
+
+.title {
+    text-align: left;
+    margin: 0 10px;
+    padding: 5px;
+    font-size: 1rem;
 }

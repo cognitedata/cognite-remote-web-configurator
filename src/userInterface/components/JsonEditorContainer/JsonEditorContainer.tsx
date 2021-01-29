@@ -1,25 +1,40 @@
 import React, { useEffect, useRef } from "react";
 import "./JsonEditorContainer.scss";
 import { JsonConfigCommandCenter } from "../../../core/JsonConfigCommandCenter";
+import { JsonPayLoad } from "../../util/types";
+import { IOpenApiSchema } from "../../../validator/interfaces/IOpenApiSchema";
 
-export function JsonEditorContainer(props: { json: any }): JSX.Element {
-    const jsonEditorElm = useRef<HTMLDivElement | null>(null);
+export function JsonEditorContainer(props: { jsonEditorElm: any, onUpdateJson: (text: JsonPayLoad) => void , customSchema: IOpenApiSchema | null}): JSX.Element {
 
-    useEffect(() => {
-        if (jsonEditorElm.current !== null) {
-            // create the editor
-            JsonConfigCommandCenter.createEditor(jsonEditorElm.current);
-        }
-    }, []);
+    const { jsonEditorElm, onUpdateJson, customSchema } = props;
+    const updateCallBack = useRef(onUpdateJson);
 
     useEffect(() => {
-        const editor = JsonConfigCommandCenter.editor;
-        if (editor) {
-            editor.set(props.json);
-            JsonConfigCommandCenter.updateTitle();
-        }
-    }, [props.json]);
+        // onupdatejson function will be updated on each rerender of parent therefore we need to store it in a ref so
+        // JsonEditor can call the correct function after instantiation
+        updateCallBack.current = onUpdateJson;
+    }, [onUpdateJson])
 
 
-    return (<div className="json-editor-container" ref={jsonEditorElm} />);
+    useEffect(() => {
+        const onChange = () => {
+            const editor = JsonConfigCommandCenter.editor;
+            if (editor) {
+                updateCallBack.current(editor.get() as JsonPayLoad);
+            }
+        };
+
+        (async () => {
+            if (jsonEditorElm.current !== null) {
+
+                const currentConfig = JsonConfigCommandCenter.currentJson;
+                await JsonConfigCommandCenter.onLoadSchema(jsonEditorElm.current, onChange, customSchema);
+                if(currentConfig) {
+                    JsonConfigCommandCenter.setEditorText(currentConfig);
+                }
+            }
+        })();
+    }, [jsonEditorElm.current, customSchema]);
+
+    return (<div className="json-editor-container"  ref={jsonEditorElm} />);
 }

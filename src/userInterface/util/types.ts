@@ -1,20 +1,23 @@
 import { JSONEditorOptions } from "jsoneditor";
+import { MergeModes } from "./enums/MergeModes";
 
 export interface JsonConfig {
-    id: number;
-    data: {
-        assets?: any[];
-        header: {
-            name: string;
-            type: string;
-        }
+    id: number | null;
+    data: JsonPayLoad
+}
+
+export interface JsonPayLoad {
+    assets?: any[];
+    header: {
+        name: string;
+        type: string;
     }
 }
 
 export interface MergeOptions {
-    localConfig: any;
-    serverConfig: any;
-    saveAfterMerge: boolean;
+    originalConfig: any;
+    editedConfig: any;
+    diffMode: MergeModes;
     onOk: (mergedJson: any) => void;
     onCancel: () => void;
 }

@@ -1,6 +1,7 @@
+import { JsonConfigCommandCenter } from "../../core/JsonConfigCommandCenter";
 import { DataType } from "../enum/DataType.enum";
 import { ISchemaNode } from "../interfaces/ISchemaNode";
-import { rootDataNode } from "../Validator";
+import { SchemaResolver } from "../SchemaResolver";
 import { StringNode } from "./StringNode";
 
 export type BaseNodes = { [key: string]: BaseNode };
@@ -44,7 +45,7 @@ export class BaseNode {
     this.isRequired = isRequired;
     this.example = schema.example;
     this.nullable = schema.nullable;
-    this.association = this.getAssociationType(schema);
+    this.association = this.getAssociationType(schema);  
   }
 
   /**
@@ -54,41 +55,33 @@ export class BaseNode {
    * correct object type
    */
   public get data(): IData {
-    if (this.discriminator && this.discriminator.mapping ) {
-
+    if (this.discriminator) {
       const result: BaseNodes = {};
-      const keysForDiscriminatorTypes = Object.keys(this.discriminator.mapping);      
+      if (this.discriminator.mapping ) {
+        const keysForDiscriminatorTypes = Object.keys(this.discriminator.mapping);      
 
-      for (const [key, val] of Object.entries(this.discriminator.mapping)) {
-        const schemaPathSections = val.split("/");
+        for (const [key, val] of Object.entries(this.discriminator.mapping)) {
+          const schemaPathSections = val.split("/");
 
-        // Get node for specific type of dicriminator. It is the last section of the schemaPath array
-        const typeIndicatorKey = schemaPathSections[schemaPathSections.length - 1];
-        const node = rootDataNode[typeIndicatorKey];
+          // Get node for specific type of dicriminator. It is the last section of the schemaPath array
+          const stringKeyForType = schemaPathSections[schemaPathSections.length - 1];
+          const nodeObjectForType = SchemaResolver.getRootDataNode()[stringKeyForType];
 
-        if(node && node._data instanceof Object){
-          // TODO: create StringNode here.(It is not allowed in TS; create BaseNode inside a BaseNode)
-          if((node._data as BaseNodes)[this.discriminator.propertyName]){
-            (node._data as BaseNodes)[this.discriminator.propertyName] = {
-              type: DataType.string,
-              data: key,
-              description: (node._data as BaseNodes)[this.discriminator.propertyName].description,
-              possibleValues: keysForDiscriminatorTypes,
-              isRequired: true
-            } as StringNode;
-          } else {
-            console.error('Error: Failed to read data from BaseNode');
+          if(nodeObjectForType && nodeObjectForType._data instanceof Object){
+            const typeIndicatorProperty = (nodeObjectForType._data as BaseNodes)[this.discriminator.propertyName] as StringNode;
+          
+            // Change property values which are specific to discriminator type
+            typeIndicatorProperty.data = key;
+            typeIndicatorProperty.possibleValues = keysForDiscriminatorTypes;
+
+            result[key] = nodeObjectForType;
+          } else { 
+            JsonConfigCommandCenter.schemaErrors.push(`Error occured while parsing schema. ${stringKeyForType} is not available`);
           }
-          result[key] = node;
         }
+      } else {
+        JsonConfigCommandCenter.schemaErrors.push(`Discriminator should comes with a mapping: ${this.description}`);
       }
-      /**
-       * {
-       *    customHierarchy: { data: { type: {data: "customHierarchy", type: "string"}}... }
-       *    fullAssetHierarchy: { data... }
-       *    noHierarchy: { data... }
-       * }
-       */
       return result;
     } else {
       return this._data;
