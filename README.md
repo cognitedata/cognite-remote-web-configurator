@@ -5,10 +5,11 @@
 ### `yarn start`
 
 Follow `Creating certificates` and create https certificates
-Runs the app in the development mode.\
+Runs the app in the development mode.
 Open [https://localhost:3000](https://localhost:3000) to view it in the browser.
 
 ### `yarn build`
+Builds the app for production to the `build` folder.
 
 #### Creating Certificates
 Inorder to start the project you will need to create valid https certificates and make them trusted in certificate trust store
