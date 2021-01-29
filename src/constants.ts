@@ -9,6 +9,12 @@ export const STRING_PLACEHOLDER = "$$";
 
 // String Constants
 export const LOCALIZATION = {
+
+    SIDENAV_TITLE:'Cognite Remote Configurator',
+    SIDENAV_SUBTITLE:'Configurations',
+    SIDENAV_UPLOAD:'Upload Custom Schema',
+    SIDENAV_CREATENEW:'Create New',
+
     RETRIEVE_CONFIGS_FAIL: 'Unable to retrieve configurations! {{error}}',
     UNTITLED: "Untitled",
     INCONSISTENT_VALUE: 'Inconsistent value. Remove and insert it again to fill missing fields',

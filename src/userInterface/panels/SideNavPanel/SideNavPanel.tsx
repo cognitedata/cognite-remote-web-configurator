@@ -63,17 +63,17 @@ export const SideNavPanel: React.FC<{
             <div>
                 <div className={classes.top}>
                     <img alt="cognite-logo" src={logo} className={classes.logo} />
-                    <Text strong className={classes.title}>Cognite Remote Configurator</Text>
+                    <Text strong className={classes.title}>{LOCALIZATION.SIDENAV_TITLE}</Text>
                 </div>
                 <Divider />
                 <div className={classes.schemaUpload}>
-                    <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema}>Upload Custom Schema</FileUploader>
+                    <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema}>{LOCALIZATION.SIDENAV_UPLOAD}</FileUploader>
                 </div>
                 <Divider />
                 <div className={classes.createNewBtn}>
-                    <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
+                    <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>{LOCALIZATION.SIDENAV_CREATENEW}</CommandItem>
                 </div>
-                <Text strong>Configurations</Text>
+                <Text strong>{LOCALIZATION.SIDENAV_SUBTITLE}</Text>
             </div>
             <div>
                 <div className={classes.jsonConfigContainer}>
@@ -85,33 +85,5 @@ export const SideNavPanel: React.FC<{
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-        // <div className={classes.container}>
-        //     <div className={classes.top}>
-        //         <img alt="cognite-logo" src={logo} className={classes.logo} />
-        //         <Text strong className={classes.title}>Cognite Remote Configurator</Text>
-        //     </div>
-        //     <Divider />
-        //     <div className={classes.schemaUpload}>
-        //         <FileUploader onUpload={onUpload} onRemove={onRemoveUploadedSchema} >Upload Custom Schema</FileUploader>
-        //     </div>
-        //     <Divider />
-        //     <div className={classes.createNewBtn}>
-        //         <CommandItem className={classes.btn} icon={"plus"} onClick={() => onJsonConfigSelectHandler(null)}>Create New</CommandItem>
-        //     </div>
-        // <Text strong>Configurations</Text>
-        // <div className={classes.jsonConfigContainer}>
-        //     <ConfigSelector
-        //         onJsonConfigSelectHandler={onJsonConfigSelectHandler}
-        //         jsonConfigMap={props.jsonConfigMap}
-        //         selectedJsonConfigId={props.selectedJsonConfigId}
-        //     />
-        // </div>
-        // </div>
     );
 }
