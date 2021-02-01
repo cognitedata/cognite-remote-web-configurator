@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
 import { CogniteClient, isLoginPopupWindow, loginPopupHandler, POPUP } from "@cognite/sdk";
-import { ClientSDKProvider, PureObject, TenantSelector } from "@cognite/gearbox";
+import { TenantSelector } from "@cognite/gearbox/dist/components/TenantSelector";
+import { ClientSDKProvider } from "@cognite/gearbox/dist/components/ClientSDKProvider";
+import { PureObject } from "@cognite/gearbox/dist/interfaces/CommonTypes";
 import styles from "./TenantLogin.module.scss";
 import {
     APP_NAME,
