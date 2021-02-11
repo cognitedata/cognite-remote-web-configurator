@@ -4,7 +4,7 @@
   "homepage": "https://cognitedata.github.io/cognite-remote-web-configurator/",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^4.3.0",
+    "@ant-design/icons": "^4.5.0",
     "@cognite/gearbox": "^2.2.2",
     "@cognite/sdk": "^3.3.2",
     "ace-diff": "^3.0.3",
