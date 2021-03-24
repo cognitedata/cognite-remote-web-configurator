@@ -1254,10 +1254,10 @@
   dependencies:
     protobufjs "^6.8.8"
 
-"@cognite/gearbox@^2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@cognite/gearbox/-/gearbox-2.2.2.tgz#69e8f9a3f2c06500b7af15ecf6a9dab062337656"
-  integrity sha512-qkV6KGSpXU1gJWBAz8yPWNi0lJxJKBQOKB9b3h3mKK0wyQI/7URHEtoHbbTV/jMmeOC3Kmi6blJXhVYxZTqUdA==
+"@cognite/gearbox@^2.3.4":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@cognite/gearbox/-/gearbox-2.3.4.tgz#7410bfa93ad81a9b340ac8d8f1583d0c8a74eb4d"
+  integrity sha512-H8otVS5NQ6/aNiEpRaIUsL84cyChMhYEqsUccDmtdLQQTMtSa7nqs3EaE7OFKzp7ZgYLnAiOgeYO8WQIpWmB9Q==
   dependencies:
     "@types/dompurify" "^2.0.2"
     d3 "^5.14.2"
