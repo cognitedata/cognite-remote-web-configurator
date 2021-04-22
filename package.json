@@ -48,7 +48,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.6.0",
+    "@testing-library/user-event": "^13.1.5",
     "@types/ace-diff": "^2.1.0",
     "@types/file-saver": "^2.0.1",
     "@types/jest": "^26.0.19",
