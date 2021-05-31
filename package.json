@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "@cognite/gearbox": "^2.2.2",
+    "@cognite/gearbox": "^2.3.6",
     "@cognite/sdk": "^3.3.2",
     "ace-diff": "^3.0.3",
     "antd": "^3.14.1",
